@@ -11,6 +11,8 @@ import Schemes from './pages/dashboard/Schemes';
 import Jobs from './pages/dashboard/Jobs';
 import Documents from './pages/dashboard/Documents';
 import Grievances from './pages/dashboard/Grievances';
+import Assistant from './pages/dashboard/Assistant';
+import Notifications from './pages/dashboard/Notifications';
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
           <Route path="jobs" element={<Jobs />} />
           <Route path="documents" element={<Documents />} />
           <Route path="grievances" element={<Grievances />} />
+          <Route path="assistant" element={<Assistant />} />
+          <Route path="notifications" element={<Notifications />} />
         </Route>
       </Routes>
     </BrowserRouter>

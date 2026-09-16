@@ -12,6 +12,7 @@ export function DashboardLayout() {
     { name: 'Jobs', path: '/dashboard/jobs', icon: <Briefcase size={20} /> },
     { name: 'Documents', path: '/dashboard/documents', icon: <FileText size={20} /> },
     { name: 'Grievances', path: '/dashboard/grievances', icon: <MessageSquare size={20} /> },
+    { name: 'AI Assistant', path: '/dashboard/assistant', icon: <MessageSquare size={20} /> },
   ];
 
   return (
@@ -64,9 +65,9 @@ export function DashboardLayout() {
             </h1>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="text-gray-500 hover:text-brand-teal transition-colors">
+            <Link to="/dashboard/notifications" className="text-gray-500 hover:text-brand-teal transition-colors">
               <Bell size={24} />
-            </button>
+            </Link>
             <div className="h-8 w-8 rounded-full bg-brand-teal flex items-center justify-center text-white font-bold">
               C
             </div>
