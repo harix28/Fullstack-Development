@@ -7,6 +7,10 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Overview from './pages/dashboard/Overview';
 import Profile from './pages/dashboard/Profile';
+import Schemes from './pages/dashboard/Schemes';
+import Jobs from './pages/dashboard/Jobs';
+import Documents from './pages/dashboard/Documents';
+import Grievances from './pages/dashboard/Grievances';
 
 function App() {
   return (
@@ -25,10 +29,10 @@ function App() {
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Overview />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="schemes" element={<div className="p-8">Schemes (Coming Soon)</div>} />
-          <Route path="jobs" element={<div className="p-8">Jobs (Coming Soon)</div>} />
-          <Route path="documents" element={<div className="p-8">Documents (Coming Soon)</div>} />
-          <Route path="grievances" element={<div className="p-8">Grievances (Coming Soon)</div>} />
+          <Route path="schemes" element={<Schemes />} />
+          <Route path="jobs" element={<Jobs />} />
+          <Route path="documents" element={<Documents />} />
+          <Route path="grievances" element={<Grievances />} />
         </Route>
       </Routes>
     </BrowserRouter>
