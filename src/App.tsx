@@ -64,7 +64,7 @@ function PublicOnlyRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
-      {/* ── Public Routes ── */}
+      {/* ── Public Single Landing Page (Consolidated intro, motive, services, about) ── */}
       <Route
         path="/"
         element={
@@ -73,10 +73,9 @@ function AppRoutes() {
           </PublicOnlyRoute>
         }
       />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/how-it-works" element={<HowItWorksPage />} />
-      <Route path="/services" element={<ServicesPage />} />
-      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/about" element={<Navigate to="/" replace />} />
+      <Route path="/how-it-works" element={<Navigate to="/" replace />} />
+      <Route path="/contact" element={<Navigate to="/" replace />} />
 
       {/* ── Auth Routes ── */}
       <Route
@@ -146,6 +145,10 @@ function AppRoutes() {
           {/* Settings */}
           <Route path="/dashboard/settings" element={<SettingsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+
+          {/* Local Citizen Services (inside dashboard workspace) */}
+          <Route path="/dashboard/services" element={<ServicesPage />} />
+          <Route path="/services" element={<ServicesPage />} />
         </Route>
       </Route>
 

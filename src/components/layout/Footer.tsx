@@ -55,11 +55,11 @@ export default function Footer() {
               Explore
             </h3>
             <ul className="space-y-2 text-slate-300">
-              <li><Link to={ROUTES.HOW_IT_WORKS || '/how-it-works'} className="hover:text-white transition-colors">How GovConnect Works</Link></li>
-              <li><Link to={ROUTES.ABOUT} className="hover:text-white transition-colors">About the Project</Link></li>
-              <li><Link to={ROUTES.SAVED || '/dashboard/saved'} className="hover:text-white transition-colors">Saved Bookmarks</Link></li>
-              <li><Link to={ROUTES.CONTACT || '/contact'} className="hover:text-white transition-colors">Citizen Helplines & Contact</Link></li>
-              <li><Link to={ROUTES.LOGIN} className="hover:text-white transition-colors">Demo Login</Link></li>
+              <li><a href="/#motive" className="hover:text-white transition-colors">Project Motive & Problem</a></li>
+              <li><a href="/#services" className="hover:text-white transition-colors">Citizen Services Suite</a></li>
+              <li><a href="/#how-it-works" className="hover:text-white transition-colors">How GovConnect Works</a></li>
+              <li><Link to={ROUTES.LOGIN} className="hover:text-white transition-colors">Sign In to Dashboard</Link></li>
+              <li><Link to={ROUTES.REGISTER} className="hover:text-white transition-colors">Register Account</Link></li>
             </ul>
           </div>
 
@@ -108,9 +108,9 @@ export default function Footer() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2 text-[11px] text-slate-500">
             <p>&copy; 2026 GovConnect. Built with pride for India's 1.4 Billion Citizens.</p>
             <div className="flex items-center gap-4">
-              <Link to="/contact" className="hover:underline">Support</Link>
-              <Link to="/about" className="hover:underline">Architecture</Link>
-              <Link to="/how-it-works" className="hover:underline">Workflow</Link>
+              <a href="/#motive" className="hover:underline">Project Motive</a>
+              <a href="/#services" className="hover:underline">Services</a>
+              <a href="/#how-it-works" className="hover:underline">Workflow</a>
             </div>
           </div>
         </div>
