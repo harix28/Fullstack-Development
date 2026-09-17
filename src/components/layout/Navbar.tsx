@@ -2,12 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Shield, Bell, Menu, X, LogOut, User, LayoutDashboard, 
-  Settings, Bookmark, Search, Moon, Sun, ArrowRight, Sparkles 
+  Settings, Bookmark, Moon, Sun, ArrowRight, Sparkles 
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
-import { GlobalSearchModal } from '@/components/common/GlobalSearchModal';
 import ROUTES from '@/constants/routes';
 import { cn } from '@/utils/cn';
 
@@ -20,20 +19,7 @@ export default function Navbar() {
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [searchModalOpen, setSearchModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Global Ctrl+K listener
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setSearchModalOpen(prev => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -85,19 +71,6 @@ export default function Navbar() {
           {/* Right Action Controls: Clean nav with Mode (Theme), Language, Sign In, Register */}
           <div className="flex items-center gap-2.5 sm:gap-3">
             
-            {/* Search Trigger */}
-            <button
-              onClick={() => setSearchModalOpen(true)}
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100/90 dark:bg-slate-800/90 text-slate-500 dark:text-slate-400 text-xs hover:bg-slate-200/80 dark:hover:bg-slate-700/80 transition-colors border border-slate-200/70 dark:border-slate-700/70 cursor-pointer"
-              title="Search schemes, jobs, services (Ctrl + K)"
-            >
-              <Search className="w-3.5 h-3.5" />
-              <span className="text-slate-600 dark:text-slate-300">Search...</span>
-              <kbd className="text-[10px] bg-white dark:bg-slate-700 px-1.5 py-0.5 rounded shadow-xs font-mono font-medium border border-slate-200 dark:border-slate-600">
-                Ctrl+K
-              </kbd>
-            </button>
-
             {/* Language Switch */}
             <button
               onClick={toggleLang}
@@ -246,9 +219,6 @@ export default function Navbar() {
           </div>
         )}
       </nav>
-
-      {/* Global Ctrl+K Modal */}
-      <GlobalSearchModal isOpen={searchModalOpen} onClose={() => setSearchModalOpen(false)} />
     </>
   );
 }
