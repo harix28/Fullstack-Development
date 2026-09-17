@@ -21,7 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (existing) {
       return { user: existing, isAuthenticated: true, isLoading: false };
     }
-    // Preload demo user for judge/evaluator instant demo experience
+    // Preload demo citizen user for instant experience
     return { user: mockUser, isAuthenticated: true, isLoading: false };
   });
 

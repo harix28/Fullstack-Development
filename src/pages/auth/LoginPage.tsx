@@ -59,7 +59,7 @@ export default function LoginPage() {
           </Link>
           
           <Badge className="bg-white/10 text-teal-300 border-white/20 mb-4 text-xs font-semibold">
-            SIH 2026 Innovation Challenge Prototype
+            College Major Project Prototype
           </Badge>
 
           <h1 className="text-4xl lg:text-5xl font-bold leading-tight mb-6">
@@ -88,7 +88,7 @@ export default function LoginPage() {
         <div className="relative z-10 mt-auto pt-8 border-t border-white/10">
           <p className="text-xs text-blue-200 mb-2 font-medium flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-teal-300" />
-            Hackathon Evaluator Notice:
+            Project Demo Notice:
           </p>
           <p className="text-xs text-blue-300/80 leading-relaxed">
             GovConnect is fully populated with mock persona profiles (Student, Farmer, Entrepreneur). Use the quick login options on the right for instant exploration without typing.
@@ -114,11 +114,11 @@ export default function LoginPage() {
           <div>
             <h2 className="text-3xl font-bold text-[#0f1740]">Welcome Back</h2>
             <p className="mt-2 text-sm text-slate-600">
-              Sign in to your citizen account or use a 1-click evaluator demo profile.
+              Sign in to your citizen account or use a 1-click instant demo profile.
             </p>
           </div>
 
-          {/* Quick Evaluator Login Buttons */}
+          {/* Quick Demo Login Buttons */}
           <div className="mt-6 p-4 bg-blue-50/70 border border-blue-200 rounded-xl space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#1a2f8a] uppercase tracking-wider flex items-center gap-1">

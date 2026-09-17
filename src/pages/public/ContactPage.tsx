@@ -123,7 +123,7 @@ export default function ContactPage() {
                   GovConnect Project Desk
                 </h3>
                 <p className="text-blue-100 text-sm mb-6 leading-relaxed">
-                  GovConnect is developed as part of the Smart India Hackathon (SIH 2026) prototype challenge. Our mission is to eliminate bureaucratic friction and empower every Indian citizen.
+                  GovConnect is developed as a major college engineering capstone project. Our mission is to eliminate bureaucratic friction and empower every Indian citizen.
                 </p>
 
                 <div className="space-y-4 text-sm">

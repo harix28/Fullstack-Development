@@ -25,7 +25,7 @@ export default function Footer() {
             </p>
             
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-sm">
-              An AI-assisted unified citizen empowerment prototype developed for the Smart India Hackathon (SIH 2026). Helping Indian citizens discover welfare schemes, government jobs, manage digital documents, and resolve civic grievances.
+              An AI-assisted unified citizen empowerment college engineering capstone project. Helping Indian citizens discover welfare schemes, government jobs, manage digital documents, and resolve civic grievances.
             </p>
 
             <div className="pt-2 flex items-center gap-2 text-xs text-slate-400">
@@ -56,10 +56,10 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2 text-slate-300">
               <li><Link to={ROUTES.HOW_IT_WORKS || '/how-it-works'} className="hover:text-white transition-colors">How GovConnect Works</Link></li>
-              <li><Link to={ROUTES.ABOUT} className="hover:text-white transition-colors">About the SIH Project</Link></li>
+              <li><Link to={ROUTES.ABOUT} className="hover:text-white transition-colors">About the Project</Link></li>
               <li><Link to={ROUTES.SAVED || '/dashboard/saved'} className="hover:text-white transition-colors">Saved Bookmarks</Link></li>
               <li><Link to={ROUTES.CONTACT || '/contact'} className="hover:text-white transition-colors">Citizen Helplines & Contact</Link></li>
-              <li><Link to={ROUTES.LOGIN} className="hover:text-white transition-colors">Evaluator Demo Login</Link></li>
+              <li><Link to={ROUTES.LOGIN} className="hover:text-white transition-colors">Demo Login</Link></li>
             </ul>
           </div>
 
@@ -102,7 +102,7 @@ export default function Footer() {
         {/* Disclaimer Strip (Prompt Section 52) */}
         <div className="pt-8 border-t border-slate-800 text-xs text-slate-400 space-y-3">
           <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 text-slate-300 leading-relaxed">
-            <strong className="text-amber-400">SIH 2026 Prototype Notice:</strong> GovConnect is a prototype citizen-assistance platform. Government scheme eligibility, job information and application requirements should always be verified through the relevant official government portal. GovConnect prepares your eligibility and complaint drafts, but does not submit applications or store official documents on central government servers.
+            <strong className="text-amber-400">Prototype Notice:</strong> GovConnect is a prototype citizen-assistance platform. Government scheme eligibility, job information and application requirements should always be verified through the relevant official government portal. GovConnect prepares your eligibility and complaint drafts, but does not submit applications or store official documents on central government servers.
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2 text-[11px] text-slate-500">

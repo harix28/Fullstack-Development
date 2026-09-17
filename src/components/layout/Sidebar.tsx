@@ -43,7 +43,7 @@ export default function Sidebar() {
           </span>
         </Link>
         <span className="text-[10px] bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-400 font-bold px-2 py-0.5 rounded border border-teal-200 dark:border-teal-800">
-          SIH 2026
+          Prototype
         </span>
       </div>
 
