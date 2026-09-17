@@ -1,0 +1,14 @@
+{
+  "navbar": {
+    "home": "Home",
+    "services": "Services",
+    "schemes": "Schemes",
+    "jobs": "Jobs",
+    "login": "Login"
+  },
+  "landing": {
+    "hero_title": "One Platform.",
+    "hero_subtitle": "Every Citizen Service.",
+    "get_started": "Get Started"
+  }
+}

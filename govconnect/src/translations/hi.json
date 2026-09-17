@@ -1,0 +1,14 @@
+{
+  "navbar": {
+    "home": "होम",
+    "services": "सेवाएं",
+    "schemes": "योजनाएं",
+    "jobs": "नौकरियां",
+    "login": "लॉग इन"
+  },
+  "landing": {
+    "hero_title": "एक मंच।",
+    "hero_subtitle": "हर नागरिक सेवा।",
+    "get_started": "शुरू करें"
+  }
+}
