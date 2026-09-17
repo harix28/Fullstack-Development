@@ -1,71 +1,118 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, ExternalLink, Mail, Phone } from 'lucide-react';
+import { Shield, ExternalLink, Mail, Phone, Heart, Sparkles } from 'lucide-react';
 import ROUTES from '@/constants/routes';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0f1740] text-white py-16">
+    <footer className="bg-[#0f1740] text-white pt-16 pb-12 font-sans border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           
-          {/* Col 1 Brand */}
-          <div className="space-y-4">
-            <Link to={ROUTES.HOME} className="flex items-center gap-2">
-              <Shield className="h-8 w-8 text-white" />
-              <span className="font-bold text-xl">GovConnect</span>
+          {/* Col 1: Brand & Tagline */}
+          <div className="lg:col-span-2 space-y-4">
+            <Link to={ROUTES.HOME} className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-[#1a2f8a] flex items-center justify-center shadow-sm text-white">
+                <Shield className="h-5 w-5" />
+              </div>
+              <span className="font-extrabold text-2xl tracking-tight">
+                Gov<span className="text-[#0d9488]">Connect</span>
+              </span>
             </Link>
-            <p className="text-sm font-medium text-teal-400">One Platform. Every Citizen Service.</p>
-            <p className="text-sm text-gray-300">
-              Simplifying access to government services, schemes, and jobs for citizens across India.
+            
+            <p className="text-teal-400 text-sm font-semibold tracking-wide">
+              One Platform. Every Citizen. Every Opportunity.
             </p>
+            
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-sm">
+              An AI-assisted unified citizen empowerment prototype developed for the Smart India Hackathon (SIH 2026). Helping Indian citizens discover welfare schemes, government jobs, manage digital documents, and resolve civic grievances.
+            </p>
+
+            <div className="pt-2 flex items-center gap-2 text-xs text-slate-400">
+              <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-ping" />
+              <span>Assisted Preparation Layer • Verified Portals</span>
+            </div>
           </div>
 
-          {/* Col 2 Quick Links */}
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li><Link to={ROUTES.HOME} className="text-sm text-gray-300 hover:text-white transition-colors">Home</Link></li>
-              <li><Link to={ROUTES.ABOUT || '/about'} className="text-sm text-gray-300 hover:text-white transition-colors">About</Link></li>
-              <li><Link to={ROUTES.SERVICES || '/services'} className="text-sm text-gray-300 hover:text-white transition-colors">Services</Link></li>
-              <li><Link to={ROUTES.SCHEMES || '/dashboard/schemes'} className="text-sm text-gray-300 hover:text-white transition-colors">Schemes</Link></li>
-              <li><Link to={ROUTES.JOBS || '/dashboard/jobs'} className="text-sm text-gray-300 hover:text-white transition-colors">Jobs</Link></li>
+          {/* Col 2: Citizen Modules */}
+          <div className="space-y-3 text-xs">
+            <h3 className="font-bold text-sm text-white uppercase tracking-wider">
+              Citizen Modules
+            </h3>
+            <ul className="space-y-2 text-slate-300">
+              <li><Link to={ROUTES.SCHEMES} className="hover:text-white transition-colors">Schemes Discovery</Link></li>
+              <li><Link to={ROUTES.JOBS} className="hover:text-white transition-colors">Sarkari Jobs & PSUs</Link></li>
+              <li><Link to={ROUTES.DOCUMENTS} className="hover:text-white transition-colors">Digital Document Vault</Link></li>
+              <li><Link to={ROUTES.GRIEVANCES} className="hover:text-white transition-colors">Grievance Redressal</Link></li>
+              <li><Link to={ROUTES.ASSISTANT} className="hover:text-white transition-colors flex items-center gap-1">Ask Sarkar AI <Sparkles className="w-3 h-3 text-amber-400" /></Link></li>
+              <li><Link to={ROUTES.SERVICES} className="hover:text-white transition-colors">Local Services Locator</Link></li>
             </ul>
           </div>
 
-          {/* Col 3 Platform */}
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Platform</h3>
-            <ul className="space-y-2">
-              <li><Link to={ROUTES.LOGIN || '/login'} className="text-sm text-gray-300 hover:text-white transition-colors">Login</Link></li>
-              <li><Link to={ROUTES.REGISTER || '/register'} className="text-sm text-gray-300 hover:text-white transition-colors">Register</Link></li>
-              <li><Link to={ROUTES.DASHBOARD || '/dashboard'} className="text-sm text-gray-300 hover:text-white transition-colors">Dashboard</Link></li>
-              <li><Link to={ROUTES.DOCUMENTS || '/dashboard/documents'} className="text-sm text-gray-300 hover:text-white transition-colors">Document Vault</Link></li>
-              <li><Link to={ROUTES.ASSISTANT || '/dashboard/assistant'} className="text-sm text-gray-300 hover:text-white transition-colors flex items-center gap-1">AI Assistant <ExternalLink className="h-3 w-3" /></Link></li>
+          {/* Col 3: Information & Guide */}
+          <div className="space-y-3 text-xs">
+            <h3 className="font-bold text-sm text-white uppercase tracking-wider">
+              Explore
+            </h3>
+            <ul className="space-y-2 text-slate-300">
+              <li><Link to={ROUTES.HOW_IT_WORKS || '/how-it-works'} className="hover:text-white transition-colors">How GovConnect Works</Link></li>
+              <li><Link to={ROUTES.ABOUT} className="hover:text-white transition-colors">About the SIH Project</Link></li>
+              <li><Link to={ROUTES.SAVED || '/dashboard/saved'} className="hover:text-white transition-colors">Saved Bookmarks</Link></li>
+              <li><Link to={ROUTES.CONTACT || '/contact'} className="hover:text-white transition-colors">Citizen Helplines & Contact</Link></li>
+              <li><Link to={ROUTES.LOGIN} className="hover:text-white transition-colors">Evaluator Demo Login</Link></li>
             </ul>
           </div>
 
-          {/* Col 4 Legal */}
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Legal</h3>
-            <ul className="space-y-2">
-              <li><Link to="/privacy" className="text-sm text-gray-300 hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="text-sm text-gray-300 hover:text-white transition-colors">Terms of Service</Link></li>
-              <li><Link to="/disclaimer" className="text-sm text-gray-300 hover:text-white transition-colors">Disclaimer</Link></li>
-              <li><Link to="/contact" className="text-sm text-gray-300 hover:text-white transition-colors">Contact Us</Link></li>
+          {/* Col 4: Official Portals Directory */}
+          <div className="space-y-3 text-xs">
+            <h3 className="font-bold text-sm text-white uppercase tracking-wider">
+              Official Portals
+            </h3>
+            <ul className="space-y-2 text-slate-300">
+              <li>
+                <a href="https://pgportal.gov.in" target="_blank" rel="noopener noreferrer" className="hover:text-white flex items-center gap-1 transition-colors">
+                  CPGRAMS Portal <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
+              </li>
+              <li>
+                <a href="https://www.myscheme.gov.in" target="_blank" rel="noopener noreferrer" className="hover:text-white flex items-center gap-1 transition-colors">
+                  myScheme.gov.in <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
+              </li>
+              <li>
+                <a href="https://www.digilocker.gov.in" target="_blank" rel="noopener noreferrer" className="hover:text-white flex items-center gap-1 transition-colors">
+                  DigiLocker <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
+              </li>
+              <li>
+                <a href="https://scholarships.gov.in" target="_blank" rel="noopener noreferrer" className="hover:text-white flex items-center gap-1 transition-colors">
+                  National Scholarship Portal <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
+              </li>
+              <li>
+                <a href="https://ssc.gov.in" target="_blank" rel="noopener noreferrer" className="hover:text-white flex items-center gap-1 transition-colors">
+                  Staff Selection Commission <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
+              </li>
             </ul>
           </div>
 
         </div>
 
-        {/* Bottom bar */}
-        <div className="border-t border-white/10 mt-12 pt-8 flex flex-col items-center text-center">
-          <p className="text-gray-400 text-xs mb-2">
-            &copy; 2024 GovConnect. Built for India's citizens.
-          </p>
-          <p className="text-gray-400 text-xs max-w-2xl">
-            GovConnect is an independent citizen-assistance platform and is not affiliated with any government department. Always verify information through official portals.
-          </p>
+        {/* Disclaimer Strip (Prompt Section 52) */}
+        <div className="pt-8 border-t border-slate-800 text-xs text-slate-400 space-y-3">
+          <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 text-slate-300 leading-relaxed">
+            <strong className="text-amber-400">SIH 2026 Prototype Notice:</strong> GovConnect is a prototype citizen-assistance platform. Government scheme eligibility, job information and application requirements should always be verified through the relevant official government portal. GovConnect prepares your eligibility and complaint drafts, but does not submit applications or store official documents on central government servers.
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2 text-[11px] text-slate-500">
+            <p>&copy; 2026 GovConnect. Built with pride for India's 1.4 Billion Citizens.</p>
+            <div className="flex items-center gap-4">
+              <Link to="/contact" className="hover:underline">Support</Link>
+              <Link to="/about" className="hover:underline">Architecture</Link>
+              <Link to="/how-it-works" className="hover:underline">Workflow</Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

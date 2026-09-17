@@ -1,4 +1,4 @@
-﻿import type { User, LoginCredentials, RegisterData } from '@/types';
+import type { User, LoginCredentials, RegisterData } from '@/types';
 import { mockUser } from '@/data/mockUser';
 
 const TOKEN_KEY = 'govconnect_token';
@@ -68,9 +68,18 @@ export const registerUser = async (data: RegisterData): Promise<User> => {
     email: data.email,
     mobile: data.mobile,
     state: data.state,
-    dateOfBirth: data.dateOfBirth,
-    gender: data.gender as User['gender'],
-    profileCompletion: 30,
+    district: data.district || mockUser.district,
+    cityVillage: data.cityVillage || mockUser.cityVillage,
+    dateOfBirth: data.dateOfBirth || '2001-01-01',
+    age: data.age || mockUser.age,
+    gender: (data.gender as User['gender']) || mockUser.gender,
+    education: data.education || mockUser.education,
+    occupation: data.occupation || mockUser.occupation,
+    employmentStatus: data.employmentStatus || mockUser.employmentStatus,
+    skills: data.skills || mockUser.skills,
+    category: (data.category as any) || mockUser.category,
+    annualIncome: data.annualIncome || mockUser.annualIncome,
+    profileCompletion: 85,
     createdAt: new Date().toISOString(),
   };
 

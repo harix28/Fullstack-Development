@@ -1,38 +1,37 @@
-// Application route constants
+// Application route constants for GovConnect
 
 export const ROUTES = {
   // Public
   HOME: '/',
   ABOUT: '/about',
+  HOW_IT_WORKS: '/how-it-works',
+  SCHEMES: '/schemes',
+  SCHEMES_RECOMMENDED: '/schemes?tab=recommended',
+  SCHEMES_EXPLORE: '/schemes?tab=explore',
+  SCHEME_DETAIL: (id: string) => `/schemes/${id}`,
+  JOBS: '/jobs',
+  JOBS_RECOMMENDED: '/jobs?tab=recommended',
+  JOB_DETAIL: (id: string) => `/jobs/${id}`,
   SERVICES: '/services',
+  CONTACT: '/contact',
+  ASK_SARKAR: '/ask-sarkar',
 
   // Auth
   LOGIN: '/login',
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
 
-  // Dashboard
+  // Dashboard & Citizen Portal
   DASHBOARD: '/dashboard',
-  PROFILE: '/dashboard/profile',
-
-  SCHEMES: '/dashboard/schemes',
-  SCHEMES_RECOMMENDED: '/dashboard/schemes/recommended',
-  SCHEMES_EXPLORE: '/dashboard/schemes/explore',
-  SCHEME_DETAIL: (id: string) => `/dashboard/schemes/${id}`,
-
-  JOBS: '/dashboard/jobs',
-  JOBS_RECOMMENDED: '/dashboard/jobs/recommended',
-  JOB_DETAIL: (id: string) => `/dashboard/jobs/${id}`,
-
-  DOCUMENTS: '/dashboard/documents',
-
-  GRIEVANCES: '/dashboard/grievances',
-  GRIEVANCE_NEW: '/dashboard/grievances/new',
-  GRIEVANCE_DETAIL: (id: string) => `/dashboard/grievances/${id}`,
-
-  ASSISTANT: '/dashboard/assistant',
-  NOTIFICATIONS: '/dashboard/notifications',
-  SETTINGS: '/dashboard/settings',
+  PROFILE: '/profile',
+  DOCUMENTS: '/documents',
+  GRIEVANCES: '/grievances',
+  GRIEVANCE_NEW: '/grievances/new',
+  GRIEVANCE_DETAIL: (id: string) => `/grievances/${id}`,
+  ASSISTANT: '/ask-sarkar',
+  SAVED: '/saved',
+  NOTIFICATIONS: '/notifications',
+  SETTINGS: '/settings',
 } as const;
 
 export default ROUTES;
