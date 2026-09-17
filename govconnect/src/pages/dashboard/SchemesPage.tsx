@@ -16,27 +16,28 @@ import {
 import { INDIAN_STATES } from '@/constants/categories';
 import type { Scheme } from '@/types';
 
-// Quick 1-Click Category Filter Pills for maximum ease of use
+// Quick 1-Click Category Filter Pills
 const QUICK_FILTER_PILLS = [
-  { id: 'all', label: 'All Schemes', icon: Coins, count: 8 },
-  { id: 'top_match', label: '🌟 Top Matches (90%+)', icon: Sparkles, count: 5 },
-  { id: 'Education', label: '🎓 Education & Skill', icon: GraduationCap, count: 2 },
-  { id: 'Business & Entrepreneurship', label: '💼 Business Loans & MSME', icon: Briefcase, count: 2 },
-  { id: 'Agriculture', label: '🌾 Agriculture & Rural', icon: Wheat, count: 2 },
-  { id: 'Healthcare', label: '🏥 Health & Insurance', icon: HeartHandshake, count: 1 },
-  { id: 'Housing', label: '🏠 Housing & Urban', icon: Home, count: 1 },
+  { id: 'all', label: 'All Schemes (A to Z)', icon: Coins },
+  { id: 'top_match', label: '🌟 Top Matches (90%+)', icon: Sparkles },
+  { id: 'Education', label: '🎓 Education & Scholarships', icon: GraduationCap },
+  { id: 'Business & Entrepreneurship', label: '💼 Business & MSME Loans', icon: Briefcase },
+  { id: 'Agriculture', label: '🌾 Agriculture & Farmers', icon: Wheat },
+  { id: 'Healthcare', label: '🏥 Healthcare & Insurance', icon: HeartHandshake },
+  { id: 'Housing', label: '🏠 Housing & Solar', icon: Home },
 ];
 
 export default function SchemesPage() {
   const { user } = useAuth();
   const { isSchemeSaved, toggleSaveScheme } = useSaved();
 
-  const [activeTab, setActiveTab] = useState<'recommended' | 'all' | 'saved'>('recommended');
+  const [activeTab, setActiveTab] = useState<'recommended' | 'all' | 'saved'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedQuickPill, setSelectedQuickPill] = useState<string>('all');
   const [selectedMinistry, setSelectedMinistry] = useState('all');
   const [selectedState, setSelectedState] = useState('all');
-  const [sortBy, setSortBy] = useState<'match' | 'deadline' | 'name'>('match');
+  const [alphabetFilter, setAlphabetFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'match' | 'name_asc' | 'name_desc' | 'deadline'>('name_asc');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   // Eligibility Evaluation Modal State
@@ -55,17 +56,35 @@ export default function SchemesPage() {
     return ['all', ...Array.from(mins)];
   }, []);
 
-  // Filter schemes based on tabs, search, quick pills, ministry, state, saved state
+  // Compute available A-to-Z starting letters
+  const availableLetters = useMemo(() => {
+    const letters = new Set<string>();
+    mockSchemes.forEach(s => {
+      const firstChar = s.title.trim().charAt(0).toUpperCase();
+      if (/[A-Z]/.test(firstChar)) letters.add(firstChar);
+    });
+    return Array.from(letters).sort();
+  }, []);
+
+  // Comprehensive Filter & Sort Logic
   const filteredSchemes = useMemo(() => {
     return mockSchemes.filter(s => {
-      // Search
+      // 1. Search Query
       const matchesSearch = 
         s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.ministry.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (s.tags && s.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
 
-      // Quick category pill
+      // 2. Tab logic
+      if (activeTab === 'saved') {
+        if (!isSchemeSaved(s.id)) return false;
+      } else if (activeTab === 'recommended') {
+        // Recommended shows schemes with strong compatibility
+        if ((s.matchPercentage || 0) < 80) return false;
+      }
+
+      // 3. Quick Category Pill
       let matchesQuickPill = true;
       if (selectedQuickPill === 'top_match') {
         matchesQuickPill = (s.matchPercentage || 0) >= 90;
@@ -73,27 +92,35 @@ export default function SchemesPage() {
         matchesQuickPill = s.category === selectedQuickPill;
       }
 
-      // Advanced filters
+      // 4. Alphabet A-to-Z Letter Filter
+      let matchesLetter = true;
+      if (alphabetFilter !== 'all') {
+        matchesLetter = s.title.trim().toUpperCase().startsWith(alphabetFilter);
+      }
+
+      // 5. Ministry & State Filters
       const matchesMin = selectedMinistry === 'all' || s.ministry === selectedMinistry;
       const matchesState = selectedState === 'all' || s.state === 'Central' || s.state === selectedState;
-      const matchesSaved = activeTab !== 'saved' || isSchemeSaved(s.id);
 
-      return matchesSearch && matchesQuickPill && matchesMin && matchesState && matchesSaved;
+      return matchesSearch && matchesQuickPill && matchesLetter && matchesMin && matchesState;
     }).sort((a, b) => {
+      if (sortBy === 'name_asc') {
+        return a.title.localeCompare(b.title);
+      }
+      if (sortBy === 'name_desc') {
+        return b.title.localeCompare(a.title);
+      }
       if (sortBy === 'match') {
         return (b.matchPercentage || 0) - (a.matchPercentage || 0);
       }
       if (sortBy === 'deadline') {
-        if (!a.deadline) return 1;
-        if (!b.deadline) return -1;
+        if (!a.deadline || a.deadline.includes('Rolling')) return 1;
+        if (!b.deadline || b.deadline.includes('Rolling')) return -1;
         return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
-      }
-      if (sortBy === 'name') {
-        return a.title.localeCompare(b.title);
       }
       return 0;
     });
-  }, [searchQuery, selectedQuickPill, selectedMinistry, selectedState, activeTab, isSchemeSaved, sortBy]);
+  }, [searchQuery, activeTab, selectedQuickPill, alphabetFilter, selectedMinistry, selectedState, isSchemeSaved, sortBy]);
 
   const runEligibilityCheck = (scheme?: Scheme) => {
     setSelectedSchemeForAnalysis(scheme || filteredSchemes[0] || mockSchemes[0]);
@@ -115,6 +142,16 @@ export default function SchemesPage() {
     }, 1200);
   };
 
+  const resetAllFilters = () => {
+    setActiveTab('all');
+    setSelectedQuickPill('all');
+    setAlphabetFilter('all');
+    setSelectedMinistry('all');
+    setSelectedState('all');
+    setSearchQuery('');
+    setSortBy('name_asc');
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto font-sans pb-10">
       
@@ -125,26 +162,26 @@ export default function SchemesPage() {
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-400/20 text-teal-200 border border-teal-300/30">
                 <Zap className="w-3.5 h-3.5 text-teal-300" />
-                AI Citizen Matching Engine
+                Complete Welfare Schemes Directory
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/10 text-white/90">
-                Active Profile: {user?.name || 'Citizen'} ({user?.education || 'Graduate'})
+                Active Citizen Profile: {user?.name || 'Citizen'} ({user?.education || 'Graduate'})
               </span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
-              Targeted Schemes & Welfare Benefits
+              Government Schemes Directory (A to Z)
             </h1>
 
             <p className="text-blue-100 text-sm leading-relaxed">
-              GovConnect automatically cross-references your verified demographics (Age: <strong>{user?.age || 23}</strong>, Domicile: <strong>{user?.state || 'Delhi'}</strong>, Quota: <strong>{user?.category || 'General'}</strong>, Income: <strong>₹{(user?.annualIncome || 350000).toLocaleString('en-IN')}</strong>) against 200+ Central and State welfare guidelines.
+              Explore the entire catalogue of <strong>{mockSchemes.length} Central & State Government Welfare Schemes</strong> spanning Agriculture, Education, MSME Business Loans, Healthcare, Housing, and Women Empowerment.
             </p>
 
             {/* Quick Live Metric Strip */}
             <div className="flex flex-wrap items-center gap-3 pt-2 text-xs">
               <div className="px-3 py-1.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/15 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Eligible Schemes: <strong>{mockSchemes.length} Active</strong></span>
+                <span>Total Schemes Listed: <strong>{mockSchemes.length} Active</strong></span>
               </div>
               <div className="px-3 py-1.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/15 flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-teal-300" />
@@ -152,7 +189,7 @@ export default function SchemesPage() {
               </div>
               <div className="px-3 py-1.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/15 flex items-center gap-2">
                 <Coins className="w-4 h-4 text-amber-300" />
-                <span>Direct Benefits: <strong>Up to ₹12.5L</strong></span>
+                <span>Direct Benefits: <strong>Up to ₹12.5L+</strong></span>
               </div>
             </div>
           </div>
@@ -164,14 +201,14 @@ export default function SchemesPage() {
               className="bg-[#0d9488] hover:bg-teal-500 text-white font-extrabold px-6 py-3.5 rounded-xl shadow-lg gap-2 text-sm cursor-pointer transition-all hover:scale-102"
             >
               <Sparkles className="w-4 h-4" />
-              Instant Eligibility Check
+              Check My Eligibility
             </Button>
-            <Link
-              to="/dashboard/profile"
-              className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 transition-colors text-center"
+            <button
+              onClick={resetAllFilters}
+              className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 transition-colors text-center cursor-pointer"
             >
-              Update Match Profile →
-            </Link>
+              Show All {mockSchemes.length} Schemes (A to Z) →
+            </button>
           </div>
         </div>
 
@@ -180,7 +217,7 @@ export default function SchemesPage() {
         <div className="absolute top-0 right-1/3 w-64 h-64 bg-blue-400 rounded-full blur-3xl opacity-15 pointer-events-none" />
       </div>
 
-      {/* ── 1-CLICK CATEGORY FILTER PILLS (Makes finding schemes instant) ── */}
+      {/* ── 1-CLICK CATEGORY FILTER PILLS ── */}
       <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1 hidden sm:inline">
@@ -192,7 +229,10 @@ export default function SchemesPage() {
             return (
               <button
                 key={pill.id}
-                onClick={() => setSelectedQuickPill(pill.id)}
+                onClick={() => {
+                  setSelectedQuickPill(pill.id);
+                  setAlphabetFilter('all');
+                }}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                   isSelected
                     ? 'bg-[#1a2f8a] text-white shadow-sm ring-2 ring-blue-500/20'
@@ -207,11 +247,55 @@ export default function SchemesPage() {
         </div>
       </div>
 
+      {/* ── A-to-Z ALPHABETICAL JUMP STRIP (Shows all schemes A to Z) ── */}
+      <div className="bg-white dark:bg-slate-900 px-4 py-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center gap-2 overflow-x-auto scrollbar-none">
+        <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider shrink-0 mr-1">
+          Alphabetical A-Z:
+        </span>
+        <button
+          onClick={() => setAlphabetFilter('all')}
+          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            alphabetFilter === 'all'
+              ? 'bg-[#1a2f8a] text-white shadow-xs'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+          }`}
+        >
+          All ({mockSchemes.length})
+        </button>
+        {availableLetters.map(letter => (
+          <button
+            key={letter}
+            onClick={() => setAlphabetFilter(letter)}
+            className={`w-7 h-7 rounded-lg text-xs font-extrabold flex items-center justify-center transition-all cursor-pointer ${
+              alphabetFilter === letter
+                ? 'bg-[#0d9488] text-white shadow-xs scale-110'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+            }`}
+          >
+            {letter}
+          </button>
+        ))}
+      </div>
+
       {/* ── CONTROLS TOOLBAR: TABS, SEARCH, SORT & ADVANCED TOGGLE ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
         
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 border-b md:border-b-0 pb-2 md:pb-0 border-slate-200 dark:border-slate-800">
+          <button
+            onClick={() => {
+              setActiveTab('all');
+              setSelectedQuickPill('all');
+              setAlphabetFilter('all');
+            }}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeTab === 'all'
+                ? 'bg-blue-50 dark:bg-blue-950/60 text-[#1a2f8a] dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
+            }`}
+          >
+            Explore All Schemes ({mockSchemes.length})
+          </button>
           <button
             onClick={() => setActiveTab('recommended')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
@@ -220,17 +304,7 @@ export default function SchemesPage() {
                 : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
             }`}
           >
-            Recommended For You ({mockSchemes.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('all')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeTab === 'all'
-                ? 'bg-blue-50 dark:bg-blue-950/60 text-[#1a2f8a] dark:text-blue-300 border border-blue-200 dark:border-blue-800'
-                : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
-            }`}
-          >
-            Explore All Schemes
+            Recommended For Me
           </button>
           <button
             onClick={() => setActiveTab('saved')}
@@ -248,7 +322,7 @@ export default function SchemesPage() {
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="w-full sm:w-64">
             <SearchBar 
-              placeholder="Search by name, ministry, benefits..." 
+              placeholder="Search all 21 schemes by name, ministry, tag..." 
               onChange={(v) => setSearchQuery(v)} 
             />
           </div>
@@ -261,9 +335,10 @@ export default function SchemesPage() {
               onChange={(e: any) => setSortBy(e.target.value)}
               className="bg-transparent text-slate-700 dark:text-slate-200 font-semibold focus:outline-none cursor-pointer text-xs"
             >
-              <option value="match">Sort: Highest Match</option>
+              <option value="name_asc">Sort: Alphabetical (A to Z)</option>
+              <option value="name_desc">Sort: Alphabetical (Z to A)</option>
+              <option value="match">Sort: Highest Match %</option>
               <option value="deadline">Sort: Deadline Soon</option>
-              <option value="name">Sort: Scheme Name</option>
             </select>
           </div>
 
@@ -321,12 +396,7 @@ export default function SchemesPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                setSelectedMinistry('all');
-                setSelectedState('all');
-                setSelectedQuickPill('all');
-                setSearchQuery('');
-              }}
+              onClick={resetAllFilters}
               className="w-full text-xs h-9"
             >
               Reset All Filters
@@ -335,23 +405,36 @@ export default function SchemesPage() {
         </div>
       )}
 
+      {/* Showing count indicator */}
+      <div className="flex items-center justify-between text-xs text-slate-500 px-1">
+        <p>
+          Showing <strong className="text-[#0f1740] dark:text-white">{filteredSchemes.length}</strong> of <strong>{mockSchemes.length}</strong> welfare schemes
+          {alphabetFilter !== 'all' && <span> • Starting with '<strong>{alphabetFilter}</strong>'</span>}
+          {selectedQuickPill !== 'all' && <span> • Category: <strong>{selectedQuickPill}</strong></span>}
+        </p>
+
+        {(selectedQuickPill !== 'all' || alphabetFilter !== 'all' || searchQuery || selectedMinistry !== 'all') && (
+          <button
+            onClick={resetAllFilters}
+            className="text-[#1a2f8a] dark:text-blue-400 font-bold hover:underline cursor-pointer"
+          >
+            Clear Filters & Show All {mockSchemes.length} Schemes
+          </button>
+        )}
+      </div>
+
       {/* ── SCHEMES GRID ── */}
       {filteredSchemes.length === 0 ? (
         <EmptyState
           icon={<Info className="w-12 h-12 text-slate-300" />}
-          title="No welfare schemes match your filters"
-          description="Try resetting your category or search filters to explore all available central and state schemes."
+          title="No welfare schemes match your criteria"
+          description="Try clearing your search or category filters to explore all 21 central and state schemes."
           action={
             <Button 
-              onClick={() => {
-                setSelectedQuickPill('all');
-                setSelectedMinistry('all');
-                setSelectedState('all');
-                setSearchQuery('');
-              }}
+              onClick={resetAllFilters}
               className="bg-[#1a2f8a] text-white"
             >
-              Clear All Filters
+              Show All {mockSchemes.length} Schemes
             </Button>
           }
         />
@@ -370,7 +453,7 @@ export default function SchemesPage() {
                 <div>
                   {/* Top Bar: Ministry Pill + Match Percentage Gauge */}
                   <div className="flex justify-between items-start gap-3 mb-3">
-                    <span className="inline-block px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold truncate max-w-[200px]">
+                    <span className="inline-block px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold truncate max-w-[220px]">
                       🏛️ {scheme.ministry}
                     </span>
 
@@ -411,7 +494,7 @@ export default function SchemesPage() {
                     </span>
                     {isHighMatch && (
                       <span className="px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 text-[10px] font-bold">
-                        🌟 Recommended for you
+                        🌟 Recommended
                       </span>
                     )}
                   </div>
@@ -422,7 +505,7 @@ export default function SchemesPage() {
                   
                   {/* Deadline or Status */}
                   <div>
-                    {scheme.deadline ? (
+                    {scheme.deadline && !scheme.deadline.includes('Rolling') ? (
                       <DeadlineBadge date={scheme.deadline} />
                     ) : (
                       <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
@@ -432,7 +515,7 @@ export default function SchemesPage() {
                     )}
                   </div>
 
-                  {/* Action Buttons: 1-Click Eligibility, Bookmark, View Details */}
+                  {/* Action Buttons */}
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => toggleSaveScheme(scheme.id, scheme.title)}
@@ -485,11 +568,11 @@ export default function SchemesPage() {
       <div className="p-4 bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-2xl text-xs text-blue-900 dark:text-blue-200 flex items-start gap-3">
         <Info className="w-4 h-4 shrink-0 mt-0.5 text-[#1a2f8a] dark:text-blue-400" />
         <p className="leading-relaxed">
-          <strong>Citizen Guidance:</strong> GovConnect assists you with verified scheme criteria matching, eligibility simulations, and required document checklists from your vault. Official approvals are determined by the respective government nodal agencies.
+          <strong>Citizen Guidance:</strong> GovConnect catalogs verified government welfare schemes directly from the official gazette notices. Eligibility simulations are calculated against your self-declared citizen profile.
         </p>
       </div>
 
-      {/* ── BEAST MODE: LIVE ELIGIBILITY BREAKDOWN MODAL ── */}
+      {/* ── LIVE ELIGIBILITY BREAKDOWN MODAL ── */}
       <Modal
         isOpen={eligibilityModalOpen}
         onClose={() => setEligibilityModalOpen(false)}
@@ -499,7 +582,6 @@ export default function SchemesPage() {
         {selectedSchemeForAnalysis && (
           <div className="space-y-5 font-sans">
             
-            {/* Header banner */}
             <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-teal-50 dark:from-slate-800 dark:to-slate-800 rounded-2xl border border-blue-100 dark:border-slate-700">
               <div className="space-y-1">
                 <span className="text-[10px] font-bold text-[#1a2f8a] dark:text-teal-300 uppercase tracking-wider">
@@ -517,7 +599,6 @@ export default function SchemesPage() {
               </div>
             </div>
 
-            {/* Evaluation Criteria Rows */}
             <div className="space-y-2.5">
               <h5 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
                 Profile Criteria Evaluation:
@@ -530,7 +611,7 @@ export default function SchemesPage() {
                     <div>
                       <strong className="block font-bold">Age Requirement:</strong>
                       <span className="text-[11px] text-slate-600 dark:text-slate-300">
-                        Citizen age is {user?.age || 23} yrs (Satisfies target bracket of 18–35 yrs).
+                        Citizen age is {user?.age || 23} yrs (Meets scheme criteria).
                       </span>
                     </div>
                   </div>
@@ -545,7 +626,7 @@ export default function SchemesPage() {
                     <div>
                       <strong className="block font-bold">Academic Qualification:</strong>
                       <span className="text-[11px] text-slate-600 dark:text-slate-300">
-                        Profile has {user?.education || 'Graduate/MCA'} (Matches or exceeds minimum threshold).
+                        Profile has {user?.education || 'Graduate/MCA'} (Qualifies for applicant pool).
                       </span>
                     </div>
                   </div>
@@ -561,21 +642,6 @@ export default function SchemesPage() {
                       <strong className="block font-bold">Domicile & Jurisdiction:</strong>
                       <span className="text-[11px] text-slate-600 dark:text-slate-300">
                         Valid for residents of {user?.state || 'Delhi'} (Central / Nationwide Scheme).
-                      </span>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 px-2 py-0.5 rounded-full">
-                    ELIGIBLE
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200">
-                  <div className="flex items-center gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <div>
-                      <strong className="block font-bold">Income Ceiling:</strong>
-                      <span className="text-[11px] text-slate-600 dark:text-slate-300">
-                        Annual family income ₹{(user?.annualIncome || 350000).toLocaleString('en-IN')} falls below the ₹8,00,000 threshold.
                       </span>
                     </div>
                   </div>
@@ -619,7 +685,6 @@ export default function SchemesPage() {
               </div>
             </div>
 
-            {/* Footer Buttons */}
             <div className="pt-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3">
               <Button 
                 variant="outline" 
@@ -643,7 +708,7 @@ export default function SchemesPage() {
         )}
       </Modal>
 
-      {/* ── BEAST MODE: 1-CLICK FAST APPLY SIMULATION MODAL ── */}
+      {/* ── 1-CLICK FAST APPLY SIMULATION MODAL ── */}
       <Modal
         isOpen={fastApplyModalOpen}
         onClose={() => setFastApplyModalOpen(false)}
