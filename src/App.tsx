@@ -11,7 +11,6 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import LandingPage from '@/pages/public/LandingPage';
 import AboutPage from '@/pages/public/AboutPage';
 import HowItWorksPage from '@/pages/public/HowItWorksPage';
-import ServicesPage from '@/pages/public/ServicesPage';
 import ContactPage from '@/pages/public/ContactPage';
 
 // Auth pages
@@ -20,7 +19,6 @@ import RegisterPage from '@/pages/auth/RegisterPage';
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage';
 
 // Dashboard pages
-import DashboardOverview from '@/pages/dashboard/DashboardOverview';
 import ProfilePage from '@/pages/dashboard/ProfilePage';
 import SchemesPage from '@/pages/dashboard/SchemesPage';
 import SchemeDetailPage from '@/pages/dashboard/SchemeDetailPage';
@@ -99,7 +97,7 @@ function AppRoutes() {
       {/* ── Protected Dashboard Routes (all user journeys accessible via /dashboard/* or short aliases) ── */}
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<DashboardOverview />} />
+          <Route path="/dashboard" element={<Navigate to="/dashboard/schemes" replace />} />
           <Route path="/dashboard/profile" element={<ProfilePage />} />
           <Route path="/profile" element={<ProfilePage />} />
 
@@ -146,9 +144,10 @@ function AppRoutes() {
           <Route path="/dashboard/settings" element={<SettingsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
 
-          {/* Local Citizen Services (inside dashboard workspace) */}
-          <Route path="/dashboard/services" element={<ServicesPage />} />
-          <Route path="/services" element={<ServicesPage />} />
+          {/* Redirect removed Overview and Local Services */}
+          <Route path="/dashboard/overview" element={<Navigate to="/dashboard/schemes" replace />} />
+          <Route path="/dashboard/services" element={<Navigate to="/dashboard/schemes" replace />} />
+          <Route path="/services" element={<Navigate to="/dashboard/schemes" replace />} />
         </Route>
       </Route>
 
