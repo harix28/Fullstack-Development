@@ -11,6 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { DemoSwitcher } from '@/components/common/DemoSwitcher';
+import FloatingAssistantModal from '@/components/common/FloatingAssistantModal';
 import ROUTES from '@/constants/routes';
 import { cn } from '@/utils/cn';
 
@@ -259,6 +260,9 @@ export default function DashboardLayout() {
 
       {/* Mobile Bottom Navigation */}
       <MobileNav />
+
+      {/* Persistent Floating Rounded Sarkar AI Assistant (Chat from anywhere) */}
+      <FloatingAssistantModal />
     </div>
   );
 }

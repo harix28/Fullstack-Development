@@ -43,6 +43,12 @@ export default function SchemesPage() {
   const [eligibilityModalOpen, setEligibilityModalOpen] = useState(false);
   const [selectedSchemeForAnalysis, setSelectedSchemeForAnalysis] = useState<Scheme | null>(null);
 
+  // 1-Click Fast Apply Simulation Modal State
+  const [fastApplyModalOpen, setFastApplyModalOpen] = useState(false);
+  const [selectedSchemeForApply, setSelectedSchemeForApply] = useState<Scheme | null>(null);
+  const [applyStep, setApplyStep] = useState<'review' | 'submitting' | 'success'>('review');
+  const [generatedToken, setGeneratedToken] = useState('');
+
   const ministries = useMemo(() => {
     const mins = new Set<string>();
     mockSchemes.forEach(s => mins.add(s.ministry));
@@ -92,6 +98,21 @@ export default function SchemesPage() {
   const runEligibilityCheck = (scheme?: Scheme) => {
     setSelectedSchemeForAnalysis(scheme || filteredSchemes[0] || mockSchemes[0]);
     setEligibilityModalOpen(true);
+  };
+
+  const handleStartFastApply = (scheme: Scheme) => {
+    setSelectedSchemeForApply(scheme);
+    setApplyStep('review');
+    setFastApplyModalOpen(true);
+  };
+
+  const handleSubmitFastApply = () => {
+    setApplyStep('submitting');
+    setTimeout(() => {
+      const token = `GOV-${selectedSchemeForApply?.id?.slice(0, 4)?.toUpperCase() || 'SCH'}-${Date.now().toString().slice(-5)}`;
+      setGeneratedToken(token);
+      setApplyStep('success');
+    }, 1200);
   };
 
   return (
@@ -427,19 +448,28 @@ export default function SchemesPage() {
 
                     <button
                       onClick={() => runEligibilityCheck(scheme)}
-                      className="px-3 py-1.5 text-xs font-bold text-[#1a2f8a] dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-xl transition-colors cursor-pointer flex items-center gap-1"
+                      className="px-2.5 py-1.5 text-xs font-bold text-[#1a2f8a] dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 rounded-xl transition-colors cursor-pointer flex items-center gap-1"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
-                      <span>Check Match</span>
+                      <span>Check</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleStartFastApply(scheme)}
+                      className="px-3 py-1.5 text-xs font-extrabold text-white bg-[#0d9488] hover:bg-teal-600 rounded-xl shadow-xs transition-transform hover:scale-102 cursor-pointer flex items-center gap-1"
+                    >
+                      <Zap className="w-3.5 h-3.5" />
+                      <span>Fast Apply</span>
                     </button>
 
                     <Button 
                       size="sm" 
+                      variant="outline"
                       asChild 
-                      className="bg-[#1a2f8a] hover:bg-[#0f1740] text-white text-xs h-8 px-3.5 rounded-xl font-bold"
+                      className="text-xs h-8 px-2.5 rounded-xl font-bold border-slate-200 dark:border-slate-700"
                     >
                       <Link to={`/dashboard/schemes/${scheme.id}`}>
-                        Apply Guide →
+                        Guide →
                       </Link>
                     </Button>
                   </div>
@@ -609,6 +639,152 @@ export default function SchemesPage() {
                 </Link>
               </Button>
             </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* ── BEAST MODE: 1-CLICK FAST APPLY SIMULATION MODAL ── */}
+      <Modal
+        isOpen={fastApplyModalOpen}
+        onClose={() => setFastApplyModalOpen(false)}
+        title={applyStep === 'success' ? "Official Application Submitted Successfully" : "1-Click DigiLocker Application Form"}
+        size="lg"
+      >
+        {selectedSchemeForApply && (
+          <div className="space-y-4 font-sans text-xs">
+            {applyStep === 'review' && (
+              <>
+                <div className="p-3.5 bg-blue-50 dark:bg-slate-800 rounded-xl border border-blue-100 dark:border-slate-700 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-bold text-[#1a2f8a] dark:text-blue-300 uppercase tracking-wider">
+                      Applying for Welfare Scheme
+                    </span>
+                    <h4 className="font-bold text-sm text-[#0f1740] dark:text-white mt-0.5">
+                      {selectedSchemeForApply.title}
+                    </h4>
+                    <p className="text-[11px] text-slate-500">{selectedSchemeForApply.ministry}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                      ⚡ Pre-Filled from Vault
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h5 className="font-bold uppercase tracking-wider text-slate-400 text-[11px]">
+                    Verified Citizen Credentials (Auto-Injected):
+                  </h5>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="p-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-xl border">
+                      <span className="text-slate-400 block text-[10px]">Beneficiary Name</span>
+                      <p className="font-bold text-[#0f1740] dark:text-white">{user?.name || 'Hari Sharma'}</p>
+                    </div>
+                    <div className="p-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-xl border">
+                      <span className="text-slate-400 block text-[10px]">Aadhaar Identification</span>
+                      <p className="font-bold text-[#0f1740] dark:text-white">XXXX-XXXX-8912 (Linked)</p>
+                    </div>
+                    <div className="p-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-xl border">
+                      <span className="text-slate-400 block text-[10px]">DBT Bank Account IFSC</span>
+                      <p className="font-bold text-emerald-600">SBIN0001248 (NPCI Active)</p>
+                    </div>
+                    <div className="p-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-xl border">
+                      <span className="text-slate-400 block text-[10px]">Declared Annual Income</span>
+                      <p className="font-bold text-[#0f1740] dark:text-white">₹{(user?.annualIncome || 350000).toLocaleString('en-IN')}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl flex items-center gap-2.5 text-emerald-900 dark:text-emerald-200">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <p className="text-[11px]">
+                    All 4 required documents (Aadhaar, Marksheet, Income Proof, Bank Passbook) are verified from your local DigiLocker vault.
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t flex items-center justify-between">
+                  <Button variant="outline" size="sm" onClick={() => setFastApplyModalOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={handleSubmitFastApply} 
+                    className="bg-[#0d9488] hover:bg-teal-600 text-white font-extrabold gap-1.5 cursor-pointer"
+                  >
+                    <Zap className="w-3.5 h-3.5" /> Confirm & Transmit Application
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {applyStep === 'submitting' && (
+              <div className="py-10 flex flex-col items-center justify-center text-center space-y-4">
+                <div className="w-14 h-14 border-4 border-[#0d9488] border-t-transparent rounded-full animate-spin" />
+                <div>
+                  <h4 className="font-extrabold text-base text-[#0f1740] dark:text-white">
+                    Transmitting to Ministry Gateway...
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Verifying digital signature • Validating Aadhaar checksum • Generating official token
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {applyStep === 'success' && (
+              <div className="space-y-4">
+                <div className="p-6 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl text-center space-y-2">
+                  <div className="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto shadow-md">
+                    <CheckCircle2 className="w-6 h-6" />
+                  </div>
+                  <h4 className="text-lg font-black text-emerald-900 dark:text-emerald-200">
+                    Application Successfully Lodged!
+                  </h4>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 max-w-md mx-auto">
+                    Your preliminary application for <strong>{selectedSchemeForApply.title}</strong> has been received by the nodal ministry.
+                  </p>
+
+                  <div className="mt-3 p-3 bg-white dark:bg-slate-900 rounded-xl border border-emerald-200 dark:border-emerald-800 inline-block font-mono text-sm font-bold text-[#1a2f8a] dark:text-blue-300">
+                    Application Token: #{generatedToken}
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border space-y-1.5 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Applicant Name:</span>
+                    <strong className="text-slate-800 dark:text-slate-200">{user?.name || 'Hari Sharma'}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Submission Timestamp:</span>
+                    <strong className="text-slate-800 dark:text-slate-200">{new Date().toLocaleString()}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Estimated SLA Window:</span>
+                    <strong className="text-emerald-600">14 Working Days</strong>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t flex items-center justify-between gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      alert(`Downloading official acknowledgment slip for token ${generatedToken}...`);
+                    }}
+                    className="text-xs gap-1.5"
+                  >
+                    📥 Download Receipt (PDF)
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={() => setFastApplyModalOpen(false)}
+                    className="bg-[#1a2f8a] text-white text-xs font-bold"
+                  >
+                    Done & Return to Schemes
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Modal>
