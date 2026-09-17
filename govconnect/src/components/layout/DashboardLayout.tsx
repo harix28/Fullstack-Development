@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet, Link, useLocation, NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import { 
   Menu, X, Bell, Shield, Moon, Sun, 
-  Bookmark, User, LogOut, Settings, 
-  FileText, Briefcase, FolderOpen, MessageSquare, Bot, Sparkles, ArrowRight
+  Bookmark, User, LogOut, Settings
 } from 'lucide-react';
 import Sidebar from './Sidebar';
 import MobileNav from './MobileNav';
@@ -41,15 +40,6 @@ export default function DashboardLayout() {
     if (!name) return 'CS';
     return name.substring(0, 2).toUpperCase();
   };
-
-  // 5 Core Citizen Tools for 1-Click Fast Navigation
-  const quickActions = [
-    { label: 'Schemes', icon: FileText, href: ROUTES.SCHEMES },
-    { label: 'Govt Jobs', icon: Briefcase, href: ROUTES.JOBS },
-    { label: 'Document Vault', icon: FolderOpen, href: ROUTES.DOCUMENTS },
-    { label: 'Grievance Redress', icon: MessageSquare, href: ROUTES.GRIEVANCES },
-    { label: 'Ask Sarkar AI', icon: Bot, href: ROUTES.ASSISTANT },
-  ];
 
   return (
     <div className="min-h-screen bg-[#f8f9fc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans transition-colors">
@@ -222,34 +212,6 @@ export default function DashboardLayout() {
 
         </div>
       </header>
-
-      {/* ── 1-CLICK QUICK ACCESS ACTION STRIP (Makes dashboard extraordinarily easy to use) ── */}
-      <div className="md:ml-64 bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/70 dark:border-slate-800/70 px-4 sm:px-6 py-2.5 backdrop-blur-xs transition-colors">
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1 hidden sm:inline">
-            Quick Tools:
-          </span>
-          {quickActions.map((qa) => {
-            const Icon = qa.icon;
-            const isCurrent = location.pathname.startsWith(qa.href);
-            return (
-              <NavLink
-                key={qa.label}
-                to={qa.href}
-                className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150',
-                  isCurrent
-                    ? 'bg-[#1a2f8a] text-white shadow-xs'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                )}
-              >
-                <Icon className={cn("w-3.5 h-3.5", isCurrent ? "text-white" : "text-slate-500")} />
-                <span>{qa.label}</span>
-              </NavLink>
-            );
-          })}
-        </div>
-      </div>
 
       {/* Main Content Area */}
       <main className="md:ml-64 pb-20 md:pb-8">
