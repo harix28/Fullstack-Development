@@ -15,13 +15,18 @@ import {
 import type { Job } from '@/types';
 
 const QUICK_JOB_PILLS = [
-  { id: 'all', label: 'All Vacancies (A to Z)' },
+  { id: 'all', label: 'All Vacancies across India' },
   { id: 'top_match', label: '🌟 Top Skill Matches (90%+)' },
-  { id: 'central_govt', label: '🏛️ Central Govt & SSC' },
+  { id: 'administrative', label: '🏛️ UPSC & Civil Services' },
+  { id: 'central_govt', label: '📑 SSC Central Exams' },
   { id: 'banking', label: '🏦 Banking & Finance (SBI / IBPS / RBI)' },
   { id: 'railways', label: '🚆 Indian Railways (RRB)' },
-  { id: 'psu', label: '💻 Tech & Scientific Labs (NIC / DRDO / ISRO / BARC)' },
-  { id: 'defence', label: '🛡️ Defence & Armed Forces (CDS / CAPF / ICG)' },
+  { id: 'defence', label: '🛡️ Defence & Armed Forces' },
+  { id: 'police', label: '👮 Police & Sub-Inspectors' },
+  { id: 'engineering', label: '🔬 Scientific Labs & PSUs (ISRO/DRDO/NIC)' },
+  { id: 'teaching', label: '📚 Teaching & Education' },
+  { id: 'medical', label: '🩺 Medical & Healthcare (AIIMS)' },
+  { id: 'state_govt', label: '🏛️ State PSCs (UPPSC / BPSC / MPSC)' },
 ];
 
 export default function JobsPage() {
@@ -33,8 +38,7 @@ export default function JobsPage() {
   const [selectedPill, setSelectedPill] = useState('all');
   const [selectedQualification, setSelectedQualification] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState('all');
-  const [alphabetFilter, setAlphabetFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'name_asc' | 'name_desc' | 'vacancies' | 'match' | 'deadline'>('name_asc');
+  const [sortBy, setSortBy] = useState<'vacancies' | 'match' | 'name_asc' | 'name_desc' | 'deadline'>('vacancies');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   // Quick Syllabus & Exam pattern modal
@@ -43,24 +47,17 @@ export default function JobsPage() {
 
   const userSkills = user?.skills || ['Python', 'SQL', 'React', 'Data Analysis'];
 
-  // Compute available A-to-Z starting letters
-  const availableLetters = useMemo(() => {
-    const letters = new Set<string>();
-    mockJobs.forEach(j => {
-      const firstChar = j.title.trim().charAt(0).toUpperCase();
-      if (/[A-Z]/.test(firstChar)) letters.add(firstChar);
-    });
-    return Array.from(letters).sort();
-  }, []);
-
   const filteredJobs = useMemo(() => {
     return mockJobs.filter(job => {
       // Search
+      const query = searchQuery.toLowerCase();
       const matchesSearch = 
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.organization.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (job.tags && job.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
+        !searchQuery ||
+        job.title.toLowerCase().includes(query) ||
+        job.organization.toLowerCase().includes(query) ||
+        job.department.toLowerCase().includes(query) ||
+        job.location.toLowerCase().includes(query) ||
+        (job.tags && job.tags.some(t => t.toLowerCase().includes(query)));
 
       // Tab logic
       if (activeTab === 'saved') {
@@ -77,31 +74,25 @@ export default function JobsPage() {
         matchesPill = job.category === selectedPill;
       }
 
-      // Alphabet A-to-Z Letter Filter
-      let matchesLetter = true;
-      if (alphabetFilter !== 'all') {
-        matchesLetter = job.title.trim().toUpperCase().startsWith(alphabetFilter);
-      }
-
       // Advanced filters
       const matchesQual = selectedQualification === 'all' || 
         job.qualification.some(q => q.toLowerCase().includes(selectedQualification.toLowerCase()));
       const matchesLoc = selectedLocation === 'all' || job.location.toLowerCase().includes(selectedLocation.toLowerCase());
 
-      return matchesSearch && matchesPill && matchesLetter && matchesQual && matchesLoc;
+      return matchesSearch && matchesPill && matchesQual && matchesLoc;
     }).sort((a, b) => {
-      if (sortBy === 'name_asc') {
-        return a.title.localeCompare(b.title);
-      }
-      if (sortBy === 'name_desc') {
-        return b.title.localeCompare(a.title);
-      }
       if (sortBy === 'vacancies') {
         const getVac = (v?: string | number) => typeof v === 'number' ? v : parseInt(String(v).replace(/\D/g, '')) || 0;
         return getVac(b.vacancies) - getVac(a.vacancies);
       }
       if (sortBy === 'match') {
         return (b.matchPercentage || 0) - (a.matchPercentage || 0);
+      }
+      if (sortBy === 'name_asc') {
+        return a.title.localeCompare(b.title);
+      }
+      if (sortBy === 'name_desc') {
+        return b.title.localeCompare(a.title);
       }
       if (sortBy === 'deadline') {
         if (!a.applicationDeadline) return 1;
@@ -110,7 +101,7 @@ export default function JobsPage() {
       }
       return 0;
     });
-  }, [searchQuery, activeTab, selectedPill, alphabetFilter, selectedQualification, selectedLocation, isJobSaved, sortBy]);
+  }, [searchQuery, activeTab, selectedPill, selectedQualification, selectedLocation, isJobSaved, sortBy]);
 
   const openSyllabus = (job: Job) => {
     setSelectedJobForModal(job);
@@ -120,11 +111,10 @@ export default function JobsPage() {
   const resetAllFilters = () => {
     setActiveTab('all');
     setSelectedPill('all');
-    setAlphabetFilter('all');
     setSelectedQualification('all');
     setSelectedLocation('all');
     setSearchQuery('');
-    setSortBy('name_asc');
+    setSortBy('vacancies');
   };
 
   return (
@@ -137,7 +127,7 @@ export default function JobsPage() {
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-400/20 text-teal-200 border border-teal-300/30">
                 <Zap className="w-3.5 h-3.5 text-teal-300" />
-                Comprehensive Sarkari Jobs Tracker (A to Z)
+                Pan-India Sarkari Jobs & Vacancies Tracker
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/10 text-white/90">
                 Matched for: {user?.education || 'Graduate / MCA'} • {user?.state || 'Delhi'}
@@ -145,11 +135,11 @@ export default function JobsPage() {
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
-              Sarkari Jobs & Public Sector Vacancies (A to Z)
+              Pan-India Sarkari Jobs & Public Sector Vacancies
             </h1>
 
             <p className="text-blue-100 text-sm leading-relaxed">
-              Real-time directory of <strong>{mockJobs.length} active recruitment examinations</strong> across UPSC, SSC, Public Sector Banks (IBPS/SBI/RBI), Indian Railways (RRB), Defence Armed Forces (CDS/CAPF/Coast Guard), and Premier Tech Labs (NIC/DRDO/ISRO/BARC).
+              Real-time directory of <strong>all {mockJobs.length} active recruitment examinations</strong> across UPSC, SSC, Public Sector Banks (IBPS/SBI/RBI), Indian Railways (RRB), Defence Armed Forces (CDS/CAPF/Coast Guard), and Premier Tech Labs (NIC/DRDO/ISRO/BARC).
             </p>
 
             {/* Matched Profile Skills Chips */}
@@ -173,9 +163,9 @@ export default function JobsPage() {
             </div>
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-center min-w-[140px]">
               <span className="text-2xl font-black text-amber-300">
-                67,000+
+                126,000+
               </span>
-              <p className="text-[11px] text-blue-200 font-bold uppercase tracking-wider mt-0.5">Total Vacancies</p>
+              <p className="text-[11px] text-blue-200 font-bold uppercase tracking-wider mt-0.5">Total Vacancies Pan-India</p>
             </div>
           </div>
         </div>
@@ -195,10 +185,7 @@ export default function JobsPage() {
             return (
               <button
                 key={pill.id}
-                onClick={() => {
-                  setSelectedPill(pill.id);
-                  setAlphabetFilter('all');
-                }}
+                onClick={() => setSelectedPill(pill.id)}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                   isSelected
                     ? 'bg-[#1a2f8a] text-white shadow-sm ring-2 ring-blue-500/20'
@@ -212,36 +199,6 @@ export default function JobsPage() {
         </div>
       </div>
 
-      {/* ── A-to-Z ALPHABETICAL JUMP STRIP (Jobs) ── */}
-      <div className="bg-white dark:bg-slate-900 px-4 py-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center gap-2 overflow-x-auto scrollbar-none">
-        <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider shrink-0 mr-1">
-          Alphabetical A-Z:
-        </span>
-        <button
-          onClick={() => setAlphabetFilter('all')}
-          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-            alphabetFilter === 'all'
-              ? 'bg-[#1a2f8a] text-white shadow-xs'
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
-          }`}
-        >
-          All ({mockJobs.length})
-        </button>
-        {availableLetters.map(letter => (
-          <button
-            key={letter}
-            onClick={() => setAlphabetFilter(letter)}
-            className={`w-7 h-7 rounded-lg text-xs font-extrabold flex items-center justify-center transition-all cursor-pointer ${
-              alphabetFilter === letter
-                ? 'bg-[#0d9488] text-white shadow-xs scale-110'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
-            }`}
-          >
-            {letter}
-          </button>
-        ))}
-      </div>
-
       {/* ── TOOLBAR: TABS, SEARCH, SORT ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
         
@@ -251,7 +208,6 @@ export default function JobsPage() {
             onClick={() => {
               setActiveTab('all');
               setSelectedPill('all');
-              setAlphabetFilter('all');
             }}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'all'
@@ -374,12 +330,11 @@ export default function JobsPage() {
       {/* Showing count indicator */}
       <div className="flex items-center justify-between text-xs text-slate-500 px-1">
         <p>
-          Showing <strong className="text-[#0f1740] dark:text-white">{filteredJobs.length}</strong> of <strong>{mockJobs.length}</strong> government vacancies
-          {alphabetFilter !== 'all' && <span> • Starting with '<strong>{alphabetFilter}</strong>'</span>}
+          Showing <strong className="text-[#0f1740] dark:text-white">{filteredJobs.length}</strong> of <strong>{mockJobs.length}</strong> public sector vacancies across India
           {selectedPill !== 'all' && <span> • Sector: <strong>{selectedPill}</strong></span>}
         </p>
 
-        {(selectedPill !== 'all' || alphabetFilter !== 'all' || searchQuery || selectedQualification !== 'all') && (
+        {(selectedPill !== 'all' || searchQuery || selectedQualification !== 'all' || selectedLocation !== 'all') && (
           <button
             onClick={resetAllFilters}
             className="text-[#1a2f8a] dark:text-blue-400 font-bold hover:underline cursor-pointer"
@@ -394,7 +349,7 @@ export default function JobsPage() {
         <EmptyState
           icon={<Briefcase className="w-12 h-12 text-slate-300" />}
           title="No vacancies match your criteria"
-          description="Try broadening your sector or qualification filters to explore all 18 government opportunities."
+          description={`Try broadening your search or sector filters to explore all ${mockJobs.length} national and state government opportunities.`}
           action={
             <Button 
               onClick={resetAllFilters}
