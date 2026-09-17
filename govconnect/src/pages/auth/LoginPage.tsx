@@ -59,7 +59,7 @@ export default function LoginPage() {
           </Link>
           
           <Badge className="bg-white/10 text-teal-300 border-white/20 mb-4 text-xs font-semibold">
-            College Major Project Prototype
+            Unified Citizen Services Platform
           </Badge>
 
           <h1 className="text-4xl lg:text-5xl font-bold leading-tight mb-6">
