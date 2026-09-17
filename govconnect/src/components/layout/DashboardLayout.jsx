@@ -1,9 +1,21 @@
 import React from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, User, FileText, Briefcase, MessageSquare, Bell, LogOut, Menu } from 'lucide-react';
+import { useStore } from '../../store/useStore';
 
 export function DashboardLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const notifications = useStore(state => state.notifications);
+  const unreadCount = notifications.filter(n => n.unread).length;
+  const user = useStore(state => state.user);
+  const logout = useStore(state => state.logout);
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    logout();
+    navigate('/');
+  };
 
   const navItems = [
     { name: 'Overview', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
@@ -29,7 +41,7 @@ export function DashboardLayout() {
                 <Link
                   to={item.path}
                   className={`flex items-center space-x-3 rounded-md px-3 py-2 transition-colors ${
-                    location.pathname === item.path
+                    (location.pathname === item.path || (location.pathname.startsWith('/dashboard/schemes') && item.path === '/dashboard/schemes'))
                       ? 'bg-brand-teal text-white'
                       : 'text-gray-300 hover:bg-white/10 hover:text-white'
                   }`}
@@ -42,10 +54,10 @@ export function DashboardLayout() {
           </ul>
         </nav>
         <div className="border-t border-gray-700 p-4">
-          <Link to="/" className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors">
+          <button onClick={handleLogout} className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors w-full">
             <LogOut size={20} />
             <span className="font-medium">Logout</span>
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -65,11 +77,16 @@ export function DashboardLayout() {
             </h1>
           </div>
           <div className="flex items-center space-x-4">
-            <Link to="/dashboard/notifications" className="text-gray-500 hover:text-brand-teal transition-colors">
+            <Link to="/dashboard/notifications" className="relative text-gray-500 hover:text-brand-teal transition-colors">
               <Bell size={24} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                  {unreadCount}
+                </span>
+              )}
             </Link>
-            <div className="h-8 w-8 rounded-full bg-brand-teal flex items-center justify-center text-white font-bold">
-              C
+            <div className="h-8 w-8 rounded-full bg-brand-teal flex items-center justify-center text-white font-bold uppercase">
+              {user?.name ? user.name.charAt(0) : 'C'}
             </div>
           </div>
         </header>
