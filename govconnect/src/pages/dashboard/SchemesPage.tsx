@@ -18,13 +18,16 @@ import type { Scheme } from '@/types';
 
 // Quick 1-Click Category Filter Pills
 const QUICK_FILTER_PILLS = [
-  { id: 'all', label: 'All Schemes (A to Z)', icon: Coins },
+  { id: 'all', label: 'All Schemes across India', icon: Coins },
   { id: 'top_match', label: '🌟 Top Matches (90%+)', icon: Sparkles },
-  { id: 'Education', label: '🎓 Education & Scholarships', icon: GraduationCap },
-  { id: 'Business & Entrepreneurship', label: '💼 Business & MSME Loans', icon: Briefcase },
-  { id: 'Agriculture', label: '🌾 Agriculture & Farmers', icon: Wheat },
-  { id: 'Healthcare', label: '🏥 Healthcare & Insurance', icon: HeartHandshake },
-  { id: 'Housing', label: '🏠 Housing & Solar', icon: Home },
+  { id: 'agriculture', label: '🌾 Agriculture & Farmers', icon: Wheat },
+  { id: 'financial', label: '💼 Financial, Loans & MSME', icon: Briefcase },
+  { id: 'education', label: '🎓 Education & Youth', icon: GraduationCap },
+  { id: 'health', label: '🏥 Health & Medicines', icon: HeartHandshake },
+  { id: 'housing', label: '🏠 Housing & Solar', icon: Home },
+  { id: 'women', label: '👩 Women & Child Welfare', icon: Sparkles },
+  { id: 'skill_development', label: '🛠️ Skill & Apprenticeship', icon: Briefcase },
+  { id: 'social_welfare', label: '🤝 Social Security & Pension', icon: HeartHandshake },
 ];
 
 export default function SchemesPage() {
@@ -36,8 +39,7 @@ export default function SchemesPage() {
   const [selectedQuickPill, setSelectedQuickPill] = useState<string>('all');
   const [selectedMinistry, setSelectedMinistry] = useState('all');
   const [selectedState, setSelectedState] = useState('all');
-  const [alphabetFilter, setAlphabetFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'match' | 'name_asc' | 'name_desc' | 'deadline'>('name_asc');
+  const [sortBy, setSortBy] = useState<'match' | 'name_asc' | 'name_desc' | 'deadline'>('match');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   // Eligibility Evaluation Modal State
@@ -56,31 +58,23 @@ export default function SchemesPage() {
     return ['all', ...Array.from(mins)];
   }, []);
 
-  // Compute available A-to-Z starting letters
-  const availableLetters = useMemo(() => {
-    const letters = new Set<string>();
-    mockSchemes.forEach(s => {
-      const firstChar = s.title.trim().charAt(0).toUpperCase();
-      if (/[A-Z]/.test(firstChar)) letters.add(firstChar);
-    });
-    return Array.from(letters).sort();
-  }, []);
-
-  // Comprehensive Filter & Sort Logic
+  // Comprehensive Pan-India Filter & Sort Logic
   const filteredSchemes = useMemo(() => {
     return mockSchemes.filter(s => {
       // 1. Search Query
+      const query = searchQuery.toLowerCase();
       const matchesSearch = 
-        s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.ministry.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (s.tags && s.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
+        !searchQuery ||
+        s.title.toLowerCase().includes(query) ||
+        s.ministry.toLowerCase().includes(query) ||
+        s.description.toLowerCase().includes(query) ||
+        (s.state && s.state.toLowerCase().includes(query)) ||
+        (s.tags && s.tags.some(t => t.toLowerCase().includes(query)));
 
       // 2. Tab logic
       if (activeTab === 'saved') {
         if (!isSchemeSaved(s.id)) return false;
       } else if (activeTab === 'recommended') {
-        // Recommended shows schemes with strong compatibility
         if ((s.matchPercentage || 0) < 80) return false;
       }
 
@@ -92,17 +86,11 @@ export default function SchemesPage() {
         matchesQuickPill = s.category === selectedQuickPill;
       }
 
-      // 4. Alphabet A-to-Z Letter Filter
-      let matchesLetter = true;
-      if (alphabetFilter !== 'all') {
-        matchesLetter = s.title.trim().toUpperCase().startsWith(alphabetFilter);
-      }
-
-      // 5. Ministry & State Filters
+      // 4. Ministry & State Filters
       const matchesMin = selectedMinistry === 'all' || s.ministry === selectedMinistry;
       const matchesState = selectedState === 'all' || s.state === 'Central' || s.state === selectedState;
 
-      return matchesSearch && matchesQuickPill && matchesLetter && matchesMin && matchesState;
+      return matchesSearch && matchesQuickPill && matchesMin && matchesState;
     }).sort((a, b) => {
       if (sortBy === 'name_asc') {
         return a.title.localeCompare(b.title);
@@ -120,7 +108,7 @@ export default function SchemesPage() {
       }
       return 0;
     });
-  }, [searchQuery, activeTab, selectedQuickPill, alphabetFilter, selectedMinistry, selectedState, isSchemeSaved, sortBy]);
+  }, [searchQuery, activeTab, selectedQuickPill, selectedMinistry, selectedState, isSchemeSaved, sortBy]);
 
   const runEligibilityCheck = (scheme?: Scheme) => {
     setSelectedSchemeForAnalysis(scheme || filteredSchemes[0] || mockSchemes[0]);
@@ -145,24 +133,23 @@ export default function SchemesPage() {
   const resetAllFilters = () => {
     setActiveTab('all');
     setSelectedQuickPill('all');
-    setAlphabetFilter('all');
     setSelectedMinistry('all');
     setSelectedState('all');
     setSearchQuery('');
-    setSortBy('name_asc');
+    setSortBy('match');
   };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto font-sans pb-10">
       
-      {/* ── BEAST MODE: CITIZEN COMMAND BANNER ── */}
+      {/* ── PAN-INDIA WELFARE SCHEMES DIRECTORY BANNER ── */}
       <div className="bg-gradient-to-r from-[#0f1740] via-[#1a2f8a] to-[#0d9488] rounded-2xl p-6 sm:p-7 text-white shadow-xl relative overflow-hidden">
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-400/20 text-teal-200 border border-teal-300/30">
                 <Zap className="w-3.5 h-3.5 text-teal-300" />
-                Complete Welfare Schemes Directory
+                All-India Welfare Schemes Directory
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/10 text-white/90">
                 Active Citizen Profile: {user?.name || 'Citizen'} ({user?.education || 'Graduate'})
@@ -170,18 +157,18 @@ export default function SchemesPage() {
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
-              Government Schemes Directory (A to Z)
+              Pan-India Government Schemes Directory
             </h1>
 
             <p className="text-blue-100 text-sm leading-relaxed">
-              Explore the entire catalogue of <strong>{mockSchemes.length} Central & State Government Welfare Schemes</strong> spanning Agriculture, Education, MSME Business Loans, Healthcare, Housing, and Women Empowerment.
+              Explore <strong>all {mockSchemes.length} Central & State Government Welfare Schemes</strong> operating across India spanning Agriculture, Education, MSME Business Loans, Healthcare, Housing, and Social Security.
             </p>
 
             {/* Quick Live Metric Strip */}
             <div className="flex flex-wrap items-center gap-3 pt-2 text-xs">
               <div className="px-3 py-1.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/15 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Total Schemes Listed: <strong>{mockSchemes.length} Active</strong></span>
+                <span>Total Schemes Listed: <strong>{mockSchemes.length} Active Pan-India</strong></span>
               </div>
               <div className="px-3 py-1.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/15 flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-teal-300" />
@@ -207,7 +194,7 @@ export default function SchemesPage() {
               onClick={resetAllFilters}
               className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 transition-colors text-center cursor-pointer"
             >
-              Show All {mockSchemes.length} Schemes (A to Z) →
+              Show All {mockSchemes.length} Schemes Across India →
             </button>
           </div>
         </div>
@@ -229,10 +216,7 @@ export default function SchemesPage() {
             return (
               <button
                 key={pill.id}
-                onClick={() => {
-                  setSelectedQuickPill(pill.id);
-                  setAlphabetFilter('all');
-                }}
+                onClick={() => setSelectedQuickPill(pill.id)}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                   isSelected
                     ? 'bg-[#1a2f8a] text-white shadow-sm ring-2 ring-blue-500/20'
@@ -247,36 +231,6 @@ export default function SchemesPage() {
         </div>
       </div>
 
-      {/* ── A-to-Z ALPHABETICAL JUMP STRIP (Shows all schemes A to Z) ── */}
-      <div className="bg-white dark:bg-slate-900 px-4 py-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center gap-2 overflow-x-auto scrollbar-none">
-        <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider shrink-0 mr-1">
-          Alphabetical A-Z:
-        </span>
-        <button
-          onClick={() => setAlphabetFilter('all')}
-          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-            alphabetFilter === 'all'
-              ? 'bg-[#1a2f8a] text-white shadow-xs'
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
-          }`}
-        >
-          All ({mockSchemes.length})
-        </button>
-        {availableLetters.map(letter => (
-          <button
-            key={letter}
-            onClick={() => setAlphabetFilter(letter)}
-            className={`w-7 h-7 rounded-lg text-xs font-extrabold flex items-center justify-center transition-all cursor-pointer ${
-              alphabetFilter === letter
-                ? 'bg-[#0d9488] text-white shadow-xs scale-110'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
-            }`}
-          >
-            {letter}
-          </button>
-        ))}
-      </div>
-
       {/* ── CONTROLS TOOLBAR: TABS, SEARCH, SORT & ADVANCED TOGGLE ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
         
@@ -286,7 +240,6 @@ export default function SchemesPage() {
             onClick={() => {
               setActiveTab('all');
               setSelectedQuickPill('all');
-              setAlphabetFilter('all');
             }}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'all'
@@ -408,12 +361,11 @@ export default function SchemesPage() {
       {/* Showing count indicator */}
       <div className="flex items-center justify-between text-xs text-slate-500 px-1">
         <p>
-          Showing <strong className="text-[#0f1740] dark:text-white">{filteredSchemes.length}</strong> of <strong>{mockSchemes.length}</strong> welfare schemes
-          {alphabetFilter !== 'all' && <span> • Starting with '<strong>{alphabetFilter}</strong>'</span>}
+          Showing <strong className="text-[#0f1740] dark:text-white">{filteredSchemes.length}</strong> of <strong>{mockSchemes.length}</strong> welfare schemes across India
           {selectedQuickPill !== 'all' && <span> • Category: <strong>{selectedQuickPill}</strong></span>}
         </p>
 
-        {(selectedQuickPill !== 'all' || alphabetFilter !== 'all' || searchQuery || selectedMinistry !== 'all') && (
+        {(selectedQuickPill !== 'all' || searchQuery || selectedMinistry !== 'all' || selectedState !== 'all') && (
           <button
             onClick={resetAllFilters}
             className="text-[#1a2f8a] dark:text-blue-400 font-bold hover:underline cursor-pointer"
@@ -428,7 +380,7 @@ export default function SchemesPage() {
         <EmptyState
           icon={<Info className="w-12 h-12 text-slate-300" />}
           title="No welfare schemes match your criteria"
-          description="Try clearing your search or category filters to explore all 21 central and state schemes."
+          description={`Try clearing your search or category filters to explore all ${mockSchemes.length} central and state welfare schemes.`}
           action={
             <Button 
               onClick={resetAllFilters}
