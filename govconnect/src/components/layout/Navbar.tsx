@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Shield, Bell, Menu, X, LogOut, User, LayoutDashboard, 
   Settings, Bookmark, Search, Moon, Sun, ArrowRight, Sparkles 
@@ -60,14 +60,6 @@ export default function Navbar() {
     navigate(ROUTES.HOME);
   };
 
-  // Exactly 4 tabs for unauthenticated visitors to get an overview of the platform
-  const publicOverviewTabs = [
-    { label: 'Home', href: ROUTES.HOME },
-    { label: 'How It Works', href: ROUTES.HOW_IT_WORKS || '/how-it-works' },
-    { label: 'Services', href: ROUTES.SERVICES },
-    { label: 'About', href: ROUTES.ABOUT },
-  ];
-
   const getInitials = (name?: string) => {
     if (!name) return 'CS';
     return name.substring(0, 2).toUpperCase();
@@ -75,11 +67,11 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors shadow-xs">
+      <nav className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
           {/* Brand Logo */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
             <Link to={isAuthenticated ? ROUTES.DASHBOARD : ROUTES.HOME} className="flex items-center gap-2.5 group">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0f1740] via-[#1a2f8a] to-[#2563eb] flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200">
                 <Shield className="h-5 w-5 text-white" />
@@ -90,46 +82,10 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Navigation Items */}
-          {!isAuthenticated ? (
-            /* Exactly 4 Overview Tabs for Unauthenticated Citizens */
-            <div className="hidden md:flex items-center gap-1.5 p-1 bg-slate-100/80 dark:bg-slate-800/80 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
-              {publicOverviewTabs.map((link) => (
-                <NavLink
-                  key={link.label}
-                  to={link.href}
-                  end={link.href === ROUTES.HOME}
-                  className={({ isActive }) =>
-                    cn(
-                      'px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150',
-                      isActive 
-                        ? 'bg-white dark:bg-slate-900 text-[#1a2f8a] dark:text-blue-400 font-bold shadow-xs border border-slate-200/60 dark:border-slate-700/60' 
-                        : 'text-slate-600 dark:text-slate-300 hover:text-[#1a2f8a] dark:hover:text-white'
-                    )
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-            </div>
-          ) : (
-            /* Logged-in citizen indicator: single prominent link to Dashboard where all work is done */
-            <div className="hidden md:flex items-center gap-3">
-              <Link
-                to={ROUTES.DASHBOARD}
-                className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-[#1a2f8a] dark:text-blue-300 font-bold text-xs hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all border border-blue-200 dark:border-blue-800 shadow-xs"
-              >
-                <LayoutDashboard className="w-4 h-4 text-[#1a2f8a] dark:text-blue-400" />
-                <span>Go to Dashboard</span>
-                <ArrowRight className="w-3.5 h-3.5 ml-0.5 text-blue-500" />
-              </Link>
-            </div>
-          )}
-
-          {/* Right Action Controls */}
+          {/* Right Action Controls: Clean nav with Mode (Theme), Language, Sign In, Register */}
           <div className="flex items-center gap-2.5 sm:gap-3">
             
-            {/* Search Button (Ctrl+K) */}
+            {/* Search Trigger */}
             <button
               onClick={() => setSearchModalOpen(true)}
               className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100/90 dark:bg-slate-800/90 text-slate-500 dark:text-slate-400 text-xs hover:bg-slate-200/80 dark:hover:bg-slate-700/80 transition-colors border border-slate-200/70 dark:border-slate-700/70 cursor-pointer"
@@ -145,17 +101,18 @@ export default function Navbar() {
             {/* Language Switch */}
             <button
               onClick={toggleLang}
-              className="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-[#0f1740] dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200/60 dark:border-slate-700/60 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-[#0f1740] dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200/60 dark:border-slate-700/60 cursor-pointer flex items-center gap-1"
               title="Switch Language"
             >
-              {language === 'hi' ? 'हिन्दी' : 'EN'}
+              <span className="text-[10px] text-slate-400">Lang:</span>
+              <span>{language === 'hi' ? 'हिन्दी' : 'EN'}</span>
             </button>
 
-            {/* Theme Toggle */}
+            {/* Theme / Mode Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 text-slate-500 dark:text-slate-400 hover:text-[#1a2f8a] dark:hover:text-white bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors border border-slate-200/60 dark:border-slate-700/60 cursor-pointer"
-              title="Toggle Theme"
+              className="p-2 text-slate-600 dark:text-slate-300 hover:text-[#1a2f8a] dark:hover:text-white bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors border border-slate-200/60 dark:border-slate-700/60 cursor-pointer"
+              title="Toggle Light / Dark Mode"
             >
               {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
             </button>
@@ -163,6 +120,15 @@ export default function Navbar() {
             {/* Authenticated Controls */}
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
+                <Link
+                  to={ROUTES.DASHBOARD}
+                  className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-[#1a2f8a] dark:text-blue-300 font-bold text-xs hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all border border-blue-200 dark:border-blue-800 shadow-xs"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-[#1a2f8a] dark:text-blue-400" />
+                  <span>Dashboard</span>
+                  <ArrowRight className="w-3.5 h-3.5 ml-0.5 text-blue-500" />
+                </Link>
+
                 <Link 
                   to={ROUTES.SAVED || '/dashboard/saved'} 
                   className="p-2 text-slate-500 dark:text-slate-400 hover:text-[#1a2f8a] dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -197,13 +163,13 @@ export default function Navbar() {
                       </div>
 
                       <Link to={ROUTES.DASHBOARD} className="flex items-center gap-2.5 px-4 py-2.5 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 font-semibold">
-                        <LayoutDashboard className="h-4 w-4 text-[#1a2f8a] dark:text-blue-400" /> Dashboard Overview
+                        <LayoutDashboard className="h-4 w-4 text-[#1a2f8a] dark:text-blue-400" /> Citizen Dashboard
                       </Link>
                       <Link to={ROUTES.PROFILE} className="flex items-center gap-2.5 px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60">
-                        <User className="h-4 w-4 text-slate-500 dark:text-slate-400" /> Citizen Profile
+                        <User className="h-4 w-4 text-slate-500 dark:text-slate-400" /> Profile
                       </Link>
                       <Link to={ROUTES.SAVED || '/dashboard/saved'} className="flex items-center gap-2.5 px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60">
-                        <Bookmark className="h-4 w-4 text-amber-500" /> Saved Collections
+                        <Bookmark className="h-4 w-4 text-amber-500" /> Saved Items
                       </Link>
                       <Link to={ROUTES.SETTINGS} className="flex items-center gap-2.5 px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60">
                         <Settings className="h-4 w-4 text-slate-400" /> Settings
@@ -221,8 +187,8 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              /* Unauthenticated Login & Register Buttons */
-              <div className="hidden sm:flex items-center gap-2">
+              /* Clean Auth Action Buttons */
+              <div className="flex items-center gap-2">
                 <Link
                   to={ROUTES.LOGIN}
                   className="px-3.5 py-1.5 text-xs font-semibold text-[#1a2f8a] dark:text-blue-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
@@ -238,91 +204,45 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Mobile Menu Hamburger */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:text-[#0f1740] dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
+            {/* Mobile Menu Button for Authenticated Users */}
+            {isAuthenticated && (
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="sm:hidden p-2 text-slate-600 dark:text-slate-300 hover:text-[#0f1740] dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Mobile Slideout Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top duration-150">
-            <button
-              onClick={() => { setSearchModalOpen(true); setMobileMenuOpen(false); }}
-              className="w-full flex items-center justify-between p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-300 font-medium"
+        {/* Mobile Slideout for Logged In User */}
+        {mobileMenuOpen && isAuthenticated && (
+          <div className="sm:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top duration-150">
+            <Link
+              to={ROUTES.DASHBOARD}
+              className="block px-3 py-2.5 rounded-lg text-sm font-bold bg-blue-50 dark:bg-blue-950/50 text-[#1a2f8a] dark:text-blue-300"
             >
-              <span className="flex items-center gap-2">
-                <Search className="w-4 h-4 text-slate-400" /> Search schemes, jobs, services...
-              </span>
-              <kbd className="text-[10px] bg-white dark:bg-slate-700 px-1.5 py-0.5 rounded">Ctrl+K</kbd>
+              Open Citizen Dashboard
+            </Link>
+            <Link
+              to={ROUTES.PROFILE}
+              className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              My Profile
+            </Link>
+            <Link
+              to={ROUTES.SAVED || '/dashboard/saved'}
+              className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              Saved Items
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="w-full mt-2 py-2 text-center text-xs font-bold text-red-600 bg-red-50 dark:bg-red-950/40 rounded-lg"
+            >
+              Sign Out
             </button>
-
-            {!isAuthenticated ? (
-              /* Exactly 4 mobile links for unauthenticated overview */
-              <div className="space-y-1">
-                {publicOverviewTabs.map((link) => (
-                  <Link
-                    key={link.label}
-                    to={link.href}
-                    className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              /* Logged in mobile links focused on dashboard */
-              <div className="space-y-1">
-                <Link
-                  to={ROUTES.DASHBOARD}
-                  className="block px-3 py-2.5 rounded-lg text-sm font-bold bg-blue-50 dark:bg-blue-950/50 text-[#1a2f8a] dark:text-blue-300"
-                >
-                  Go to Dashboard Workspace
-                </Link>
-                <Link
-                  to={ROUTES.PROFILE}
-                  className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  Citizen Profile
-                </Link>
-                <Link
-                  to={ROUTES.SAVED || '/dashboard/saved'}
-                  className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  Saved Items
-                </Link>
-                <Link
-                  to={ROUTES.SETTINGS}
-                  className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  Settings
-                </Link>
-              </div>
-            )}
-
-            {!isAuthenticated ? (
-              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2">
-                <Link to={ROUTES.LOGIN} className="w-full py-2.5 text-center text-xs font-bold border border-slate-300 dark:border-slate-700 text-[#1a2f8a] dark:text-blue-400 rounded-lg">
-                  Sign In
-                </Link>
-                <Link to={ROUTES.REGISTER} className="w-full py-2.5 text-center text-xs font-bold bg-[#1a2f8a] text-white rounded-lg">
-                  Register
-                </Link>
-              </div>
-            ) : (
-              <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
-                <button
-                  onClick={handleLogout}
-                  className="w-full py-2.5 text-center text-xs font-bold text-red-600 bg-red-50 dark:bg-red-950/40 rounded-lg"
-                >
-                  Sign Out
-                </button>
-              </div>
-            )}
           </div>
         )}
       </nav>

@@ -23,7 +23,7 @@ export default function Sidebar() {
     { label: 'Document Vault', icon: FolderOpen, href: ROUTES.DOCUMENTS },
     { label: 'Grievance Redress', icon: MessageSquare, href: ROUTES.GRIEVANCES },
     { label: 'Ask Sarkar AI', icon: Bot, href: ROUTES.ASSISTANT },
-    { label: 'Local Services', icon: MapPin, href: ROUTES.SERVICES },
+    { label: 'Local Services', icon: MapPin, href: '/dashboard/services' },
     { label: 'Saved Items', icon: Bookmark, href: ROUTES.SAVED || '/dashboard/saved', badge: totalSaved > 0 ? totalSaved : undefined },
     { label: 'Notifications', icon: Bell, href: ROUTES.NOTIFICATIONS, badge: 3 },
     { label: 'Settings', icon: Settings, href: ROUTES.SETTINGS },
