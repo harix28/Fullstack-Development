@@ -8,7 +8,7 @@
 import { mockSchemes } from '../data/mockSchemes';
 
 // Base API configuration (for future REST endpoints)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const SchemeService = {
   getRecommended: async () => {
@@ -20,7 +20,7 @@ export const SchemeService = {
 };
 
 export const AuthService = {
-  login: async (credentials) => {
+  login: async (_credentials) => {
     return new Promise((resolve) => {
       setTimeout(() => resolve({ token: 'mock-jwt-token', user: { name: 'Citizen User' } }), 800);
     });

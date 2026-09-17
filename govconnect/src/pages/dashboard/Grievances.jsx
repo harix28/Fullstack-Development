@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, ArrowRight, Wand2, ShieldAlert, Loader2, CheckCircle } from 'lucide-react';
+import { ArrowRight, Wand2, ShieldAlert, Loader2, CheckCircle } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 
 export default function Grievances() {

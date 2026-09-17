@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { mockSchemes } from '../data/mockSchemes';
 
 export const useStore = create((set) => ({
   user: null,

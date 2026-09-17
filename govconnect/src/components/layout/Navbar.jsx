@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, User, Bell, Globe } from 'lucide-react';
+import { Menu, Bell, Globe } from 'lucide-react';
 import { Button } from '../ui/Button';
 
 export function Navbar() {
