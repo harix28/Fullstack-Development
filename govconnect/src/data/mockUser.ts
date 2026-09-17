@@ -1,0 +1,30 @@
+import type { User } from '@/types';
+
+export const mockUser: User & { phone: string } = {
+  id: 'usr_in_2026_01',
+  name: 'Aarav Sharma',
+  email: 'aarav.sharma@example.com',
+  mobile: '9876543210',
+  phone: '9876543210',
+  age: 28,
+  avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',
+  state: 'Uttar Pradesh',
+  district: 'Varanasi',
+  dateOfBirth: '1998-07-15',
+  gender: 'male',
+  category: 'obc',
+  religion: 'Hindu',
+  maritalStatus: 'single',
+  hasDisability: false,
+  education: 'graduate',
+  occupation: 'employed_private',
+  annualIncome: 350000,
+  familySize: 4,
+  profileCompletion: 72,
+  preferences: {
+    language: 'en',
+    notifications: true,
+    emailUpdates: true,
+  },
+  createdAt: '2025-01-10T10:30:00.000Z',
+};

@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await login(identifier, password);
+      await login({ emailOrMobile: identifier, password });
       navigate(ROUTES.DASHBOARD);
     } catch (err: any) {
       setError(err.message || 'Invalid credentials. Please try again.');

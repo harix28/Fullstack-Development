@@ -39,7 +39,7 @@ export const getJobs = async (filters?: JobFilters): Promise<Job[]> => {
     );
   }
 
-  if (filters?.category && filters.category !== '') {
+  if (filters?.category) {
     results = results.filter((j) => j.category === filters.category);
   }
 

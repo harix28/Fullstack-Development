@@ -141,7 +141,7 @@ export default function DocumentsPage() {
                   </div>
                   <h3 className="font-semibold text-[#0f1740] mb-1 line-clamp-1" title={doc.name}>{doc.name}</h3>
                   <div className="text-sm text-[#64748b] mb-4 space-y-1">
-                    <p>{doc.type.toUpperCase()} • {formatFileSize(doc.size)}</p>
+                    <p>{doc.type.toUpperCase()} • {formatFileSize(doc.fileSize || (doc as any).size || 0)}</p>
                     <p>Uploaded on: {formatDate(doc.uploadDate)}</p>
                     {doc.expiryDate && (
                       <p className={cn("text-xs", new Date(doc.expiryDate) < new Date() ? "text-red-500 font-medium" : "")}>

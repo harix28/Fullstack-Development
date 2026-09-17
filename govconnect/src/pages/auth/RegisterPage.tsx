@@ -50,17 +50,16 @@ const RegisterPage: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // Create user data object for context
-      const userData = {
+      await register({
         name: formData.fullName,
         email: formData.email,
         mobile: formData.mobile,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
         state: formData.state,
-        dob: formData.dob,
-        gender: formData.gender
-      };
-      
-      await register(userData, formData.password);
+        dateOfBirth: formData.dob,
+        gender: formData.gender,
+      });
       navigate(ROUTES.DASHBOARD);
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');

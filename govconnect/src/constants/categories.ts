@@ -30,27 +30,27 @@ export const JOB_CATEGORIES: { value: JobCategory; label: string }[] = [
   { value: 'central_govt', label: 'Central Government' },
 ];
 
-export const DOCUMENT_CATEGORIES: { value: DocumentCategory; label: string; icon: string }[] = [
-  { value: 'identity', label: 'Identity', icon: 'id-card' },
-  { value: 'education', label: 'Education', icon: 'graduation-cap' },
-  { value: 'income', label: 'Income', icon: 'indian-rupee' },
-  { value: 'address', label: 'Address Proof', icon: 'map-pin' },
-  { value: 'caste_category', label: 'Caste / Category', icon: 'users' },
-  { value: 'certificates', label: 'Certificates', icon: 'award' },
-  { value: 'other', label: 'Other', icon: 'file' },
+export const DOCUMENT_CATEGORIES: { id: DocumentCategory; value: DocumentCategory; label: string; icon: string }[] = [
+  { id: 'identity', value: 'identity', label: 'Identity', icon: 'id-card' },
+  { id: 'education', value: 'education', label: 'Education', icon: 'graduation-cap' },
+  { id: 'income', value: 'income', label: 'Income', icon: 'indian-rupee' },
+  { id: 'address', value: 'address', label: 'Address Proof', icon: 'map-pin' },
+  { id: 'caste_category', value: 'caste_category', label: 'Caste / Category', icon: 'users' },
+  { id: 'certificates', value: 'certificates', label: 'Certificates', icon: 'award' },
+  { id: 'other', value: 'other', label: 'Other', icon: 'file' },
 ];
 
-export const GRIEVANCE_CATEGORIES: { value: GrievanceCategory; label: string }[] = [
-  { value: 'public_services', label: 'Public Services' },
-  { value: 'infrastructure', label: 'Infrastructure' },
-  { value: 'corruption', label: 'Corruption' },
-  { value: 'education', label: 'Education' },
-  { value: 'health', label: 'Health' },
-  { value: 'police', label: 'Police' },
-  { value: 'revenue', label: 'Revenue / Land' },
-  { value: 'utilities', label: 'Utilities' },
-  { value: 'environment', label: 'Environment' },
-  { value: 'other', label: 'Other' },
+export const GRIEVANCE_CATEGORIES: { id: GrievanceCategory; value: GrievanceCategory; label: string }[] = [
+  { id: 'public_services', value: 'public_services', label: 'Public Services' },
+  { id: 'infrastructure', value: 'infrastructure', label: 'Infrastructure' },
+  { id: 'corruption', value: 'corruption', label: 'Corruption' },
+  { id: 'education', value: 'education', label: 'Education' },
+  { id: 'health', value: 'health', label: 'Health' },
+  { id: 'police', value: 'police', label: 'Police' },
+  { id: 'revenue', value: 'revenue', label: 'Revenue / Land' },
+  { id: 'utilities', value: 'utilities', label: 'Utilities' },
+  { id: 'environment', value: 'environment', label: 'Environment' },
+  { id: 'other', value: 'other', label: 'Other' },
 ];
 
 export const INDIAN_STATES = [

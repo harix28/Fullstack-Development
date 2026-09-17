@@ -34,20 +34,11 @@ export default function AssistantPage() {
     setIsTyping(true);
 
     try {
-      // Simulate API call
-      setTimeout(() => {
-        const responseText = sendMessage(newUserMsg.content);
-        const newAstMsg = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant' as const,
-          content: responseText,
-          timestamp: new Date().toISOString(),
-        };
-        setMessages(prev => [...prev, newAstMsg]);
-        setIsTyping(false);
-      }, 1500);
+      const astMsg = await sendMessage(newUserMsg.content, [...messages, newUserMsg]);
+      setMessages(prev => [...prev, astMsg]);
     } catch (error) {
       console.error(error);
+    } finally {
       setIsTyping(false);
     }
   };

@@ -34,3 +34,5 @@ export const ROUTES = {
   NOTIFICATIONS: '/dashboard/notifications',
   SETTINGS: '/dashboard/settings',
 } as const;
+
+export default ROUTES;

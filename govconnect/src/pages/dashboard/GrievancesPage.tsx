@@ -116,7 +116,7 @@ export default function GrievancesPage() {
                     {grievance.timeline && grievance.timeline.length > 0 && (
                       <span className="flex items-center">
                         <AlertTriangle className="w-3.5 h-3.5 mr-1 text-amber-500" />
-                        Updated {timeAgo(grievance.timeline[grievance.timeline.length - 1].date)}
+                        Updated {timeAgo(grievance.timeline[grievance.timeline.length - 1].timestamp || grievance.timeline[grievance.timeline.length - 1].date || grievance.updatedAt)}
                       </span>
                     )}
                   </div>

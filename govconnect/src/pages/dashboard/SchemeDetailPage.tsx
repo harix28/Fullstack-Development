@@ -66,7 +66,7 @@ const SchemeDetailPage: React.FC = () => {
             <Card className="p-5">
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
-                  {mockUser.age >= 18 ? <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" /> : <XCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />}
+                  {(mockUser.age ?? 28) >= 18 ? <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" /> : <XCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />}
                   <div>
                     <p className="font-medium text-[#0f1740]">Age Requirement</p>
                     <p className="text-sm text-[#64748b]">Must be between 18 and 35 years</p>

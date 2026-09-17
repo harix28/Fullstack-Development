@@ -5,6 +5,8 @@ export interface User {
   name: string;
   email: string;
   mobile: string;
+  phone?: string;
+  age?: number;
   avatar?: string;
   state: string;
   district: string;
@@ -210,6 +212,7 @@ export interface Grievance {
   state: string;
   referenceNumber?: string;
   attachments: string[];
+  documents?: string[];
   status: GrievanceStatus;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   aiAnalysis?: AiAnalysis;
@@ -262,6 +265,8 @@ export interface GrievanceTimeline {
   status: string;
   description: string;
   timestamp: string;
+  date?: string;
+  comment?: string;
 }
 
 // ─── Notification Types ───────────────────────────────────────────────────────
@@ -272,6 +277,7 @@ export interface Notification {
   title: string;
   message: string;
   isRead: boolean;
+  read?: boolean;
   createdAt: string;
   actionUrl?: string;
   actionLabel?: string;
