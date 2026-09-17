@@ -14,7 +14,7 @@ const AboutPage: React.FC = () => {
         {/* HERO */}
         <section className="text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto mb-16 pt-8">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#1a2f8a] dark:text-blue-400 text-xs font-bold border border-blue-200 dark:border-blue-800 mb-4">
-            <Award className="w-3.5 h-3.5" /> SIH 2026 Innovation Initiative
+            <Award className="w-3.5 h-3.5" /> College Major Capstone Project
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-[#0f1740] dark:text-white mb-5 tracking-tight">
             About GovConnect

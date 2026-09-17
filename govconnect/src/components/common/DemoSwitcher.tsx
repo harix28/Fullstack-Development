@@ -47,10 +47,10 @@ export const DemoSwitcher: React.FC = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-amber-500/10 to-teal-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 hover:bg-amber-100/30 transition-all shadow-sm"
-        title="Switch evaluator demo profile"
+        title="Switch demo persona profile"
       >
         <Sparkles className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
-        <span className="hidden sm:inline">Evaluator Demo Profile:</span>
+        <span className="hidden sm:inline">Demo Persona:</span>
         <span className="font-bold text-[#1a2f8a] dark:text-teal-400">{user?.name || 'Citizen'}</span>
         <ChevronDown className="w-3 h-3 text-slate-400" />
       </button>
@@ -61,7 +61,7 @@ export const DemoSwitcher: React.FC = () => {
           <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-700 py-3 z-50 animate-in fade-in zoom-in-95">
             <div className="px-4 pb-2 border-b border-slate-100 dark:border-slate-800">
               <p className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                SIH 2026 Evaluator Switcher
+                Demo Persona Switcher
               </p>
               <p className="text-[11px] text-slate-500">
                 Switch profiles to test dynamic eligibility and job match calculations.

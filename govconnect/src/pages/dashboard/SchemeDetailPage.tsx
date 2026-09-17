@@ -297,7 +297,7 @@ export default function SchemeDetailPage() {
       <div className="mt-8 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
         <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
         <p>
-          <strong>GovConnect Verification Notice:</strong> GovConnect is a frontend prototype built for the SIH 2026 challenge. Scheme guidelines, eligibility thresholds, and required documentation are indicative and subject to official gazette notifications.
+          <strong>GovConnect Verification Notice:</strong> GovConnect is a student capstone prototype. Scheme guidelines, eligibility thresholds, and required documentation are indicative and subject to official gazette notifications.
         </p>
       </div>
     </div>

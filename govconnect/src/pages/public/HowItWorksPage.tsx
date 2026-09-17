@@ -86,7 +86,7 @@ export default function HowItWorksPage() {
               How <span className="text-[#0d9488]">GovConnect</span> Empowers Every Citizen
             </h1>
             <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
-              We bridge the gap between complex government portals and everyday citizens through a transparent 4-step workflow designed for SIH 2026.
+              We bridge the gap between complex government portals and everyday citizens through a transparent 4-step digital workflow.
             </p>
           </div>
         </section>

@@ -5,7 +5,7 @@ export const mockFaqs: FAQItem[] = [
     id: 'faq_01',
     category: 'general',
     question: 'What is GovConnect?',
-    answer: 'GovConnect is an AI-assisted unified citizen empowerment platform designed for SIH 2026. It simplifies how citizens discover welfare schemes, find government and PSU jobs, store essential identity documents digitally, and draft structured grievances for official government portals.',
+    answer: 'GovConnect is an AI-assisted unified citizen empowerment platform. It simplifies how citizens discover welfare schemes, find government and PSU jobs, store essential identity documents digitally, and draft structured grievances for official government portals.',
   },
   {
     id: 'faq_02',

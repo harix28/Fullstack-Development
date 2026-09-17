@@ -49,7 +49,7 @@ const LandingPage: React.FC = () => {
     },
     {
       q: 'Is GovConnect free to use?',
-      a: 'Yes, GovConnect is 100% free and open for all Indian citizens as part of our SIH 2026 digital empowerment mission.'
+      a: 'Yes, GovConnect is 100% free and open for all Indian citizens as part of our digital empowerment initiative.'
     },
     {
       q: 'How does the Ask Sarkar AI assistant work?',
@@ -68,7 +68,7 @@ const LandingPage: React.FC = () => {
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-slate-800/90 shadow-xs border border-slate-200 dark:border-slate-700 text-xs font-bold text-[#1a2f8a] dark:text-blue-400">
                 <span className="flex h-2 w-2 rounded-full bg-teal-500 animate-pulse" />
-                <span>SIH 2026 Innovation Challenge • Unified Citizen Platform</span>
+                <span>College Major Project • Unified Citizen Services Platform</span>
               </div>
               
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#0f1740] dark:text-white leading-[1.15] tracking-tight">
