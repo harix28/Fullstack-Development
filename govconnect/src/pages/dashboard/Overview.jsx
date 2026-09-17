@@ -1,13 +1,16 @@
 import React from 'react';
 import { FileText, Briefcase, FileSignature, AlertCircle, ArrowRight } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
+import { useStore } from '../../store/useStore';
 
 export default function Overview() {
+  const user = useStore(state => state.user);
+
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
       <div>
-        <h2 className="text-2xl font-bold text-brand-navy">Good morning, Citizen</h2>
+        <h2 className="text-2xl font-bold text-brand-navy">Good morning, {user?.name || 'Citizen'}</h2>
         <p className="mt-1 text-sm text-gray-500">Here is your personalized GovConnect overview.</p>
       </div>
 

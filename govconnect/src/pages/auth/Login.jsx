@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
+import { useStore } from '../../store/useStore';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const login = useStore((state) => state.login);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Mock login logic - route to dashboard
+    login({ name: 'Citizen User', email });
     navigate('/dashboard');
   };
 
