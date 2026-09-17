@@ -9,17 +9,19 @@ interface TabsContextType {
 const TabsContext = createContext<TabsContextType | undefined>(undefined);
 
 export interface TabsProps {
-  defaultValue: string;
+  defaultValue?: string;
   value?: string;
   onChange?: (value: string) => void;
+  onValueChange?: (value: string) => void;
   children: ReactNode;
   className?: string;
 }
 
 export const Tabs: React.FC<TabsProps> = ({
-  defaultValue,
+  defaultValue = '',
   value,
   onChange,
+  onValueChange,
   children,
   className,
 }) => {
@@ -32,6 +34,9 @@ export const Tabs: React.FC<TabsProps> = ({
     }
     if (onChange) {
       onChange(newValue);
+    }
+    if (onValueChange) {
+      onValueChange(newValue);
     }
   };
 

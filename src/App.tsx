@@ -2,13 +2,17 @@ import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { LanguageProvider } from '@/context/LanguageContext';
+import { ThemeProvider } from '@/context/ThemeContext';
+import { SavedProvider } from '@/context/SavedContext';
 import { ToastProvider } from '@/components/ui/Toast';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 
 // Public pages
 import LandingPage from '@/pages/public/LandingPage';
 import AboutPage from '@/pages/public/AboutPage';
+import HowItWorksPage from '@/pages/public/HowItWorksPage';
 import ServicesPage from '@/pages/public/ServicesPage';
+import ContactPage from '@/pages/public/ContactPage';
 
 // Auth pages
 import LoginPage from '@/pages/auth/LoginPage';
@@ -27,15 +31,16 @@ import GrievancesPage from '@/pages/dashboard/GrievancesPage';
 import NewGrievancePage from '@/pages/dashboard/NewGrievancePage';
 import GrievanceDetailPage from '@/pages/dashboard/GrievanceDetailPage';
 import AssistantPage from '@/pages/dashboard/AssistantPage';
+import SavedItemsPage from '@/pages/dashboard/SavedItemsPage';
 import NotificationsPage from '@/pages/dashboard/NotificationsPage';
 import SettingsPage from '@/pages/dashboard/SettingsPage';
 
 // Loading fallback
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-[#f8f9fc]">
+  <div className="min-h-screen flex items-center justify-center bg-[#f8f9fc] dark:bg-slate-900">
     <div className="flex flex-col items-center gap-4">
       <div className="w-10 h-10 border-4 border-[#1a2f8a] border-t-transparent rounded-full animate-spin" />
-      <p className="text-[#64748b] text-sm font-medium">Loading GovConnect...</p>
+      <p className="text-slate-500 text-sm font-medium">Loading GovConnect...</p>
     </div>
   </div>
 );
@@ -62,7 +67,9 @@ function AppRoutes() {
       {/* ── Public Routes ── */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/about" element={<AboutPage />} />
+      <Route path="/how-it-works" element={<HowItWorksPage />} />
       <Route path="/services" element={<ServicesPage />} />
+      <Route path="/contact" element={<ContactPage />} />
 
       {/* ── Auth Routes ── */}
       <Route
@@ -83,56 +90,85 @@ function AppRoutes() {
       />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-      {/* ── Protected Dashboard Routes ── */}
+      {/* ── Protected Dashboard Routes (all user journeys accessible via /dashboard/* or short aliases) ── */}
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardOverview />} />
           <Route path="/dashboard/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
 
           {/* Schemes */}
           <Route path="/dashboard/schemes" element={<SchemesPage />} />
           <Route path="/dashboard/schemes/recommended" element={<SchemesPage />} />
           <Route path="/dashboard/schemes/explore" element={<SchemesPage />} />
           <Route path="/dashboard/schemes/:id" element={<SchemeDetailPage />} />
+          <Route path="/schemes" element={<SchemesPage />} />
+          <Route path="/schemes/:id" element={<SchemeDetailPage />} />
 
           {/* Jobs */}
           <Route path="/dashboard/jobs" element={<JobsPage />} />
           <Route path="/dashboard/jobs/recommended" element={<JobsPage />} />
           <Route path="/dashboard/jobs/:id" element={<JobDetailPage />} />
+          <Route path="/jobs" element={<JobsPage />} />
+          <Route path="/jobs/:id" element={<JobDetailPage />} />
 
-          {/* Documents */}
+          {/* Documents Vault */}
           <Route path="/dashboard/documents" element={<DocumentsPage />} />
+          <Route path="/documents" element={<DocumentsPage />} />
 
-          {/* Grievances */}
+          {/* Grievance Module */}
           <Route path="/dashboard/grievances" element={<GrievancesPage />} />
           <Route path="/dashboard/grievances/new" element={<NewGrievancePage />} />
           <Route path="/dashboard/grievances/:id" element={<GrievanceDetailPage />} />
+          <Route path="/grievances" element={<GrievancesPage />} />
+          <Route path="/grievances/new" element={<NewGrievancePage />} />
+          <Route path="/grievances/:id" element={<GrievanceDetailPage />} />
 
-          {/* AI Assistant */}
+          {/* Ask Sarkar AI Assistant */}
           <Route path="/dashboard/assistant" element={<AssistantPage />} />
+          <Route path="/ask-sarkar" element={<AssistantPage />} />
+
+          {/* Saved Items */}
+          <Route path="/dashboard/saved" element={<SavedItemsPage />} />
+          <Route path="/saved" element={<SavedItemsPage />} />
 
           {/* Notifications */}
           <Route path="/dashboard/notifications" element={<NotificationsPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
 
           {/* Settings */}
           <Route path="/dashboard/settings" element={<SettingsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>
 
-      {/* ── Fallback 404 ── */}
+      {/* ── 404 Fallback ── */}
       <Route
         path="*"
         element={
-          <div className="min-h-screen flex items-center justify-center bg-[#f8f9fc]">
-            <div className="text-center">
-              <h1 className="text-6xl font-bold text-[#0f1740] mb-4">404</h1>
-              <p className="text-[#64748b] text-lg mb-6">Page not found</p>
-              <a
-                href="/"
-                className="inline-flex items-center px-6 py-3 bg-[#1a2f8a] text-white rounded-lg font-medium hover:bg-[#0f1740] transition-colors"
-              >
-                Go Home
-              </a>
+          <div className="min-h-screen flex items-center justify-center bg-[#f8f9fc] dark:bg-slate-900 p-4">
+            <div className="text-center max-w-md">
+              <div className="w-16 h-16 bg-blue-100 text-[#1a2f8a] rounded-2xl flex items-center justify-center mx-auto mb-4 font-extrabold text-2xl">
+                404
+              </div>
+              <h1 className="text-3xl font-bold text-[#0f1740] dark:text-white mb-2">Page Not Found</h1>
+              <p className="text-slate-500 text-sm mb-6">
+                The page or citizen service you are looking for does not exist or has moved.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <a
+                  href="/dashboard"
+                  className="px-5 py-2.5 bg-[#1a2f8a] text-white rounded-lg text-sm font-semibold hover:bg-[#0f1740] transition-colors"
+                >
+                  Go to Dashboard
+                </a>
+                <a
+                  href="/"
+                  className="px-5 py-2.5 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50"
+                >
+                  Home
+                </a>
+              </div>
             </div>
           </div>
         }
@@ -144,15 +180,19 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <LanguageProvider>
-          <ToastProvider>
-            <Suspense fallback={<PageLoader />}>
-              <AppRoutes />
-            </Suspense>
-          </ToastProvider>
-        </LanguageProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <ToastProvider>
+              <SavedProvider>
+                <Suspense fallback={<PageLoader />}>
+                  <AppRoutes />
+                </Suspense>
+              </SavedProvider>
+            </ToastProvider>
+          </LanguageProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

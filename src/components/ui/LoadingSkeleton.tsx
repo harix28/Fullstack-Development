@@ -40,3 +40,26 @@ export const SkeletonList: React.FC<{ className?: string }> = ({ className }) =>
     </div>
   );
 };
+
+export interface LoadingSkeletonProps {
+  count?: number;
+  type?: 'card' | 'list' | 'text';
+  className?: string;
+}
+
+export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
+  count = 1,
+  type = 'card',
+  className,
+}) => {
+  return (
+    <div className={cn('space-y-4', className)}>
+      {Array.from({ length: count }).map((_, i) => (
+        type === 'card' ? <SkeletonCard key={i} className={className} /> :
+        type === 'list' ? <SkeletonList key={i} className={className} /> :
+        <SkeletonText key={i} className={className} />
+      ))}
+    </div>
+  );
+};
+

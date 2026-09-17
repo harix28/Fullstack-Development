@@ -5,27 +5,71 @@ export interface User {
   name: string;
   email: string;
   mobile: string;
+  phone?: string;
+  age?: number;
   avatar?: string;
   state: string;
   district: string;
+  cityVillage?: string;
   dateOfBirth: string;
-  gender: 'male' | 'female' | 'other' | 'prefer_not_to_say';
-  category: 'general' | 'obc' | 'sc' | 'st' | 'ews';
+  gender: 'male' | 'female' | 'other' | 'prefer_not_to_say' | string;
+  category: 'general' | 'obc' | 'sc' | 'st' | 'ews' | string;
   religion?: string;
   maritalStatus?: 'single' | 'married' | 'divorced' | 'widowed';
   hasDisability: boolean;
   disabilityType?: string;
-  education: EducationLevel;
-  occupation: OccupationStatus;
+  education: EducationLevel | string;
+  occupation: OccupationStatus | string;
+  skills?: string[];
+  employmentStatus?: string;
   annualIncome: number;
   familySize: number;
   profileCompletion: number;
+  savedSchemes?: string[];
+  savedJobs?: string[];
+  savedServices?: string[];
   preferences: {
     language: 'en' | 'hi';
     notifications: boolean;
     emailUpdates: boolean;
+    theme?: 'light' | 'dark' | 'system';
   };
   createdAt: string;
+}
+
+// ─── Local Services Types ───────────────────────────────────────────────────
+
+export interface LocalService {
+  id: string;
+  name: string;
+  category: ServiceCategory;
+  address: string;
+  distance: string;
+  phone: string;
+  timing: string;
+  openingHours?: string;
+  state: string;
+  district: string;
+  isSaved?: boolean;
+  description?: string;
+  mapsUrl?: string;
+}
+
+export type ServiceCategory =
+  | 'hospital'
+  | 'police'
+  | 'govt_office'
+  | 'college'
+  | 'bank'
+  | 'csc_centre'
+  | 'employment_office'
+  | 'municipal_office';
+
+export interface FAQItem {
+  id: string;
+  category: 'general' | 'schemes' | 'jobs' | 'documents' | 'grievances' | 'privacy';
+  question: string;
+  answer: string;
 }
 
 export type EducationLevel =
@@ -210,6 +254,7 @@ export interface Grievance {
   state: string;
   referenceNumber?: string;
   attachments: string[];
+  documents?: string[];
   status: GrievanceStatus;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   aiAnalysis?: AiAnalysis;
@@ -262,6 +307,8 @@ export interface GrievanceTimeline {
   status: string;
   description: string;
   timestamp: string;
+  date?: string;
+  comment?: string;
 }
 
 // ─── Notification Types ───────────────────────────────────────────────────────
@@ -272,6 +319,7 @@ export interface Notification {
   title: string;
   message: string;
   isRead: boolean;
+  read?: boolean;
   createdAt: string;
   actionUrl?: string;
   actionLabel?: string;
@@ -339,6 +387,25 @@ export interface LoginCredentials {
   rememberMe?: boolean;
 }
 
+export interface UserDocument {
+  id: string;
+  userId: string;
+  name: string;
+  category: DocumentCategory;
+  type: string;
+  fileSize: number;
+  fileUrl: string;
+  uploadDate: string;
+  expiryDate?: string;
+  status: 'verified' | 'uploaded' | 'processing' | 'expired' | 'needs_review';
+  ocrStatus?: 'completed' | 'processing' | 'failed' | 'pending';
+  isVerified?: boolean;
+  isStarred?: boolean;
+  extractedData?: Record<string, any>;
+  usedIn?: string[];
+}
+
+
 export interface RegisterData {
   name: string;
   email: string;
@@ -346,6 +413,15 @@ export interface RegisterData {
   password: string;
   confirmPassword: string;
   state: string;
-  dateOfBirth: string;
-  gender: string;
+  district?: string;
+  cityVillage?: string;
+  dateOfBirth?: string;
+  age?: number;
+  gender?: string;
+  education?: string;
+  occupation?: string;
+  employmentStatus?: string;
+  skills?: string[];
+  category?: string;
+  annualIncome?: number;
 }

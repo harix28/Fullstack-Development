@@ -1,4 +1,4 @@
-﻿import type { Scheme, SchemeCategory } from '@/types';
+import type { Scheme, SchemeCategory } from '@/types';
 import { mockSchemes } from '@/data/mockSchemes';
 
 // In-memory mutable copy so save toggles persist across calls during a session
@@ -39,7 +39,7 @@ export const getSchemes = async (filters?: SchemeFilters): Promise<Scheme[]> => 
     );
   }
 
-  if (filters?.category && filters.category !== '') {
+  if (filters?.category) {
     results = results.filter((s) => s.category === filters.category);
   }
 

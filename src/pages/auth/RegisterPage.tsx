@@ -1,307 +1,671 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Shield, AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { 
+  Shield, CheckCircle2, ArrowRight, ArrowLeft, 
+  User, MapPin, GraduationCap, Sliders, Sparkles, 
+  Eye, EyeOff, AlertCircle 
+} from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { Button, Card, Badge } from '@/components/ui';
+import { INDIAN_STATES } from '@/constants/categories';
 import ROUTES from '@/constants/routes';
-import { INDIAN_STATES } from '@/constants/categories'; // Assuming this exists or can be replaced
 
-const RegisterPage: React.FC = () => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    mobile: '',
-    password: '',
-    confirmPassword: '',
-    state: '',
-    dob: '',
-    gender: '',
-    agreeTerms: false
-  });
-  
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  
+const WIZARD_STEPS = [
+  { id: 1, title: 'Basic Info', icon: User },
+  { id: 2, title: 'Demographics', icon: MapPin },
+  { id: 3, title: 'Education & Skills', icon: GraduationCap },
+  { id: 4, title: 'Preferences', icon: Sliders },
+  { id: 5, title: 'Ready', icon: Sparkles },
+];
+
+const SKILL_SUGGESTIONS = [
+  'Python', 'SQL', 'React', 'Data Analysis', 'Web Development',
+  'Accounting / Tally', 'Machine Learning', 'Electrician', 
+  'Digital Marketing', 'Civil Drafting', 'Agriculture / Farming', 'Customer Support'
+];
+
+const SCHEME_INTERESTS = [
+  'Education & Scholarships', 'Small Business & Startups (MUDRA)', 
+  'Affordable Housing (PMAY)', 'Healthcare (Ayushman Bharat)', 
+  'Agriculture & Farmer Welfare', 'Skill Development & ITI', 'Women Empowerment'
+];
+
+const JOB_INTERESTS = [
+  'Staff Selection Commission (SSC)', 'Banking & Insurance (IBPS / SBI)', 
+  'Indian Railways (RRB)', 'Civil Services (UPSC / State PSC)', 
+  'Public Sector Undertakings (PSU)', 'Defence & Police Forces', 'State IT & Tech Services'
+];
+
+export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [customSkillInput, setCustomSkillInput] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData(prev => ({ ...prev, [name]: checked }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+  const [formData, setFormData] = useState({
+    // Step 1
+    name: 'Hari Sharma',
+    email: 'hari.sharma@example.com',
+    mobile: '9876543210',
+    password: 'Password@123',
+    confirmPassword: 'Password@123',
+
+    // Step 2
+    age: 23,
+    gender: 'Male',
+    state: 'Delhi',
+    district: 'New Delhi',
+    cityVillage: 'Connaught Place',
+    category: 'General',
+    annualIncome: 350000,
+    hasDisability: false,
+
+    // Step 3
+    education: 'MCA',
+    occupation: 'Student / Tech Aspirant',
+    employmentStatus: 'Student',
+    skills: ['Python', 'SQL', 'React', 'Data Analysis'],
+
+    // Step 4
+    interestedSchemes: ['Education & Scholarships', 'Small Business & Startups (MUDRA)'],
+    interestedJobs: ['Staff Selection Commission (SSC)', 'Banking & Insurance (IBPS / SBI)', 'State IT & Tech Services'],
+    preferredLocation: 'Delhi NCR / Remote'
+  });
+
+  const toggleSkill = (skill: string) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.includes(skill)
+        ? prev.skills.filter(s => s !== skill)
+        : [...prev.skills, skill]
+    }));
+  };
+
+  const addCustomSkill = () => {
+    if (customSkillInput.trim() && !formData.skills.includes(customSkillInput.trim())) {
+      setFormData(prev => ({ ...prev, skills: [...prev.skills, customSkillInput.trim()] }));
+      setCustomSkillInput('');
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const toggleSchemeInterest = (interest: string) => {
+    setFormData(prev => ({
+      ...prev,
+      interestedSchemes: prev.interestedSchemes.includes(interest)
+        ? prev.interestedSchemes.filter(i => i !== interest)
+        : [...prev.interestedSchemes, interest]
+    }));
+  };
+
+  const toggleJobInterest = (job: string) => {
+    setFormData(prev => ({
+      ...prev,
+      interestedJobs: prev.interestedJobs.includes(job)
+        ? prev.interestedJobs.filter(j => j !== job)
+        : [...prev.interestedJobs, job]
+    }));
+  };
+
+  const handleNext = () => {
     setError('');
 
-    // Basic Validation
-    if (!formData.fullName.trim()) return setError('Full Name is required.');
-    if (!formData.email.trim() || !/^\S+@\S+\.\S+$/.test(formData.email)) return setError('Valid email is required.');
-    if (!formData.mobile.trim() || !/^\d{10}$/.test(formData.mobile)) return setError('Valid 10-digit mobile number is required.');
-    if (formData.password.length < 8) return setError('Password must be at least 8 characters.');
-    if (formData.password !== formData.confirmPassword) return setError('Passwords do not match.');
-    if (!formData.agreeTerms) return setError('You must agree to the Terms and Conditions.');
+    if (currentStep === 1) {
+      if (!formData.name.trim()) return setError('Please enter your full name.');
+      if (!formData.email.trim() || !formData.email.includes('@')) return setError('Valid email is required.');
+      if (!formData.mobile.trim() || formData.mobile.length < 10) return setError('Valid 10-digit mobile number is required.');
+      if (formData.password.length < 6) return setError('Password must be at least 6 characters.');
+      if (formData.password !== formData.confirmPassword) return setError('Passwords do not match.');
+    }
 
-    setIsLoading(true);
-    try {
-      // Create user data object for context
-      const userData = {
-        name: formData.fullName,
-        email: formData.email,
-        mobile: formData.mobile,
-        state: formData.state,
-        dob: formData.dob,
-        gender: formData.gender
-      };
-      
-      await register(userData, formData.password);
-      navigate(ROUTES.DASHBOARD);
-    } catch (err: any) {
-      setError(err.message || 'Registration failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+    if (currentStep === 2) {
+      if (!formData.state) return setError('Please select your state.');
+      if (!formData.district) return setError('Please specify your district.');
+    }
+
+    if (currentStep === 3) {
+      if (!formData.education) return setError('Please select your highest education level.');
+    }
+
+    if (currentStep < 5) {
+      setCurrentStep(prev => prev + 1);
     }
   };
 
-  // Fallback for states if INDIAN_STATES isn't properly exported
+  const handleFinish = async () => {
+    try {
+      await register({
+        name: formData.name,
+        email: formData.email,
+        mobile: formData.mobile,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        state: formData.state,
+        district: formData.district,
+        cityVillage: formData.cityVillage,
+        age: Number(formData.age),
+        gender: formData.gender,
+        education: formData.education,
+        occupation: formData.occupation,
+        employmentStatus: formData.employmentStatus,
+        skills: formData.skills,
+        category: formData.category,
+        annualIncome: Number(formData.annualIncome),
+      });
+      navigate(ROUTES.DASHBOARD);
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
+    }
+  };
+
   const statesList = Array.isArray(INDIAN_STATES) && INDIAN_STATES.length > 0 
     ? INDIAN_STATES 
-    : ['Andhra Pradesh', 'Delhi', 'Gujarat', 'Karnataka', 'Maharashtra', 'Tamil Nadu', 'Uttar Pradesh'];
+    : ['Andhra Pradesh', 'Bihar', 'Delhi', 'Gujarat', 'Karnataka', 'Maharashtra', 'Punjab', 'Rajasthan', 'Tamil Nadu', 'Uttar Pradesh'];
 
   return (
-    <div className="min-h-screen flex bg-white font-sans">
-      {/* Left Panel - Branding */}
-      <div className="hidden md:flex md:w-[40%] bg-[#0f1740] text-white flex-col justify-between p-12 fixed inset-y-0 left-0">
-        <div className="relative z-10">
-          <Link to={ROUTES.HOME} className="flex items-center gap-2 mb-16">
-            <span className="text-3xl">🏛</span>
-            <span className="text-2xl font-bold tracking-tight text-white">
-              Gov<span className="text-[#0d9488]">Connect</span>
-            </span>
+    <div className="min-h-screen flex flex-col bg-[#f8f9fc] font-sans">
+      {/* Top Header */}
+      <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+        <Link to={ROUTES.HOME} className="flex items-center gap-2">
+          <Shield className="h-8 w-8 text-[#1a2f8a]" />
+          <span className="font-bold text-xl text-[#0f1740]">
+            Gov<span className="text-[#0d9488]">Connect</span>
+          </span>
+        </Link>
+        <div className="text-sm text-slate-500">
+          Already registered?{' '}
+          <Link to={ROUTES.LOGIN} className="font-semibold text-[#1a2f8a] hover:underline">
+            Sign In
           </Link>
-          
-          <h1 className="text-4xl font-bold leading-tight mb-6">
-            Start Your Journey.
-          </h1>
-          <p className="text-lg text-blue-100 mb-12 max-w-md">
-            Create an account to access a unified platform tailored to your specific civic needs.
-          </p>
+        </div>
+      </header>
 
-          <div className="space-y-6">
-            {[
-              'Personalised Scheme Recommendations',
-              'Automated Job Alerts',
-              'Secure Document Vault',
-              'Free AI Grievance Assistance'
-            ].map((feature, idx) => (
-              <div key={idx} className="flex items-center gap-3">
-                <CheckCircle2 className="text-[#0d9488] w-6 h-6" />
-                <span className="text-blue-50 font-medium">{feature}</span>
-              </div>
-            ))}
+      {/* Main Form Container */}
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-8">
+        
+        {/* Progress Stepper Bar */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between relative">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 -z-10 rounded-full" />
+            <div 
+              className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[#1a2f8a] -z-10 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep - 1) / (WIZARD_STEPS.length - 1)) * 100}%` }}
+            />
+
+            {WIZARD_STEPS.map((step) => {
+              const Icon = step.icon;
+              const isDone = currentStep > step.id;
+              const isCurrent = currentStep === step.id;
+
+              return (
+                <div key={step.id} className="flex flex-col items-center">
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all border-2 ${
+                    isDone 
+                      ? 'bg-[#1a2f8a] border-[#1a2f8a] text-white shadow-sm' 
+                      : isCurrent 
+                      ? 'bg-white border-[#1a2f8a] text-[#1a2f8a] ring-4 ring-blue-100 shadow' 
+                      : 'bg-white border-slate-300 text-slate-400'
+                  }`}>
+                    {isDone ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-4 h-4" />}
+                  </div>
+                  <span className={`text-[11px] font-medium mt-1.5 hidden sm:block ${
+                    isCurrent ? 'text-[#1a2f8a] font-bold' : isDone ? 'text-slate-700' : 'text-slate-400'
+                  }`}>
+                    {step.title}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        <div className="relative z-10 mt-auto pt-12">
-          <p className="text-sm text-blue-200">
-            Already have an account?
-          </p>
-          <Link to={ROUTES.LOGIN} className="inline-flex items-center mt-2 text-white font-semibold hover:text-[#0d9488] transition-colors">
-            Sign In Instead <ArrowRight className="ml-2 w-4 h-4" />
-          </Link>
-        </div>
-
-        {/* Abstract Background Elements */}
-        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-[#1a2f8a] rounded-full blur-3xl opacity-50"></div>
-        <div className="absolute top-20 right-0 w-64 h-64 bg-[#0d9488] rounded-full blur-3xl opacity-20"></div>
-      </div>
-
-      {/* Right Panel - Form (Offset for fixed left panel) */}
-      <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 md:ml-[40%] lg:px-16 xl:px-24 py-12">
-        <div className="mx-auto w-full max-w-2xl">
-          <div className="md:hidden flex items-center justify-between mb-8">
-            <Link to={ROUTES.HOME} className="flex items-center gap-2">
-              <span className="text-3xl">🏛</span>
-              <span className="text-2xl font-bold tracking-tight text-[#0f1740]">
-                Gov<span className="text-[#0d9488]">Connect</span>
-              </span>
-            </Link>
-            <Link to={ROUTES.LOGIN} className="text-sm font-medium text-[#0d9488]">
-              Login
-            </Link>
-          </div>
-
-          <div>
-            <h2 className="text-3xl font-bold text-[#0f1740]">Create Account</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Fill in your details below to get started. All fields are secure.
-            </p>
-          </div>
-
-          <div className="mt-8">
-            {error && (
-              <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-md flex gap-3 items-start">
-                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Personal Details Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name *</label>
-                  <input
-                    id="fullName" name="fullName" type="text" required
-                    value={formData.fullName} onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-3 border border-[#e2e8f0] rounded-lg shadow-sm placeholder-gray-400 focus:ring-[#0d9488] focus:border-[#0d9488] sm:text-sm"
-                    placeholder="As per official ID"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address *</label>
-                  <input
-                    id="email" name="email" type="email" required
-                    value={formData.email} onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-3 border border-[#e2e8f0] rounded-lg shadow-sm placeholder-gray-400 focus:ring-[#0d9488] focus:border-[#0d9488] sm:text-sm"
-                    placeholder="you@example.com"
-                  />
-                </div>
-              </div>
-
-              {/* Contact & Demographics Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div>
-                  <label htmlFor="mobile" className="block text-sm font-medium text-gray-700">Mobile *</label>
-                  <input
-                    id="mobile" name="mobile" type="tel" maxLength={10} required
-                    value={formData.mobile} onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-3 border border-[#e2e8f0] rounded-lg shadow-sm placeholder-gray-400 focus:ring-[#0d9488] focus:border-[#0d9488] sm:text-sm"
-                    placeholder="10 digits"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="dob" className="block text-sm font-medium text-gray-700">Date of Birth</label>
-                  <input
-                    id="dob" name="dob" type="date"
-                    value={formData.dob} onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-3 border border-[#e2e8f0] rounded-lg shadow-sm text-gray-700 focus:ring-[#0d9488] focus:border-[#0d9488] sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="gender" className="block text-sm font-medium text-gray-700">Gender</label>
-                  <select
-                    id="gender" name="gender"
-                    value={formData.gender} onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-3 border border-[#e2e8f0] rounded-lg shadow-sm text-gray-700 focus:ring-[#0d9488] focus:border-[#0d9488] sm:text-sm"
-                  >
-                    <option value="">Select...</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                    <option value="Prefer not to say">Prefer not to say</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* State Selection */}
-              <div>
-                <label htmlFor="state" className="block text-sm font-medium text-gray-700">State / Union Territory</label>
-                <select
-                  id="state" name="state"
-                  value={formData.state} onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-3 border border-[#e2e8f0] rounded-lg shadow-sm text-gray-700 focus:ring-[#0d9488] focus:border-[#0d9488] sm:text-sm"
-                >
-                  <option value="">Select your state...</option>
-                  {statesList.map(state => (
-                    <option key={state} value={state}>{state}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Password Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password *</label>
-                  <div className="mt-1 relative">
-                    <input
-                      id="password" name="password" type={showPassword ? 'text' : 'password'} required
-                      value={formData.password} onChange={handleChange}
-                      className="block w-full px-3 py-3 border border-[#e2e8f0] rounded-lg shadow-sm placeholder-gray-400 focus:ring-[#0d9488] focus:border-[#0d9488] sm:text-sm"
-                      placeholder="Min 8 characters"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password *</label>
-                  <div className="mt-1 relative">
-                    <input
-                      id="confirmPassword" name="confirmPassword" type={showConfirmPassword ? 'text' : 'password'} required
-                      value={formData.confirmPassword} onChange={handleChange}
-                      className="block w-full px-3 py-3 border border-[#e2e8f0] rounded-lg shadow-sm placeholder-gray-400 focus:ring-[#0d9488] focus:border-[#0d9488] sm:text-sm"
-                      placeholder="Repeat password"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Terms Checkbox */}
-              <div className="flex items-start pt-2">
-                <div className="flex items-center h-5">
-                  <input
-                    id="agreeTerms" name="agreeTerms" type="checkbox" required
-                    checked={formData.agreeTerms} onChange={handleChange}
-                    className="w-4 h-4 text-[#0d9488] border-gray-300 rounded focus:ring-[#0d9488]"
-                  />
-                </div>
-                <div className="ml-3 text-sm">
-                  <label htmlFor="agreeTerms" className="font-medium text-gray-700">
-                    I agree to the <a href="#" className="text-[#0d9488] hover:underline">Terms of Service</a> and <a href="#" className="text-[#0d9488] hover:underline">Privacy Policy</a>.
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-[#0f1740] hover:bg-[#1a2f8a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0f1740] disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-4"
-                >
-                  {isLoading ? 'Creating Account...' : 'Create Account'}
-                </button>
-              </div>
-            </form>
-            
-            <div className="mt-8 flex justify-center md:hidden">
-              <span className="text-sm text-gray-600">
-                <Shield className="w-4 h-4 inline mr-1 text-gray-400" /> Secure Registration
-              </span>
+        {/* Form Card */}
+        <Card className="p-6 sm:p-8 shadow-md">
+          {error && (
+            <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-md flex gap-3 items-center text-sm text-red-700">
+              <AlertCircle className="w-5 h-5 shrink-0 text-red-500" />
+              <span>{error}</span>
             </div>
-          </div>
-        </div>
-      </div>
+          )}
+
+          {/* STEP 1: Basic Information */}
+          {currentStep === 1 && (
+            <div className="space-y-5">
+              <div>
+                <h2 className="text-2xl font-bold text-[#0f1740]">Basic Citizen Credentials</h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  Enter your identification details to create your secure GovConnect account.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                    Full Name (as on official ID) *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="e.g. Hari Sharma"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1a2f8a] text-sm"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="e.g. hari.sharma@example.com"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1a2f8a] text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">
+                      10-Digit Mobile Number *
+                    </label>
+                    <input
+                      type="tel"
+                      maxLength={10}
+                      required
+                      value={formData.mobile}
+                      onChange={e => setFormData({ ...formData, mobile: e.target.value })}
+                      placeholder="9876543210"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1a2f8a] text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">
+                      Password *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        value={formData.password}
+                        onChange={e => setFormData({ ...formData, password: e.target.value })}
+                        placeholder="Min 6 characters"
+                        className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1a2f8a] text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">
+                      Confirm Password *
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      value={formData.confirmPassword}
+                      onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })}
+                      placeholder="Re-enter password"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1a2f8a] text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 2: Demographics */}
+          {currentStep === 2 && (
+            <div className="space-y-5">
+              <div>
+                <h2 className="text-2xl font-bold text-[#0f1740]">Personal & Demographics</h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  Used by our AI to compute accurate welfare scheme eligibility and quotas.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Age *</label>
+                    <input
+                      type="number"
+                      value={formData.age}
+                      onChange={e => setFormData({ ...formData, age: Number(e.target.value) })}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Gender</label>
+                    <select
+                      value={formData.gender}
+                      onChange={e => setFormData({ ...formData, gender: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Transgender">Transgender</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Category / Quota</label>
+                    <select
+                      value={formData.category}
+                      onChange={e => setFormData({ ...formData, category: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                    >
+                      <option value="General">General</option>
+                      <option value="OBC">OBC (Other Backward Classes)</option>
+                      <option value="SC">SC (Scheduled Caste)</option>
+                      <option value="ST">ST (Scheduled Tribe)</option>
+                      <option value="EWS">EWS (Economically Weaker Section)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">State / UT *</label>
+                    <select
+                      value={formData.state}
+                      onChange={e => setFormData({ ...formData, state: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                    >
+                      {statesList.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">District *</label>
+                    <input
+                      type="text"
+                      value={formData.district}
+                      onChange={e => setFormData({ ...formData, district: e.target.value })}
+                      placeholder="e.g. New Delhi"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">City / Village</label>
+                    <input
+                      type="text"
+                      value={formData.cityVillage}
+                      onChange={e => setFormData({ ...formData, cityVillage: e.target.value })}
+                      placeholder="e.g. Connaught Place"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Annual Household Income (₹)</label>
+                    <input
+                      type="number"
+                      step={25000}
+                      value={formData.annualIncome}
+                      onChange={e => setFormData({ ...formData, annualIncome: Number(e.target.value) })}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-1">Helps unlock BPL, EWS and income-targeted subsidies</p>
+                  </div>
+                  <div className="flex items-center pt-6">
+                    <label className="flex items-center gap-2.5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.hasDisability}
+                        onChange={e => setFormData({ ...formData, hasDisability: e.target.checked })}
+                        className="w-4 h-4 rounded text-[#1a2f8a]"
+                      />
+                      <span className="text-sm font-medium text-slate-700">Person with Disability (Divyangjan)</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3: Education & Career */}
+          {currentStep === 3 && (
+            <div className="space-y-5">
+              <div>
+                <h2 className="text-2xl font-bold text-[#0f1740]">Education & Skills Profile</h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  GovConnect uses your qualification and skills to match SSC, Banking, and IT job vacancies.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Highest Education Level *</label>
+                    <select
+                      value={formData.education}
+                      onChange={e => setFormData({ ...formData, education: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                    >
+                      <option value="10th Pass">10th Pass (Matriculation)</option>
+                      <option value="12th Pass">12th Pass (Higher Secondary)</option>
+                      <option value="Diploma / ITI">Diploma / ITI</option>
+                      <option value="Graduate (B.Tech / B.Sc / B.Com / BA)">Graduate (B.Tech / B.Sc / B.Com / BA)</option>
+                      <option value="MCA">Post Graduate (MCA / M.Tech / MBA)</option>
+                      <option value="Doctorate (Ph.D)">Doctorate (Ph.D)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Employment Status</label>
+                    <select
+                      value={formData.employmentStatus}
+                      onChange={e => setFormData({ ...formData, employmentStatus: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                    >
+                      <option value="Student">Student</option>
+                      <option value="Employed (Private)">Employed (Private)</option>
+                      <option value="Employed (Govt/PSU)">Employed (Govt / PSU)</option>
+                      <option value="Self-Employed / Freelancer">Self-Employed / Freelancer</option>
+                      <option value="Seeking Employment">Seeking Employment (Job Seeker)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Key Skills & Competencies
+                  </label>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {SKILL_SUGGESTIONS.map(skill => {
+                      const isSelected = formData.skills.includes(skill);
+                      return (
+                        <button
+                          type="button"
+                          key={skill}
+                          onClick={() => toggleSkill(skill)}
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                            isSelected
+                              ? 'bg-[#1a2f8a] text-white shadow-sm'
+                              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          }`}
+                        >
+                          {isSelected ? `✓ ${skill}` : `+ ${skill}`}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={customSkillInput}
+                      onChange={e => setCustomSkillInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomSkill(); } }}
+                      placeholder="Add custom skill (e.g. AutoCAD, Welding, Cloud)..."
+                      className="flex-1 px-3.5 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                    />
+                    <Button type="button" variant="outline" onClick={addCustomSkill} className="text-xs">
+                      Add
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 4: Preferences */}
+          {currentStep === 4 && (
+            <div className="space-y-5">
+              <div>
+                <h2 className="text-2xl font-bold text-[#0f1740]">Personalized Preferences</h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  Choose which scheme categories and job avenues you want prioritized on your dashboard.
+                </p>
+              </div>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Interested Government Scheme Categories
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {SCHEME_INTERESTS.map(interest => {
+                      const checked = formData.interestedSchemes.includes(interest);
+                      return (
+                        <label
+                          key={interest}
+                          className={`flex items-center gap-2.5 p-3 rounded-lg border text-xs font-medium cursor-pointer transition-colors ${
+                            checked ? 'bg-blue-50 border-[#1a2f8a] text-[#1a2f8a]' : 'border-slate-200 hover:bg-slate-50'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleSchemeInterest(interest)}
+                            className="rounded text-[#1a2f8a]"
+                          />
+                          <span>{interest}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Target Job & Recruitment Boards
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {JOB_INTERESTS.map(job => {
+                      const checked = formData.interestedJobs.includes(job);
+                      return (
+                        <label
+                          key={job}
+                          className={`flex items-center gap-2.5 p-3 rounded-lg border text-xs font-medium cursor-pointer transition-colors ${
+                            checked ? 'bg-teal-50 border-teal-600 text-teal-800' : 'border-slate-200 hover:bg-slate-50'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleJobInterest(job)}
+                            className="rounded text-teal-600"
+                          />
+                          <span>{job}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 5: Profile Ready Confirmation */}
+          {currentStep === 5 && (
+            <div className="text-center py-6 space-y-6">
+              <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                <CheckCircle2 className="w-10 h-10" />
+              </div>
+
+              <div>
+                <Badge className="bg-green-100 text-green-800 border-green-200 mb-2">
+                  Profile 100% Complete
+                </Badge>
+                <h2 className="text-3xl font-extrabold text-[#0f1740]">
+                  Your GovConnect Profile is Ready!
+                </h2>
+                <p className="text-slate-600 text-sm mt-2 max-w-lg mx-auto">
+                  Welcome aboard, <strong className="text-[#0f1740]">{formData.name}</strong>. Your single citizen profile has been calibrated with your education in <strong className="text-[#0f1740]">{formData.education}</strong>, skills ({formData.skills.join(', ')}), and location in <strong className="text-[#0f1740]">{formData.state}</strong>.
+                </p>
+              </div>
+
+              <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 text-left max-w-md mx-auto text-xs space-y-2.5">
+                <div className="flex justify-between border-b pb-2">
+                  <span className="text-slate-500">Citizen Name:</span>
+                  <span className="font-bold text-slate-800">{formData.name}</span>
+                </div>
+                <div className="flex justify-between border-b pb-2">
+                  <span className="text-slate-500">Qualification & Age:</span>
+                  <span className="font-bold text-slate-800">{formData.education} • {formData.age} yrs</span>
+                </div>
+                <div className="flex justify-between border-b pb-2">
+                  <span className="text-slate-500">State / District:</span>
+                  <span className="font-bold text-slate-800">{formData.district}, {formData.state}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Matched Opportunities:</span>
+                  <span className="font-bold text-[#0d9488]">12+ Schemes & 8+ Govt Jobs</span>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <Button
+                  onClick={handleFinish}
+                  className="w-full sm:w-auto px-10 py-3.5 bg-[#1a2f8a] hover:bg-[#0f1740] text-white font-bold text-base rounded-xl shadow-lg"
+                >
+                  Enter Citizen Dashboard <ArrowRight className="w-5 h-5 ml-2 inline" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Stepper Navigation Buttons */}
+          {currentStep < 5 && (
+            <div className="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+              {currentStep > 1 ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCurrentStep(prev => prev - 1)}
+                  className="gap-1.5"
+                >
+                  <ArrowLeft className="w-4 h-4" /> Back
+                </Button>
+              ) : (
+                <div />
+              )}
+
+              <Button
+                type="button"
+                onClick={handleNext}
+                className="bg-[#1a2f8a] hover:bg-[#0f1740] text-white gap-2 px-6"
+              >
+                Continue <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
+          )}
+        </Card>
+      </main>
     </div>
   );
-};
-
-export default RegisterPage;
+}

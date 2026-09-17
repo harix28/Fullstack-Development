@@ -120,9 +120,9 @@ export default function GrievanceDetailPage() {
                     <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg border bg-white shadow-sm">
                       <div className="flex items-center justify-between mb-1">
                         <div className="font-semibold text-slate-900">{event.status.replace('_', ' ').toUpperCase()}</div>
-                        <time className="text-xs font-medium text-amber-500">{formatDate(event.date)}</time>
+                        <time className="text-xs font-medium text-amber-500">{formatDate(event.date || event.timestamp)}</time>
                       </div>
-                      <div className="text-slate-500 text-sm">{event.comment}</div>
+                      <div className="text-slate-500 text-sm">{event.comment || event.description}</div>
                     </div>
                   </div>
                 ))}
@@ -165,18 +165,21 @@ export default function GrievanceDetailPage() {
               <Button 
                 variant="outline" 
                 className="w-full bg-white text-[#1a2f8a] border-[#1a2f8a] hover:bg-blue-50"
-                onClick={() => window.open(grievance.officialPortal, '_blank')}
+                onClick={() => {
+                  const url = typeof grievance.officialPortal === 'string' ? grievance.officialPortal : grievance.officialPortal?.url;
+                  if (url) window.open(url, '_blank');
+                }}
               >
                 Visit Portal <ExternalLink className="w-4 h-4 ml-2" />
               </Button>
             </Card>
           )}
 
-          {grievance.documents && grievance.documents.length > 0 && (
+          {(grievance.documents || grievance.attachments) && (grievance.documents || grievance.attachments).length > 0 && (
             <Card className="p-6">
               <h3 className="font-semibold text-[#0f1740] mb-4">Attached Documents</h3>
               <ul className="space-y-2">
-                {grievance.documents.map(docId => {
+                {(grievance.documents || grievance.attachments).map((docId: string) => {
                   const doc = mockDocuments.find(d => d.id === docId);
                   if (!doc) return null;
                   return (

@@ -1,200 +1,338 @@
 import React, { useState } from 'react';
+import { 
+  User, Mail, Phone, MapPin, GraduationCap, 
+  Briefcase, Award, Shield, CheckCircle2, Save, Sparkles 
+} from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { mockUser } from '@/data/mockUser';
-import { Button, Card, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
+import { useToast } from '@/components/ui/Toast';
+import { Button, Card, Badge, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
+import { INDIAN_STATES } from '@/constants/categories';
 
-const ProfilePage: React.FC = () => {
-  const { user } = useAuth();
-  const userData = user || mockUser;
-  
-  const [formData, setFormData] = useState(userData);
+export default function ProfilePage() {
+  const { user, updateProfile } = useAuth();
+  const { showToast } = useToast();
+
+  const [formData, setFormData] = useState({
+    name: user?.name || 'Hari Sharma',
+    email: user?.email || 'hari.sharma@example.com',
+    mobile: user?.phone || user?.mobile || '9876543210',
+    age: user?.age || 23,
+    gender: user?.gender || 'Male',
+    state: user?.state || 'Delhi',
+    district: user?.district || 'New Delhi',
+    cityVillage: user?.cityVillage || 'Connaught Place',
+    education: user?.education || 'MCA',
+    occupation: user?.occupation || 'Student / Tech Aspirant',
+    employmentStatus: user?.employmentStatus || 'Student',
+    annualIncome: user?.annualIncome || 350000,
+    category: user?.category || 'General',
+    skills: user?.skills || ['Python', 'SQL', 'React', 'Data Analysis'],
+    hasDisability: user?.hasDisability || false
+  });
+
   const [isEditing, setIsEditing] = useState(false);
-  const [showToast, setShowToast] = useState(false);
+  const [skillInput, setSkillInput] = useState('');
+
+  const handleAddSkill = () => {
+    if (skillInput.trim() && !formData.skills.includes(skillInput.trim())) {
+      setFormData(prev => ({ ...prev, skills: [...prev.skills, skillInput.trim()] }));
+      setSkillInput('');
+    }
+  };
+
+  const handleRemoveSkill = (skill: string) => {
+    setFormData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }));
+  };
 
   const handleSave = () => {
+    updateProfile({
+      ...formData,
+      age: Number(formData.age),
+      annualIncome: Number(formData.annualIncome)
+    });
     setIsEditing(false);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+    showToast({
+      title: 'Profile Updated',
+      description: 'Your citizen credentials have been saved and applied across scheme recommendations.',
+      variant: 'success'
+    });
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto flex flex-col md:flex-row gap-8">
-      {/* LEFT: PROFILE SIDEBAR */}
-      <div className="w-full md:w-1/3 xl:w-1/4 space-y-6">
-        <Card className="p-6 text-center flex flex-col items-center">
-          <div className="w-24 h-24 bg-[#1a2f8a] text-white rounded-full flex items-center justify-center text-3xl font-bold mb-4">
-            {formData.name?.charAt(0) || 'U'}
+    <div className="max-w-7xl mx-auto space-y-6 font-sans">
+      
+      {/* Top Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#0f1740] dark:text-white">
+            Citizen Profile Management
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 text-sm">
+            GovConnect uses this single verified profile to drive all scheme and job matching.
+          </p>
+        </div>
+
+        {isEditing ? (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
+            <Button size="sm" onClick={handleSave} className="bg-[#1a2f8a] hover:bg-[#0f1740] text-white gap-1.5">
+              <Save className="w-4 h-4" /> Save Profile
+            </Button>
           </div>
-          <h2 className="text-xl font-bold text-[#0f1740]">{formData.name}</h2>
-          <p className="text-sm text-[#64748b] mb-6">{formData.email}</p>
-          
-          <div className="w-full">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-[#0f1740]">Profile Completion</span>
-              <span className="text-sm font-bold text-[#0d9488]">72%</span>
-            </div>
-            <div className="w-full bg-slate-100 rounded-full h-2.5">
-              <div className="bg-[#0d9488] h-2.5 rounded-full" style={{ width: '72%' }}></div>
-            </div>
-            <p className="text-xs text-[#64748b] mt-3">Complete your profile to get better recommendations</p>
-          </div>
-        </Card>
+        ) : (
+          <Button onClick={() => setIsEditing(true)} className="bg-[#1a2f8a] hover:bg-[#0f1740] text-white">
+            Edit Profile
+          </Button>
+        )}
       </div>
 
-      {/* RIGHT: FORMS */}
-      <div className="w-full md:w-2/3 xl:w-3/4">
-        <Card className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-[#0f1740]">My Profile</h2>
-            {isEditing ? (
-              <div className="space-x-2">
-                <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
-                <Button onClick={handleSave}>Save Changes</Button>
-              </div>
-            ) : (
-              <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
-            )}
-          </div>
-
-          {showToast && (
-            <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-lg text-sm border border-green-200">
-              Profile updated successfully!
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* Left Sidebar Profile Summary Card */}
+        <div className="lg:col-span-4 space-y-6">
+          <Card className="p-6 text-center flex flex-col items-center">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#0f1740] to-[#1a2f8a] text-white text-3xl font-bold flex items-center justify-center shadow-lg mb-4">
+              {formData.name.slice(0, 2).toUpperCase()}
             </div>
-          )}
 
-          <Tabs defaultValue="personal" className="w-full">
-            <TabsList className="mb-6 overflow-x-auto whitespace-nowrap">
-              <TabsTrigger value="personal">Personal Info</TabsTrigger>
-              <TabsTrigger value="education">Education</TabsTrigger>
-              <TabsTrigger value="employment">Employment & Income</TabsTrigger>
-              <TabsTrigger value="family">Family & Category</TabsTrigger>
-              <TabsTrigger value="preferences">Preferences</TabsTrigger>
-            </TabsList>
+            <h2 className="text-xl font-bold text-[#0f1740] dark:text-white">
+              {formData.name}
+            </h2>
+            <p className="text-xs text-slate-500 mb-1">{formData.email}</p>
+            <Badge className="bg-teal-50 text-teal-800 border-teal-200 text-xs mb-4">
+              {formData.education} • {formData.occupation}
+            </Badge>
 
-            <TabsContent value="personal" className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Full Name</label>
-                  <input type="text" disabled className="w-full p-2 border rounded-md bg-slate-50 text-[#64748b]" value={formData.name || ''} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Email</label>
-                  <input type="email" disabled className="w-full p-2 border rounded-md bg-slate-50 text-[#64748b]" value={formData.email || ''} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Mobile</label>
-                  <input type="text" disabled className="w-full p-2 border rounded-md bg-slate-50 text-[#64748b]" value={formData.mobile || '+91 9876543210'} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Date of Birth</label>
-                  <input type="date" disabled={!isEditing} className="w-full p-2 border rounded-md disabled:bg-slate-50" defaultValue="1995-05-15" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Gender</label>
-                  <select disabled={!isEditing} className="w-full p-2 border rounded-md disabled:bg-slate-50">
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">State</label>
-                  <input type="text" disabled={!isEditing} className="w-full p-2 border rounded-md disabled:bg-slate-50" defaultValue="Maharashtra" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">District</label>
-                  <input type="text" disabled={!isEditing} className="w-full p-2 border rounded-md disabled:bg-slate-50" defaultValue="Mumbai" />
-                </div>
+            {/* Profile Completion Meter */}
+            <div className="w-full bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-100 dark:border-slate-700 text-left space-y-2">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-slate-700 dark:text-slate-300">Profile Completion</span>
+                <span className="font-bold text-[#0d9488]">100%</span>
               </div>
-            </TabsContent>
-
-            <TabsContent value="education" className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Highest Education Level</label>
-                  <select disabled={!isEditing} className="w-full p-2 border rounded-md disabled:bg-slate-50">
-                    <option>Graduate</option>
-                    <option>Post Graduate</option>
-                    <option>Higher Secondary</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Field of Study</label>
-                  <input type="text" disabled={!isEditing} className="w-full p-2 border rounded-md disabled:bg-slate-50" defaultValue="Computer Science" />
-                </div>
+              <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div className="bg-[#0d9488] h-full rounded-full" style={{ width: '100%' }} />
               </div>
-            </TabsContent>
+              <p className="text-[11px] text-slate-400">
+                Full eligibility parameters active for automated recommendation filtering.
+              </p>
+            </div>
 
-            <TabsContent value="employment" className="space-y-4">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Occupation Status</label>
-                  <select disabled={!isEditing} className="w-full p-2 border rounded-md disabled:bg-slate-50">
-                    <option>Employed</option>
-                    <option>Unemployed</option>
-                    <option>Student</option>
-                    <option>Self-employed</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Annual Income (₹)</label>
-                  <input type="number" disabled={!isEditing} className="w-full p-2 border rounded-md disabled:bg-slate-50" defaultValue="500000" />
-                </div>
-              </div>
-            </TabsContent>
+            <div className="w-full pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-left space-y-2 text-slate-600 dark:text-slate-300">
+              <p className="flex items-center justify-between">
+                <span className="text-slate-400">Citizen Age:</span>
+                <strong>{formData.age} yrs</strong>
+              </p>
+              <p className="flex items-center justify-between">
+                <span className="text-slate-400">Domicile:</span>
+                <strong>{formData.district}, {formData.state}</strong>
+              </p>
+              <p className="flex items-center justify-between">
+                <span className="text-slate-400">Category / Quota:</span>
+                <strong>{formData.category}</strong>
+              </p>
+              <p className="flex items-center justify-between">
+                <span className="text-slate-400">Disability Status:</span>
+                <strong>{formData.hasDisability ? 'Yes (Divyangjan)' : 'None'}</strong>
+              </p>
+            </div>
+          </Card>
+        </div>
 
-            <TabsContent value="family" className="space-y-4">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Category</label>
-                  <select disabled={!isEditing} className="w-full p-2 border rounded-md disabled:bg-slate-50">
-                    <option>General</option>
-                    <option>OBC</option>
-                    <option>SC</option>
-                    <option>ST</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Family Category</label>
-                  <select disabled={!isEditing} className="w-full p-2 border rounded-md disabled:bg-slate-50">
-                    <option>APL</option>
-                    <option>BPL</option>
-                  </select>
-                </div>
-                 <div className="col-span-1 md:col-span-2 flex items-center space-x-2 mt-2">
-                  <input type="checkbox" id="disability" disabled={!isEditing} className="rounded" />
-                  <label htmlFor="disability" className="text-sm font-medium text-[#0f1740]">Has Disability?</label>
-                </div>
-              </div>
-            </TabsContent>
+        {/* Right Form Tabs */}
+        <div className="lg:col-span-8">
+          <Card className="p-6">
+            <Tabs defaultValue="personal" className="w-full">
+              <TabsList className="mb-6 flex flex-wrap gap-1">
+                <TabsTrigger value="personal">Personal Info</TabsTrigger>
+                <TabsTrigger value="education">Education & Career</TabsTrigger>
+                <TabsTrigger value="skills">Skills & Tags</TabsTrigger>
+                <TabsTrigger value="socio">Socio-Economic</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="preferences" className="space-y-4">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#0f1740] mb-1">Language Preference</label>
-                  <select disabled={!isEditing} className="w-full p-2 border rounded-md disabled:bg-slate-50">
-                    <option>English</option>
-                    <option>Hindi</option>
-                  </select>
-                </div>
-                <div className="col-span-1 md:col-span-2 space-y-2 mt-2">
-                  <div className="flex items-center space-x-2">
-                    <input type="checkbox" id="emailNotif" disabled={!isEditing} defaultChecked className="rounded" />
-                    <label htmlFor="emailNotif" className="text-sm font-medium text-[#0f1740]">Email Notifications</label>
+              {/* Tab 1: Personal Info */}
+              <TabsContent value="personal" className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+                    <input
+                      type="text"
+                      disabled={!isEditing}
+                      value={formData.name}
+                      onChange={e => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg text-xs bg-slate-50 disabled:opacity-75 dark:bg-slate-800"
+                    />
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <input type="checkbox" id="smsNotif" disabled={!isEditing} defaultChecked className="rounded" />
-                    <label htmlFor="smsNotif" className="text-sm font-medium text-[#0f1740]">SMS Notifications</label>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      disabled={!isEditing}
+                      value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg text-xs bg-slate-50 disabled:opacity-75 dark:bg-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Mobile Number</label>
+                    <input
+                      type="tel"
+                      disabled={!isEditing}
+                      value={formData.mobile}
+                      onChange={e => setFormData({ ...formData, mobile: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg text-xs bg-slate-50 disabled:opacity-75 dark:bg-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Age</label>
+                    <input
+                      type="number"
+                      disabled={!isEditing}
+                      value={formData.age}
+                      onChange={e => setFormData({ ...formData, age: Number(e.target.value) })}
+                      className="w-full p-2.5 border rounded-lg text-xs bg-slate-50 disabled:opacity-75 dark:bg-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">State / UT</label>
+                    <select
+                      disabled={!isEditing}
+                      value={formData.state}
+                      onChange={e => setFormData({ ...formData, state: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg text-xs bg-slate-50 disabled:opacity-75 dark:bg-slate-800"
+                    >
+                      {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">District</label>
+                    <input
+                      type="text"
+                      disabled={!isEditing}
+                      value={formData.district}
+                      onChange={e => setFormData({ ...formData, district: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg text-xs bg-slate-50 disabled:opacity-75 dark:bg-slate-800"
+                    />
                   </div>
                 </div>
-              </div>
-            </TabsContent>
+              </TabsContent>
 
-          </Tabs>
-        </Card>
+              {/* Tab 2: Education & Career */}
+              <TabsContent value="education" className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Highest Education Level</label>
+                    <select
+                      disabled={!isEditing}
+                      value={formData.education}
+                      onChange={e => setFormData({ ...formData, education: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg text-xs bg-slate-50 disabled:opacity-75 dark:bg-slate-800"
+                    >
+                      <option value="10th Pass">10th Pass</option>
+                      <option value="12th Pass">12th Pass</option>
+                      <option value="Diploma">Diploma / ITI</option>
+                      <option value="Graduate">Graduate (B.Tech / B.Sc / BA / B.Com)</option>
+                      <option value="MCA">Post Graduate (MCA / M.Tech / MBA)</option>
+                      <option value="Doctorate">Doctorate (Ph.D)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Occupation</label>
+                    <input
+                      type="text"
+                      disabled={!isEditing}
+                      value={formData.occupation}
+                      onChange={e => setFormData({ ...formData, occupation: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg text-xs bg-slate-50 disabled:opacity-75 dark:bg-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Employment Status</label>
+                    <select
+                      disabled={!isEditing}
+                      value={formData.employmentStatus}
+                      onChange={e => setFormData({ ...formData, employmentStatus: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg text-xs bg-slate-50 disabled:opacity-75 dark:bg-slate-800"
+                    >
+                      <option value="Student">Student</option>
+                      <option value="Employed (Private)">Employed (Private)</option>
+                      <option value="Employed (Govt)">Employed (Govt)</option>
+                      <option value="Self-Employed">Self-Employed / Entrepreneur</option>
+                      <option value="Unemployed">Job Seeker</option>
+                    </select>
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Tab 3: Skills */}
+              <TabsContent value="skills" className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                    Current Skills for Job Matching:
+                  </label>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {formData.skills.map(skill => (
+                      <span key={skill} className="flex items-center gap-1.5 px-3 py-1 bg-teal-50 text-teal-800 text-xs rounded-lg font-medium border border-teal-200">
+                        {skill}
+                        {isEditing && (
+                          <button onClick={() => handleRemoveSkill(skill)} className="text-red-500 font-bold ml-1">×</button>
+                        )}
+                      </span>
+                    ))}
+                  </div>
+
+                  {isEditing && (
+                    <div className="flex gap-2 max-w-sm">
+                      <input
+                        type="text"
+                        value={skillInput}
+                        onChange={e => setSkillInput(e.target.value)}
+                        placeholder="Add skill (e.g. Cloud, Docker, Accounting)..."
+                        className="flex-1 p-2 border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                      />
+                      <Button size="sm" type="button" onClick={handleAddSkill} variant="outline" className="text-xs">
+                        Add
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              {/* Tab 4: Socio-Economic */}
+              <TabsContent value="socio" className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Reservation Category</label>
+                    <select
+                      disabled={!isEditing}
+                      value={formData.category}
+                      onChange={e => setFormData({ ...formData, category: e.target.value })}
+                      className="w-full p-2.5 border rounded-lg text-xs bg-slate-50 disabled:opacity-75 dark:bg-slate-800"
+                    >
+                      <option value="General">General</option>
+                      <option value="OBC">OBC</option>
+                      <option value="SC">SC</option>
+                      <option value="ST">ST</option>
+                      <option value="EWS">EWS</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Annual Family Income (₹)</label>
+                    <input
+                      type="number"
+                      disabled={!isEditing}
+                      value={formData.annualIncome}
+                      onChange={e => setFormData({ ...formData, annualIncome: Number(e.target.value) })}
+                      className="w-full p-2.5 border rounded-lg text-xs bg-slate-50 disabled:opacity-75 dark:bg-slate-800"
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </Card>
+        </div>
       </div>
     </div>
   );
-};
-
-export default ProfilePage;
+}
