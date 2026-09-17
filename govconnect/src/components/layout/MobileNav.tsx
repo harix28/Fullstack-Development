@@ -15,17 +15,17 @@ export default function MobileNav() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const mainItems = [
-    { label: 'Overview', icon: LayoutDashboard, href: ROUTES.DASHBOARD || '/dashboard', exact: true },
     { label: 'Schemes', icon: FileText, href: ROUTES.SCHEMES || '/dashboard/schemes' },
     { label: 'Jobs', icon: Briefcase, href: ROUTES.JOBS || '/dashboard/jobs' },
     { label: 'Documents', icon: FolderOpen, href: ROUTES.DOCUMENTS || '/dashboard/documents' },
+    { label: 'Grievances', icon: MessageSquare, href: ROUTES.GRIEVANCES || '/dashboard/grievances' },
   ];
 
   const moreItems = [
-    { label: 'Grievances', icon: MessageSquare, href: ROUTES.GRIEVANCES || '/dashboard/grievances' },
-    { label: 'AI Assistant', icon: Bot, href: ROUTES.ASSISTANT || '/dashboard/assistant' },
-    { label: 'Notifications', icon: Bell, href: ROUTES.NOTIFICATIONS || '/dashboard/notifications' },
+    { label: 'Ask Sarkar AI', icon: Bot, href: ROUTES.ASSISTANT || '/dashboard/assistant' },
     { label: 'My Profile', icon: User, href: ROUTES.PROFILE || '/dashboard/profile' },
+    { label: 'Saved Items', icon: Bell, href: ROUTES.SAVED || '/dashboard/saved' },
+    { label: 'Notifications', icon: Bell, href: ROUTES.NOTIFICATIONS || '/dashboard/notifications' },
     { label: 'Settings', icon: Settings, href: ROUTES.SETTINGS || '/dashboard/settings' },
   ];
 
@@ -97,7 +97,6 @@ export default function MobileNav() {
             <NavLink
               key={item.label}
               to={item.href}
-              end={item.exact}
               className={({ isActive }) =>
                 cn(
                   'flex flex-col items-center gap-0.5 flex-1 p-1',
