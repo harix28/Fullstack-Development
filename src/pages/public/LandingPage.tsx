@@ -120,11 +120,6 @@ const LandingPage: React.FC = () => {
             
             {/* Left Column: Hero Copy & Motive */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-slate-800/90 shadow-xs border border-slate-200 dark:border-slate-700 text-xs font-bold text-[#1a2f8a] dark:text-blue-400">
-                <span className="flex h-2 w-2 rounded-full bg-teal-500 animate-pulse" />
-                <span>College Major Project • Unified Citizen Services Platform</span>
-              </div>
-              
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#0f1740] dark:text-white leading-[1.12] tracking-tight">
                 One Platform. <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0d9488] via-[#2563eb] to-[#1a2f8a]">
