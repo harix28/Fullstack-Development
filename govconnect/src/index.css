@@ -1,12 +1,103 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap');
 
-@layer base {
-  html {
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-  body {
-    @apply bg-brand-light text-brand-dark antialiased;
-  }
+@import "tailwindcss";
+
+@theme {
+  /* === Color Palette === */
+  --color-navy-50: #f0f4ff;
+  --color-navy-100: #e0eaff;
+  --color-navy-200: #c0d2ff;
+  --color-navy-300: #93aeff;
+  --color-navy-400: #6080ff;
+  --color-navy-500: #3d5afe;
+  --color-navy-600: #1a3cbe;
+  --color-navy-700: #1a2f8a;
+  --color-navy-800: #1a2464;
+  --color-navy-900: #0f1740;
+  --color-navy-950: #080d24;
+
+  --color-teal-50: #f0fdfa;
+  --color-teal-100: #ccfbf1;
+  --color-teal-200: #99f6e4;
+  --color-teal-300: #5eead4;
+  --color-teal-400: #2dd4bf;
+  --color-teal-500: #14b8a6;
+  --color-teal-600: #0d9488;
+  --color-teal-700: #0f766e;
+  --color-teal-800: #115e59;
+  --color-teal-900: #134e4a;
+
+  --color-gov-bg: #f8f9fc;
+  --color-gov-card: #ffffff;
+  --color-gov-border: #e2e8f0;
+  --color-gov-text: #1e293b;
+  --color-gov-muted: #64748b;
+  --color-gov-subtle: #94a3b8;
+
+  /* === Typography === */
+  --font-sans: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
+
+  /* === Border Radius === */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* === Shadows === */
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-card-hover: 0 4px 12px 0 rgb(0 0 0 / 0.12), 0 2px 6px -1px rgb(0 0 0 / 0.08);
+  --shadow-modal: 0 20px 60px -12px rgb(0 0 0 / 0.25);
+}
+
+/* === Base Styles === */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-gov-bg);
+  color: var(--color-gov-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Focus Styles (Accessibility) === */
+:focus-visible {
+  outline: 2px solid var(--color-navy-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-gov-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-gov-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gov-subtle);
+}
+
+/* === Transitions === */
+.transition-base {
+  transition: all 0.2s ease;
+}
+
+/* === Hindi/Devanagari text optimization === */
+[lang="hi"] {
+  font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+  line-height: 1.8;
 }
