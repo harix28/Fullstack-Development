@@ -3,11 +3,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { PublicLayout } from './components/layout/PublicLayout';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import LandingPage from './pages/public/LandingPage';
+import Services from './pages/public/Services';
+import About from './pages/public/About';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Overview from './pages/dashboard/Overview';
 import Profile from './pages/dashboard/Profile';
 import Schemes from './pages/dashboard/Schemes';
+import SchemeDetails from './pages/dashboard/SchemeDetails';
 import Jobs from './pages/dashboard/Jobs';
 import Documents from './pages/dashboard/Documents';
 import Grievances from './pages/dashboard/Grievances';
@@ -21,8 +24,8 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<PublicLayout />}>
           <Route index element={<LandingPage />} />
-          <Route path="services" element={<div className="p-8">Services Page (Coming Soon)</div>} />
-          <Route path="about" element={<div className="p-8">About Page (Coming Soon)</div>} />
+          <Route path="services" element={<Services />} />
+          <Route path="about" element={<About />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Route>
@@ -32,6 +35,7 @@ function App() {
           <Route index element={<Overview />} />
           <Route path="profile" element={<Profile />} />
           <Route path="schemes" element={<Schemes />} />
+          <Route path="schemes/:id" element={<SchemeDetails />} />
           <Route path="jobs" element={<Jobs />} />
           <Route path="documents" element={<Documents />} />
           <Route path="grievances" element={<Grievances />} />

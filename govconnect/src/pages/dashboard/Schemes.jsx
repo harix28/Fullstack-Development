@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Filter, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 
 export default function Schemes() {
@@ -73,7 +74,9 @@ export default function Schemes() {
           </div>
           <div className="bg-gray-50 p-4 border-t border-gray-100 flex justify-between items-center">
             <Button variant="ghost" size="sm">Save</Button>
-            <Button size="sm">View Details</Button>
+            <Link to="/dashboard/schemes/2">
+              <Button size="sm">View Details</Button>
+            </Link>
           </div>
         </div>
       </div>
