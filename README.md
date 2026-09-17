@@ -1,32 +1,37 @@
-# React + TypeScript + Vite
+# Fullstack Development Repository
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Welcome to the Fullstack Development repository! This repository contains a collection of full-stack projects, frontend interfaces, and development experiments.
 
-Currently, two official plugins are available:
+## Projects
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 🏛️ [GovConnect - Unified Citizen Services Platform](./govconnect)
 
-## React Compiler
+**GovConnect** is a comprehensive, citizen-facing portal designed to simplify how people interact with government services. It acts as a unified platform where citizens can discover schemes, track job opportunities, manage official documents securely, and receive AI-assisted help with grievances.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+#### Key Features of GovConnect:
+- **Unified Citizen Profile**: A single source of truth for personal data to drive intelligent eligibility matching.
+- **Scheme Discovery Engine**: Recommends relevant government schemes with visual eligibility checklists and match percentages.
+- **Government Jobs Portal**: A localized job board for discovering government vacancies, complete with deadline tracking.
+- **Document Vault**: A UI for a secure document manager that simulates OCR processing states (Verified, Processing).
+- **AI Grievance Assistant**: A guided workflow that analyzes user complaints, classifies the correct department, drafts formal grievances, and directs the user to the correct official portal for submission.
+- **Modern Tech Stack**: Built with React 18, Vite, Tailwind CSS v3, and React Router v6.
 
-## Expanding the Oxlint configuration
+> **Note:** The GovConnect frontend is currently built using mock data and local state to demonstrate the UI/UX architecture. It is designed to be easily wired up to a Node.js/PostgreSQL backend in the future.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+👉 **[View the GovConnect Project Details & Installation Guide](./govconnect/README.md)**
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+---
+
+## 🛠️ Repository Setup
+
+If you wish to run any of the projects locally, navigate to the specific project folder and follow its respective `README.md`.
+
+For example, to run GovConnect:
+```bash
+cd govconnect
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## 📄 License
+This repository is open-sourced under the MIT License.
