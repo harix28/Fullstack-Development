@@ -65,7 +65,14 @@ function AppRoutes() {
   return (
     <Routes>
       {/* ── Public Routes ── */}
-      <Route path="/" element={<LandingPage />} />
+      <Route
+        path="/"
+        element={
+          <PublicOnlyRoute>
+            <LandingPage />
+          </PublicOnlyRoute>
+        }
+      />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/how-it-works" element={<HowItWorksPage />} />
       <Route path="/services" element={<ServicesPage />} />
