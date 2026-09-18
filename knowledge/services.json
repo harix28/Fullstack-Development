@@ -1,0 +1,147 @@
+[
+  {
+    "id": "srv_pgportal_cpgrams_01",
+    "name": "CPGRAMS – Centralised Public Grievance Redress and Monitoring System",
+    "department": "Department of Administrative Reforms & Public Grievances (DARPG)",
+    "category": "grievance",
+    "state": "Central Government / All States",
+    "description": "24x7 online citizen portal to lodge grievances against Central Ministries, Departments, Public Sector Undertakings, and State Governments with automated token tracking.",
+    "eligibility": [
+      "Any citizen of India aggrieved by government public service delays or civic failure"
+    ],
+    "documents": [
+      "Incident details, supporting photos/scans, location description"
+    ],
+    "official_url": "https://pgportal.gov.in",
+    "source_url": "https://pgportal.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://pgportal.gov.in"
+    ]
+  },
+  {
+    "id": "srv_parivahan_sarathi_02",
+    "name": "Sarathi – Driving Licence & Learner Licence Online Issuance",
+    "department": "Ministry of Road Transport and Highways (MoRTH)",
+    "category": "transport",
+    "state": "All India / State Transport Departments",
+    "description": "Contactless citizen service for applying for Learner's Licence, Driving Licence renewal, duplicate licence, and change of address using Aadhaar authentication.",
+    "eligibility": [
+      "Citizens aged 18+ (16+ for gearless two-wheeler up to 50cc)"
+    ],
+    "documents": [
+      "Aadhaar Card",
+      "Age Proof (10th marksheet or birth certificate)",
+      "Medical Certificate Form 1A"
+    ],
+    "official_url": "https://parivahan.gov.in",
+    "source_url": "https://parivahan.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://parivahan.gov.in"
+    ]
+  },
+  {
+    "id": "srv_uidai_aadhaar_03",
+    "name": "UIDAI myAadhaar – Online Demographic Update & Document Verification",
+    "department": "Unique Identification Authority of India (UIDAI)",
+    "category": "documents",
+    "state": "Central Government",
+    "description": "Self-service portal for updating residential address, downloading e-Aadhaar, ordering PVC Aadhaar card, and locking/unlocking biometric credentials.",
+    "eligibility": [
+      "All Aadhaar number holders with registered mobile number"
+    ],
+    "documents": [
+      "Proof of Address (Utility bill, Passport, Bank statement)"
+    ],
+    "official_url": "https://uidai.gov.in",
+    "source_url": "https://uidai.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://uidai.gov.in"
+    ]
+  },
+  {
+    "id": "srv_delhi_edistrict_04",
+    "name": "Delhi e-District Citizen Revenue & Certificate Services",
+    "department": "Revenue Department, Government of NCT of Delhi",
+    "category": "revenue",
+    "state": "Delhi",
+    "description": "Single-window digital platform for issuance of Domicile Certificate, Income Certificate, SC/ST/OBC Certificate, and Lal Dora Land Certificates.",
+    "eligibility": [
+      "Residents of Delhi with minimum 3 years domicile continuous stay proof"
+    ],
+    "documents": [
+      "Aadhaar Card",
+      "Self-declaration affidavit",
+      "Past 3 years electricity/rent receipts",
+      "Salary certificate"
+    ],
+    "official_url": "https://delhi.gov.in",
+    "source_url": "https://delhi.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://delhi.gov.in"
+    ]
+  },
+  {
+    "id": "srv_396c750d",
+    "name": "Integrated Government Online Directory : Home",
+    "department": "National Informatics Centre",
+    "category": "transport",
+    "state": "Central Government",
+    "description": "A one-point source to access Indian Government Websites at all levels and from all sectors",
+    "eligibility": [
+      "Resident citizens with valid identification proof"
+    ],
+    "documents": [
+      "Valid Government Identity Proof"
+    ],
+    "official_url": "https://igod.gov.in/",
+    "source_url": "https://igod.gov.in/",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://igod.gov.in/"
+    ]
+  },
+  {
+    "id": "srv_fb50a9e8",
+    "name": "Home",
+    "department": "UIDAI",
+    "category": "transport",
+    "state": "Central Government",
+    "description": "UIDAI is mandated to issue an easily verifiable 12 digit random number as Unique Identity - Aadhaar to all Residents of India.",
+    "eligibility": [
+      "Resident citizens with valid identification proof"
+    ],
+    "documents": [
+      "Valid Government Identity Proof"
+    ],
+    "official_url": "https://uidai.gov.in/hi",
+    "source_url": "https://uidai.gov.in/hi",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://uidai.gov.in/hi"
+    ]
+  },
+  {
+    "id": "srv_38a95595",
+    "name": "Welcome!",
+    "department": "Ministry of Road Transport & Highways",
+    "category": "transport",
+    "state": "Central Government",
+    "description": "Welcome! | Parivahansewa",
+    "eligibility": [
+      "Resident citizens with valid identification proof"
+    ],
+    "documents": [
+      "Valid Government Identity Proof"
+    ],
+    "official_url": "https://parivahan.gov.in/",
+    "source_url": "https://parivahan.gov.in/",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://parivahan.gov.in/"
+    ]
+  }
+]

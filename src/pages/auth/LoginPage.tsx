@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Shield, AlertCircle, ArrowRight, CheckCircle2, UserCheck, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Shield, AlertCircle, ArrowRight, CheckCircle2, Lock } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { Button, Card, Badge } from '@/components/ui';
-import { DEMO_PRESETS } from '@/data/mockUser';
+import { Button, Badge } from '@/components/ui';
 import ROUTES from '@/constants/routes';
 
 export default function LoginPage() {
-  const [identifier, setIdentifier] = useState('hari.sharma@example.com');
-  const [password, setPassword] = useState('Password@123');
-  const [rememberMe, setRememberMe] = useState(true);
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login, switchPreset } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,11 +38,6 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleQuickLogin = (presetKey: keyof typeof DEMO_PRESETS) => {
-    switchPreset(presetKey);
-    navigate(ROUTES.DASHBOARD);
   };
 
   return (
@@ -74,7 +68,7 @@ export default function LoginPage() {
               'Single citizen profile powers scheme & job matching',
               'Assisted grievance drafting with official routing',
               'Local service locator with proximity tracking',
-              'Secure digital document vault with OCR indexing'
+              'Secure digital document vault with client-side privacy'
             ].map((feature, idx) => (
               <div key={idx} className="flex items-center gap-3">
                 <CheckCircle2 className="text-[#0d9488] w-5 h-5 shrink-0" />
@@ -84,14 +78,14 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Quick Demo Persona Notice */}
+        {/* Citizen Security & Privacy Notice */}
         <div className="relative z-10 mt-auto pt-8 border-t border-white/10">
           <p className="text-xs text-blue-200 mb-2 font-medium flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-teal-300" />
-            Project Demo Notice:
+            <Lock className="w-3.5 h-3.5 text-teal-300" />
+            Privacy & Trust:
           </p>
           <p className="text-xs text-blue-300/80 leading-relaxed">
-            GovConnect is fully populated with mock persona profiles (Student, Farmer, Entrepreneur). Use the quick login options on the right for instant exploration without typing.
+            GovConnect secures your citizen profile and documents. No sensitive biometric credentials are collected or shared with unverified parties.
           </p>
         </div>
 
@@ -100,7 +94,7 @@ export default function LoginPage() {
         <div className="absolute top-20 -left-20 w-64 h-64 bg-[#0d9488] rounded-full blur-3xl opacity-20 pointer-events-none" />
       </div>
 
-      {/* Right Panel - Form & Demo Buttons */}
+      {/* Right Panel - Form */}
       <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:flex-none lg:w-1/2 lg:px-20 xl:px-24 py-12 overflow-y-auto">
         <div className="mx-auto w-full max-w-md">
           {/* Mobile Brand */}
@@ -112,86 +106,20 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <h2 className="text-3xl font-bold text-[#0f1740]">Welcome Back</h2>
+            <h2 className="text-3xl font-bold text-[#0f1740]">Sign In</h2>
             <p className="mt-2 text-sm text-slate-600">
-              Sign in to your citizen account or use a 1-click instant demo profile.
+              Enter your credentials to access citizen schemes, jobs, and grievance assistance.
             </p>
           </div>
 
-          {/* Quick Demo Login Buttons */}
-          <div className="mt-6 p-4 bg-blue-50/70 border border-blue-200 rounded-xl space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#1a2f8a] uppercase tracking-wider flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5" /> Instant Demo Personas
-              </span>
-              <span className="text-[10px] bg-[#1a2f8a]/10 text-[#1a2f8a] px-1.5 py-0.5 rounded font-semibold">1-Click</span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('student')}
-                className="w-full text-left p-2.5 bg-white hover:bg-blue-50/50 border border-blue-200 rounded-lg text-xs font-medium text-[#0f1740] flex items-center justify-between transition-colors shadow-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-base">🎓</span>
-                  <div>
-                    <p className="font-bold text-[#1a2f8a]">Hari Sharma (Student / Tech)</p>
-                    <p className="text-[10px] text-slate-500">23 yrs • MCA Graduate • Delhi • Python/SQL</p>
-                  </div>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('farmer')}
-                className="w-full text-left p-2.5 bg-white hover:bg-blue-50/50 border border-blue-200 rounded-lg text-xs font-medium text-[#0f1740] flex items-center justify-between transition-colors shadow-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-base">🌾</span>
-                  <div>
-                    <p className="font-bold text-amber-800">Ramesh Patel (Farmer)</p>
-                    <p className="text-[10px] text-slate-500">45 yrs • 10th Pass • Gujarat • Agriculture/Dairy</p>
-                  </div>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('entrepreneur')}
-                className="w-full text-left p-2.5 bg-white hover:bg-blue-50/50 border border-blue-200 rounded-lg text-xs font-medium text-[#0f1740] flex items-center justify-between transition-colors shadow-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-base">🚀</span>
-                  <div>
-                    <p className="font-bold text-teal-800">Priya Singh (Startup Founder)</p>
-                    <p className="text-[10px] text-slate-500">29 yrs • B.Tech • Karnataka • MSME/Fintech</p>
-                  </div>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-              </button>
-            </div>
-          </div>
-
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-3 text-slate-400 font-semibold">Or Sign In with Credentials</span>
-            </div>
-          </div>
-
           {error && (
-            <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-3 rounded-md flex gap-2 items-center text-xs text-red-700">
+            <div className="mt-6 bg-red-50 border-l-4 border-red-500 p-3 rounded-md flex gap-2 items-center text-xs text-red-700">
               <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>
               <label htmlFor="identifier" className="block text-xs font-semibold text-slate-700 mb-1">
                 Mobile Number or Email Address

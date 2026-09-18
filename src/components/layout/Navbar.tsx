@@ -2,18 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Shield, Bell, Menu, X, LogOut, User, LayoutDashboard, 
-  Settings, Bookmark, Moon, Sun, ArrowRight, Sparkles 
+  Settings, Bookmark, ArrowRight, Sparkles 
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { useTheme } from '@/context/ThemeContext';
 import ROUTES from '@/constants/routes';
 import { cn } from '@/utils/cn';
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
   const { language, setLanguage } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -79,15 +77,6 @@ export default function Navbar() {
             >
               <span className="text-[10px] text-slate-400">Lang:</span>
               <span>{language === 'hi' ? 'हिन्दी' : 'EN'}</span>
-            </button>
-
-            {/* Theme / Mode Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 text-slate-600 dark:text-slate-300 hover:text-[#1a2f8a] dark:hover:text-white bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors border border-slate-200/60 dark:border-slate-700/60 cursor-pointer"
-              title="Toggle Light / Dark Mode"
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
             </button>
 
             {/* Authenticated Controls */}

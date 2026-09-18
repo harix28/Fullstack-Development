@@ -35,3 +35,13 @@ npm run dev
 
 ## 📄 License
 This repository is open-sourced under the MIT License.
+
+## AI + Government Source Pipeline
+
+1. Copy `server/.env.example` to `server/.env`.
+2. Put a newly rotated Gemini API key in `GEMINI_API_KEY` (never in `VITE_*`).
+3. Start backend: `npm run server`.
+4. Start frontend in another terminal: `npm run dev`.
+5. Optional source crawl: `pip install -r scraper/requirements.txt` then `npm run scrape`.
+
+The crawler reads `scraper/government_list.xlsx`, checks robots.txt, stays on the source host, applies a delay and writes `scraper/data/pages.json` and `sources.json`. It does not bypass CAPTCHA, OTP, authentication or other access controls. Crawled content is source material and must be verified before being presented as current official information.

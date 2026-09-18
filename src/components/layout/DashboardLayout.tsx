@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { 
-  Menu, X, Bell, Shield, Moon, Sun, 
+  Menu, X, Bell, Shield, 
   Bookmark, User, LogOut, Settings
 } from 'lucide-react';
 import Sidebar from './Sidebar';
 import MobileNav from './MobileNav';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { useTheme } from '@/context/ThemeContext';
-import { DemoSwitcher } from '@/components/common/DemoSwitcher';
 import FloatingAssistantModal from '@/components/common/FloatingAssistantModal';
 import ROUTES from '@/constants/routes';
 import { cn } from '@/utils/cn';
@@ -17,7 +15,6 @@ import { cn } from '@/utils/cn';
 export default function DashboardLayout() {
   const { user, logout } = useAuth();
   const { language, setLanguage } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -129,12 +126,6 @@ export default function DashboardLayout() {
 
         {/* Right: Controls & Profile */}
         <div className="flex items-center gap-2 sm:gap-3">
-          
-          {/* Persona Switcher Pill */}
-          <div className="hidden lg:block">
-            <DemoSwitcher />
-          </div>
-
           {/* Language Switch */}
           <button
             onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
@@ -142,15 +133,6 @@ export default function DashboardLayout() {
             title="Switch Language"
           >
             {language === 'hi' ? 'हिन्दी' : 'EN'}
-          </button>
-
-          {/* Theme / Mode Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 text-slate-500 dark:text-slate-400 hover:text-[#1a2f8a] dark:hover:text-white bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors border border-slate-200/60 dark:border-slate-700/60 cursor-pointer"
-            title="Toggle theme mode"
-          >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
           </button>
 
           {/* Notifications Icon */}

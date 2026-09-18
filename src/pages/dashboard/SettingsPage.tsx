@@ -56,53 +56,22 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      {/* ── APPEARANCE & THEME (Prompt Section 31) ── */}
+      {/* ── APPEARANCE & THEME ── */}
       <section>
         <h2 className="text-lg font-bold text-[#0f1740] dark:text-white mb-3 flex items-center gap-2">
-          <Moon className="w-5 h-5 text-[#1a2f8a]" /> Appearance & Display
+          <Sun className="w-5 h-5 text-amber-500" /> Platform Visual Theme
         </h2>
-        <Card className="p-6 space-y-4">
-          <div>
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Color Theme</h3>
-            <p className="text-xs text-slate-500 mb-3">Select your preferred visual style.</p>
-            
-            <div className="grid grid-cols-3 gap-3">
-              <button
-                type="button"
-                onClick={() => setTheme('light')}
-                className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-xs font-semibold transition-all ${
-                  theme === 'light'
-                    ? 'border-[#1a2f8a] bg-blue-50 text-[#1a2f8a] shadow-sm'
-                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <Sun className="w-4 h-4" /> Light
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setTheme('dark')}
-                className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-xs font-semibold transition-all ${
-                  theme === 'dark'
-                    ? 'border-blue-500 bg-slate-800 text-blue-400 shadow-sm'
-                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <Moon className="w-4 h-4" /> Dark
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setTheme('system')}
-                className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-xs font-semibold transition-all ${
-                  theme === 'system'
-                    ? 'border-[#0d9488] bg-teal-50 text-[#0d9488] shadow-sm'
-                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <Monitor className="w-4 h-4" /> System Auto
-              </button>
+        <Card className="p-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-slate-800">Clean Civic Light UI</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                High-contrast, accessible typography optimized for all screen types and e-governance standards.
+              </p>
             </div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-[#1a2f8a] border border-blue-200">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#1a2f8a]" /> Active & Enforced
+            </span>
           </div>
         </Card>
       </section>

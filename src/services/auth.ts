@@ -1,5 +1,4 @@
 import type { User, LoginCredentials, RegisterData } from '@/types';
-import { mockUser } from '@/data/mockUser';
 
 const TOKEN_KEY = 'govconnect_token';
 const USER_KEY = 'govconnect_user';
@@ -29,23 +28,90 @@ const clearSession = (): void => {
  * Future: POST to API_ENDPOINTS.auth.login
  */
 export const loginUser = async (credentials: LoginCredentials): Promise<User> => {
-  await delay(800);
+  await delay(600);
 
   const { emailOrMobile, password } = credentials;
 
-  // Mock credential validation
-  const isValidEmail =
-    emailOrMobile === mockUser.email || emailOrMobile === mockUser.mobile;
-  const isValidPassword = password.length >= 6;
-
-  if (!isValidEmail || !isValidPassword) {
-    throw new Error('Invalid email/mobile or password. Please try again.');
+  if (!emailOrMobile || !password) {
+    throw new Error('Please enter both email/mobile and password.');
   }
 
-  const mockToken = `mock_jwt_${Date.now()}`;
-  persistSession(mockUser, mockToken);
+  // 1. Check registered users list in localStorage
+  try {
+    const registeredUsersJson = localStorage.getItem('govconnect_registered_users');
+    const registeredUsers: (User & { password?: string })[] = registeredUsersJson
+      ? JSON.parse(registeredUsersJson)
+      : [];
 
-  return { ...mockUser };
+    const found = registeredUsers.find(
+      (u) =>
+        (u.email.toLowerCase() === emailOrMobile.toLowerCase().trim() ||
+          u.mobile === emailOrMobile.trim()) &&
+        (!u.password || u.password === password)
+    );
+
+    if (found) {
+      const { password: _, ...cleanUser } = found;
+      const token = `token_${Date.now()}`;
+      persistSession(cleanUser, token);
+      return cleanUser;
+    }
+  } catch (err) {
+    console.error('Error reading registered users', err);
+  }
+
+  // 2. Validate format: valid email or 10-digit mobile, and password min 6 chars
+  const cleanMobile = emailOrMobile.replace(/\D/g, '');
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrMobile.trim());
+  const isValidMobile = cleanMobile.length === 10;
+  const isValidPassword = password.length >= 6;
+
+  if (!isValidPassword) {
+    throw new Error('Password must be at least 6 characters long.');
+  }
+
+  if (!isValidEmail && !isValidMobile) {
+    throw new Error('Please enter a valid email address or 10-digit mobile number.');
+  }
+
+  // Generate user session for the authenticated credentials
+  const derivedName = isValidEmail
+    ? emailOrMobile.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+    : `Citizen ${cleanMobile.slice(-4)}`;
+
+  const authenticatedUser: User = {
+    id: `user_${Date.now()}`,
+    name: derivedName,
+    email: isValidEmail ? emailOrMobile.trim() : `${cleanMobile}@citizen.in`,
+    mobile: isValidMobile ? cleanMobile : '9876543210',
+    state: 'Delhi',
+    district: 'New Delhi',
+    cityVillage: 'City Center',
+    dateOfBirth: '2001-01-01',
+    age: 24,
+    gender: 'male',
+    category: 'general',
+    hasDisability: false,
+    education: 'graduate',
+    occupation: 'citizen',
+    employmentStatus: 'Employed / Self-Employed',
+    skills: ['General Administration', 'Digital Literacy'],
+    annualIncome: 300000,
+    familySize: 3,
+    profileCompletion: 80,
+    preferences: {
+      language: 'en',
+      notifications: true,
+      emailUpdates: true,
+      theme: 'light',
+    },
+    createdAt: new Date().toISOString(),
+  };
+
+  const token = `token_${Date.now()}`;
+  persistSession(authenticatedUser, token);
+
+  return authenticatedUser;
 };
 
 /**
@@ -55,38 +121,57 @@ export const loginUser = async (credentials: LoginCredentials): Promise<User> =>
  * Future: POST to API_ENDPOINTS.auth.register
  */
 export const registerUser = async (data: RegisterData): Promise<User> => {
-  await delay(1000);
+  await delay(700);
 
   if (data.password !== data.confirmPassword) {
     throw new Error('Passwords do not match.');
   }
 
-  const newUser: User = {
-    ...mockUser,
+  const newUser: User & { password?: string } = {
     id: `user_${Date.now()}`,
     name: data.name,
     email: data.email,
     mobile: data.mobile,
     state: data.state,
-    district: data.district || mockUser.district,
-    cityVillage: data.cityVillage || mockUser.cityVillage,
+    district: data.district || '',
+    cityVillage: data.cityVillage || '',
     dateOfBirth: data.dateOfBirth || '2001-01-01',
-    age: data.age || mockUser.age,
-    gender: (data.gender as User['gender']) || mockUser.gender,
-    education: data.education || mockUser.education,
-    occupation: data.occupation || mockUser.occupation,
-    employmentStatus: data.employmentStatus || mockUser.employmentStatus,
-    skills: data.skills || mockUser.skills,
-    category: (data.category as any) || mockUser.category,
-    annualIncome: data.annualIncome || mockUser.annualIncome,
+    age: data.age || 23,
+    gender: (data.gender as User['gender']) || 'male',
+    hasDisability: false,
+    education: data.education || 'Graduate',
+    occupation: data.occupation || 'Professional',
+    employmentStatus: data.employmentStatus || 'Seeking Opportunities',
+    skills: data.skills || [],
+    category: (data.category as any) || 'General',
+    annualIncome: data.annualIncome || 300000,
+    familySize: 3,
     profileCompletion: 85,
+    preferences: {
+      language: 'en',
+      notifications: true,
+      emailUpdates: true,
+      theme: 'light',
+    },
     createdAt: new Date().toISOString(),
+    password: data.password,
   };
 
-  const mockToken = `mock_jwt_${Date.now()}`;
-  persistSession(newUser, mockToken);
+  // Save to registered users list in localStorage
+  try {
+    const registeredUsersJson = localStorage.getItem('govconnect_registered_users');
+    const registeredUsers: any[] = registeredUsersJson ? JSON.parse(registeredUsersJson) : [];
+    registeredUsers.push(newUser);
+    localStorage.setItem('govconnect_registered_users', JSON.stringify(registeredUsers));
+  } catch (err) {
+    console.error('Error saving registered user', err);
+  }
 
-  return newUser;
+  const { password: _, ...userWithoutPassword } = newUser;
+  const mockToken = `token_${Date.now()}`;
+  persistSession(userWithoutPassword, mockToken);
+
+  return userWithoutPassword;
 };
 
 /**
@@ -100,14 +185,20 @@ export const logoutUser = (): void => {
 
 /**
  * Retrieve the currently authenticated user from localStorage.
- * Returns null if not authenticated.
+ * Returns null if not authenticated or if obsolete demo session is found.
  */
 export const getCurrentUser = (): User | null => {
   try {
     const token = localStorage.getItem(TOKEN_KEY);
     const userJson = localStorage.getItem(USER_KEY);
     if (!token || !userJson) return null;
-    return JSON.parse(userJson) as User;
+    const parsed = JSON.parse(userJson) as User;
+    // Wipe obsolete demo session
+    if (parsed.id === 'usr_in_demo_01' || token === 'mock_jwt_demo_token') {
+      clearSession();
+      return null;
+    }
+    return parsed;
   } catch {
     clearSession();
     return null;

@@ -15,10 +15,11 @@ export default function MobileNav() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const mainItems = [
+    { label: 'Overview', icon: LayoutDashboard, href: ROUTES.DASHBOARD || '/dashboard' },
     { label: 'Schemes', icon: FileText, href: ROUTES.SCHEMES || '/dashboard/schemes' },
     { label: 'Jobs', icon: Briefcase, href: ROUTES.JOBS || '/dashboard/jobs' },
-    { label: 'Documents', icon: FolderOpen, href: ROUTES.DOCUMENTS || '/dashboard/documents' },
-    { label: 'Grievances', icon: MessageSquare, href: ROUTES.GRIEVANCES || '/dashboard/grievances' },
+    { label: 'Vault', icon: FolderOpen, href: ROUTES.DOCUMENTS || '/dashboard/documents' },
+    { label: 'Grievance', icon: MessageSquare, href: ROUTES.GRIEVANCES || '/dashboard/grievances' },
   ];
 
   const moreItems = [

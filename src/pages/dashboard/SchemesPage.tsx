@@ -695,7 +695,7 @@ export default function SchemesPage() {
                   <div className="grid grid-cols-2 gap-2.5">
                     <div className="p-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-xl border">
                       <span className="text-slate-400 block text-[10px]">Beneficiary Name</span>
-                      <p className="font-bold text-[#0f1740] dark:text-white">{user?.name || 'Hari Sharma'}</p>
+                      <p className="font-bold text-[#0f1740] dark:text-white">{user?.name || 'Citizen'}</p>
                     </div>
                     <div className="p-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-xl border">
                       <span className="text-slate-400 block text-[10px]">Aadhaar Identification</span>
@@ -769,7 +769,7 @@ export default function SchemesPage() {
                 <div className="bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-xl border space-y-1.5 text-xs">
                   <div className="flex justify-between">
                     <span className="text-slate-500">Applicant Name:</span>
-                    <strong className="text-slate-800 dark:text-slate-200">{user?.name || 'Hari Sharma'}</strong>
+                    <strong className="text-slate-800 dark:text-slate-200">{user?.name || 'Citizen'}</strong>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Submission Timestamp:</span>

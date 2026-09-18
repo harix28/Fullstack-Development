@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Bot, Send, User, Trash2, AlertCircle, Sparkles, 
   ArrowRight, CheckCircle2, MessageSquare, FileText, Briefcase,
-  Mic, MicOff, Volume2, ShieldCheck, Zap
+  Mic, MicOff, Volume2, ShieldCheck, Zap, Server, RotateCcw
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { Button, Card, Badge } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import { sendMessage } from '@/services/assistant';
 import ROUTES from '@/constants/routes';
+import { RecommendationCards, SourceCitations, AdminDataStatusModal } from '@/components/common/AiResponseWidgets';
+import type { ChatMessage } from '@/types';
 
 const PROMPT_CHIPS = [
   { label: '🎯 Am I eligible for PM-KISAN or MUDRA?', query: 'Am I eligible for PM-KISAN or MUDRA loan?' },
@@ -23,21 +25,21 @@ export default function AssistantPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [messages, setMessages] = useState<any[]>([
+  const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'welcome_1',
       role: 'assistant',
       content: `Namaste, **${user?.name || 'Citizen'}**! 🙏 
 
-I am **Ask Sarkar**, your personal AI assistant for government welfare schemes, recruitment opportunities, and citizen grievance resolution. 
+I am **Ask Sarkar**, your AI assistant for Indian government welfare schemes, recruitment vacancies, and civic grievance resolution powered by Google Gemini and official-source government data.
 
-I have loaded your verified citizen profile:
+I have loaded your GovConnect profile:
 • **Education:** ${user?.education || 'Post Graduate / MCA'}
 • **Domicile State:** ${user?.state || 'Delhi'}
 • **Category:** ${user?.category || 'General'}
 • **Active Profile Skills:** ${(user?.skills || ['Python', 'SQL', 'React']).slice(0, 3).join(', ')}
 
-How may I assist you today? Click any prompt below or type your question in any Indian language.`,
+How may I assist you today? Click any prompt below or type your question in English, Hindi, or Hinglish.`,
       timestamp: new Date().toISOString(),
       suggestions: [
         'Which schemes am I eligible for?',
@@ -50,6 +52,8 @@ How may I assist you today? Click any prompt below or type your question in any 
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isAdminStatusOpen, setIsAdminStatusOpen] = useState(false);
+  const [lastFailedQuery, setLastFailedQuery] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -64,7 +68,8 @@ How may I assist you today? Click any prompt below or type your question in any 
     const text = (textToSend || inputValue).trim();
     if (!text || isTyping) return;
 
-    const userMsg = {
+    setLastFailedQuery(null);
+    const userMsg: ChatMessage = {
       id: `usr_${Date.now()}`,
       role: 'user',
       content: text,
@@ -76,16 +81,20 @@ How may I assist you today? Click any prompt below or type your question in any 
     setIsTyping(true);
 
     try {
-      const botReply = await sendMessage(text, [...messages, userMsg]);
+      const botReply = await sendMessage(text, [...messages, userMsg], {
+        page: 'ask-sarkar',
+        user: user || undefined,
+      });
       setMessages(prev => [...prev, botReply]);
     } catch (err) {
       console.error(err);
+      setLastFailedQuery(text);
       setMessages(prev => [
         ...prev,
         {
           id: `err_${Date.now()}`,
           role: 'assistant',
-          content: 'Sorry, I encountered a temporary simulation issue. Please try asking your question again.',
+          content: 'Service is temporarily busy. Showing available GovConnect official-source information. Click below to retry.',
           timestamp: new Date().toISOString(),
         }
       ]);
@@ -130,13 +139,19 @@ How may I assist you today? Click any prompt below or type your question in any 
     ]);
   };
 
-  const handleActionClick = (actionType?: string) => {
-    if (actionType === 'navigate_grievance') {
-      navigate(ROUTES.GRIEVANCE_NEW);
-    } else if (actionType === 'navigate_schemes') {
-      navigate(ROUTES.SCHEMES);
-    } else if (actionType === 'navigate_jobs') {
-      navigate(ROUTES.JOBS);
+  const handleActionClick = (actionType?: string, payload?: any) => {
+    if (actionType === 'navigate_grievance' || actionType === 'create_grievance') {
+      navigate(ROUTES.GRIEVANCE_NEW, { state: payload });
+    } else if (actionType === 'navigate_schemes' || actionType === 'view_scheme') {
+      if (payload?.id) navigate(`/schemes/${payload.id}`);
+      else navigate(ROUTES.SCHEMES);
+    } else if (actionType === 'navigate_jobs' || actionType === 'view_job') {
+      if (payload?.id) navigate(`/jobs/${payload.id}`);
+      else navigate(ROUTES.JOBS);
+    } else if (actionType === 'navigate_vault' || actionType === 'view_vault') {
+      navigate(ROUTES.DOCUMENTS);
+    } else if (actionType === 'apply_official' && payload?.url) {
+      window.open(payload.url, '_blank', 'noopener,noreferrer');
     } else {
       navigate(ROUTES.SCHEMES);
     }
@@ -157,7 +172,7 @@ How may I assist you today? Click any prompt below or type your question in any 
                 Ask Sarkar AI Assistant
               </h1>
               <span className="bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800 text-[10px] font-extrabold py-0.5 px-2 rounded-full">
-                AI Copilot
+                Gemini RAG
               </span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400">
@@ -167,10 +182,16 @@ How may I assist you today? Click any prompt below or type your question in any 
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-600 text-[11px] text-slate-600 dark:text-slate-300">
+          {/* SIH Live Data Status Trigger */}
+          <button
+            onClick={() => setIsAdminStatusOpen(true)}
+            title="Inspect Official Sources & Live Pipeline"
+            className="flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-full border border-slate-200 dark:border-slate-600 text-[11px] text-slate-700 dark:text-slate-200 transition-colors shadow-xs cursor-pointer"
+          >
+            <Server className="w-3 h-3 text-teal-600 dark:text-teal-400" />
+            <span className="font-bold">51 Official Sources</span>
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Profile Context Linked</span>
-          </div>
+          </button>
 
           <button 
             onClick={clearChat} 
@@ -185,7 +206,7 @@ How may I assist you today? Click any prompt below or type your question in any 
       {/* ── ASSISTIVE NOTICE ── */}
       <div className="bg-amber-50/80 dark:bg-amber-950/40 px-4 py-2 border-b border-amber-200/60 dark:border-amber-800/60 flex items-center justify-center gap-2 text-xs text-amber-800 dark:text-amber-300">
         <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-        <span>Ask Sarkar is an assistive prototype. Always verify critical requirements on official government portals.</span>
+        <span>Ask Sarkar is grounded on official government sources. Final eligibility should always be verified on official portals.</span>
       </div>
 
       {/* ── MESSAGES AREA ── */}
@@ -195,7 +216,7 @@ How may I assist you today? Click any prompt below or type your question in any 
             key={msg.id} 
             className={cn("flex w-full", msg.role === 'user' ? "justify-end" : "justify-start")}
           >
-            <div className={cn("flex max-w-[90%] sm:max-w-[80%] gap-3", msg.role === 'user' ? "flex-row-reverse" : "flex-row")}>
+            <div className={cn("flex max-w-[95%] sm:max-w-[85%] gap-3", msg.role === 'user' ? "flex-row-reverse" : "flex-row")}>
               
               {/* Avatar */}
               <div className="flex-none mt-1">
@@ -211,7 +232,7 @@ How may I assist you today? Click any prompt below or type your question in any 
               </div>
 
               {/* Message Content */}
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col space-y-2 max-w-full">
                 <div className={cn(
                   "p-4 text-sm whitespace-pre-wrap leading-relaxed shadow-xs rounded-2xl",
                   msg.role === 'user' 
@@ -219,17 +240,27 @@ How may I assist you today? Click any prompt below or type your question in any 
                     : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200/80 dark:border-slate-700 rounded-tl-xs"
                 )}>
                   {msg.content}
+
+                  {/* Recommendation Cards */}
+                  {msg.recommendations && msg.recommendations.length > 0 && (
+                    <RecommendationCards recommendations={msg.recommendations} onAction={handleActionClick} />
+                  )}
+
+                  {/* Source Citations */}
+                  {msg.sources && msg.sources.length > 0 && (
+                    <SourceCitations sources={msg.sources} />
+                  )}
                 </div>
 
-                {/* Optional Action Button */}
+                {/* Primary Action Button (e.g. Grievance Review or Portal Launch) */}
                 {msg.actionType && (
                   <div className="pt-1">
                     <Button
                       size="sm"
-                      onClick={() => handleActionClick(msg.actionType)}
+                      onClick={() => handleActionClick(msg.actionType, msg.actionPayload)}
                       className="bg-[#0d9488] hover:bg-teal-600 text-white font-bold text-xs shadow gap-1.5 cursor-pointer rounded-xl"
                     >
-                      {msg.actionLabel || 'Explore Further'}
+                      {msg.actionLabel || 'Review & Proceed'}
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Button>
                   </div>
@@ -258,6 +289,19 @@ How may I assist you today? Click any prompt below or type your question in any 
           </div>
         ))}
 
+        {/* Retry prompt if failed */}
+        {lastFailedQuery && (
+          <div className="flex justify-center">
+            <button
+              onClick={() => handleSend(lastFailedQuery)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-300 cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Retry last query</span>
+            </button>
+          </div>
+        )}
+
         {/* Typing indicator */}
         {isTyping && (
           <div className="flex w-full justify-start">
@@ -267,11 +311,11 @@ How may I assist you today? Click any prompt below or type your question in any 
                   <Bot className="w-4 h-4 text-teal-300" />
                 </div>
               </div>
-              <div className="px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl rounded-tl-xs shadow-xs flex items-center gap-1.5">
-                <span className="text-xs text-slate-500 dark:text-slate-400 mr-2">Ask Sarkar is evaluating schemes & guidelines</span>
-                <div className="w-1.5 h-1.5 bg-[#1a2f8a] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="w-1.5 h-1.5 bg-[#1a2f8a] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                <div className="w-1.5 h-1.5 bg-[#1a2f8a] rounded-full animate-bounce"></div>
+              <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl rounded-tl-xs border border-slate-200 dark:border-slate-700 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#1a2f8a] animate-bounce" />
+                <span className="w-2 h-2 rounded-full bg-teal-500 animate-bounce [animation-delay:0.2s]" />
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-bounce [animation-delay:0.4s]" />
+                <span className="text-xs text-slate-500 ml-1">Searching official sources with Gemini...</span>
               </div>
             </div>
           </div>
@@ -280,70 +324,72 @@ How may I assist you today? Click any prompt below or type your question in any 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* ── 1-CLICK PROMPT PREVIEW BAR ── */}
-      {!isTyping && (
-        <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center gap-2 overflow-x-auto scrollbar-none">
-          <span className="text-xs font-bold text-slate-400 shrink-0 flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-teal-500" /> Quick Prompts:
+      {/* ── QUICK PROMPTS CHIPS BAR ── */}
+      <div className="flex-none px-4 py-2 bg-slate-100/70 dark:bg-slate-800/40 border-t border-slate-200/70 dark:border-slate-800 overflow-x-auto">
+        <div className="flex items-center gap-2 text-xs">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-teal-500" />
+            Quick:
           </span>
           {PROMPT_CHIPS.map((chip, idx) => (
             <button
               key={idx}
               onClick={() => handleSend(chip.query)}
-              className="text-xs text-left px-3 py-1.5 bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-[#0f1740] dark:text-slate-200 rounded-xl transition-colors border border-slate-200 dark:border-slate-700 whitespace-nowrap font-medium cursor-pointer"
+              className="shrink-0 px-3 py-1 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-full text-slate-700 dark:text-slate-300 font-medium text-[11px] transition-colors shadow-2xs cursor-pointer"
             >
               {chip.label}
             </button>
           ))}
         </div>
-      )}
+      </div>
 
-      {/* ── INPUT AREA WITH VOICE SIMULATION ── */}
-      <div className="p-3 sm:p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-        <div className="relative flex items-center gap-2">
-          
-          {/* Voice Input Mic Button */}
+      {/* ── INPUT BAR ── */}
+      <div className="flex-none p-4 bg-white dark:bg-slate-900 border-t border-slate-200/90 dark:border-slate-800">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={simulateVoiceInput}
-            className={`p-2.5 rounded-full transition-all cursor-pointer ${
-              isListening
-                ? 'bg-red-500 text-white animate-pulse ring-4 ring-red-200'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
-            }`}
-            title={isListening ? "Listening... Speak now" : "Speak your query (Simulated Voice Assistant)"}
+            title="Speech Input (Voice Assistant)"
+            className={cn(
+              "p-2.5 rounded-xl border transition-colors cursor-pointer shrink-0",
+              isListening 
+                ? "bg-red-500 text-white border-red-600 animate-pulse" 
+                : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100"
+            )}
           >
-            {isListening ? <Mic className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
           </button>
 
-          {/* Text Input */}
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={isListening ? "Listening to your voice input..." : "Ask in English or Hindi (e.g. Which scholarship can I get?)..."}
-              className="w-full pl-4 pr-12 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1a2f8a] text-sm text-[#0f1740] dark:text-white font-medium"
-              disabled={isTyping}
-            />
-            <button
-              onClick={() => handleSend()}
-              disabled={!inputValue.trim() || isTyping}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 bg-[#1a2f8a] text-white rounded-full disabled:opacity-40 hover:bg-[#0f1740] transition-colors cursor-pointer shadow-sm"
-              title="Send Message"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type your question in Hindi, English or Hinglish..."
+            disabled={isTyping}
+            className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]/20 focus:border-[#1a2f8a] transition-all disabled:opacity-50"
+          />
+
+          <Button
+            onClick={() => handleSend()}
+            disabled={!inputValue.trim() || isTyping}
+            className="bg-[#1a2f8a] hover:bg-[#0f1740] text-white p-2.5 rounded-xl transition-transform hover:scale-105 disabled:opacity-50 cursor-pointer shadow-md shrink-0"
+          >
+            <Send className="w-4 h-4" />
+          </Button>
         </div>
 
-        <div className="text-center mt-2">
-          <span className="text-[10px] text-slate-400">
-            Ask Sarkar AI • Contextual Citizen Intelligence Layer
-          </span>
+        <div className="flex items-center justify-between text-[10px] text-slate-400 px-1 mt-2">
+          <span>Grounded with 51 official portal sources via robots.txt compliant crawler</span>
+          <span>Press Enter ↵ to send</span>
         </div>
       </div>
+
+      {/* Admin SIH Diagnostic Modal */}
+      <AdminDataStatusModal
+        isOpen={isAdminStatusOpen}
+        onClose={() => setIsAdminStatusOpen(false)}
+      />
     </div>
   );
 }

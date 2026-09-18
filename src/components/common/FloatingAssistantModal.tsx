@@ -9,6 +9,7 @@ import { cn } from '@/utils/cn';
 import { useAuth } from '@/context/AuthContext';
 import { sendMessage } from '@/services/assistant';
 import ROUTES from '@/constants/routes';
+import { RecommendationCards, SourceCitations } from '@/components/common/AiResponseWidgets';
 
 export default function FloatingAssistantModal() {
   const { user } = useAuth();
@@ -124,7 +125,7 @@ Sawaal poochein ya neeche diye gaye quick prompts par click karein!`,
     try {
       const botReply = await sendMessage(text, [...messages, userMsg], {
         page: pageContext.type,
-        user
+        user: user || undefined
       });
       setMessages(prev => [...prev, botReply]);
 
@@ -183,14 +184,22 @@ Sawaal poochein ya neeche diye gaye quick prompts par click karein!`,
   };
 
   const handleAction = (actionType?: string, payload?: any) => {
-    if (actionType === 'navigate_schemes') {
-      navigate(ROUTES.SCHEMES);
-    } else if (actionType === 'navigate_jobs') {
-      navigate(ROUTES.JOBS);
-    } else if (actionType === 'navigate_vault') {
+    if (actionType === 'navigate_schemes' || actionType === 'view_scheme') {
+      if (payload?.id) navigate(`/schemes/${payload.id}`);
+      else navigate(ROUTES.SCHEMES);
+    } else if (actionType === 'navigate_jobs' || actionType === 'view_job') {
+      if (payload?.id) navigate(`/jobs/${payload.id}`);
+      else navigate(ROUTES.JOBS);
+    } else if (actionType === 'navigate_vault' || actionType === 'view_vault') {
       navigate(ROUTES.DOCUMENTS);
-    } else if (actionType === 'navigate_grievance') {
-      navigate(ROUTES.GRIEVANCE_NEW);
+    } else if (actionType === 'navigate_services') {
+      navigate(ROUTES.SERVICES);
+    } else if (actionType === 'navigate_grievance' || actionType === 'create_grievance') {
+      navigate(ROUTES.GRIEVANCE_NEW, { state: payload });
+    } else if (actionType === 'apply_official' && payload?.url) {
+      window.open(payload.url, '_blank', 'noopener,noreferrer');
+    } else {
+      navigate(ROUTES.SCHEMES);
     }
   };
 
@@ -340,6 +349,16 @@ Sawaal poochein ya neeche diye gaye quick prompts par click karein!`,
                               : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200/80 dark:border-slate-700 rounded-tl-xs"
                           )}>
                             {msg.content}
+
+                            {/* Official-Source Recommendation Cards */}
+                            {msg.recommendations && msg.recommendations.length > 0 && (
+                              <RecommendationCards recommendations={msg.recommendations} onAction={handleAction} compact />
+                            )}
+
+                            {/* Source Citations */}
+                            {msg.sources && msg.sources.length > 0 && (
+                              <SourceCitations sources={msg.sources} />
+                            )}
                           </div>
 
                           {/* Action Button inside reply */}

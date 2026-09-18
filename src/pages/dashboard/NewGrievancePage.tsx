@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   CheckCircle2, ArrowRight, ArrowLeft, Bot, Building, Tag, AlertTriangle, 
   Copy, RefreshCw, Save, ExternalLink 
@@ -14,6 +14,7 @@ const STEPS = ['Describe Issue', 'AI Classification', 'Draft Complaint', 'Review
 
 export default function NewGrievancePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     title: '',
@@ -33,6 +34,36 @@ export default function NewGrievancePage() {
   const [reviewChecked, setReviewChecked] = useState(false);
   const [isEditingDraft, setIsEditingDraft] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Pre-fill if routed from Ask Sarkar AI with draft payload
+  useEffect(() => {
+    if (location.state) {
+      const s = location.state as any;
+      if (s.draft || s.title) {
+        setFormData(prev => ({
+          ...prev,
+          title: s.title || prev.title,
+          category: s.category || prev.category,
+        }));
+        setAiAnalysis({
+          department: s.department || 'Competent Authority',
+          category: s.category || 'Infrastructure / Public Services',
+          priority: s.priority || 'high',
+          portal: {
+            name: s.portalUrl?.includes('morth') ? 'MoRTH Portal' : (s.portalUrl?.includes('consumer') ? 'INGRAM' : 'CPGRAMS'),
+            url: s.portalUrl || 'https://pgportal.gov.in',
+            description: 'Official Government Redressal Portal'
+          },
+          confidence: 94,
+          reasoning: 'Classified by Ask Sarkar AI using official department mapping based on citizen issue.'
+        });
+        if (s.draft) {
+          setDraftText(s.draft);
+          setCurrentStep(2); // Advance directly to Draft review step
+        }
+      }
+    }
+  }, [location.state]);
 
   const simulateAnalysis = () => {
     setIsAnalyzing(true);

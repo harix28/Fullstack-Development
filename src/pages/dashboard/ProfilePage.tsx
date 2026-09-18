@@ -13,22 +13,44 @@ export default function ProfilePage() {
   const { showToast } = useToast();
 
   const [formData, setFormData] = useState({
-    name: user?.name || 'Hari Sharma',
-    email: user?.email || 'hari.sharma@example.com',
-    mobile: user?.phone || user?.mobile || '9876543210',
-    age: user?.age || 23,
+    name: user?.name || 'Citizen User',
+    email: user?.email || '',
+    mobile: user?.phone || user?.mobile || '',
+    age: user?.age || 24,
     gender: user?.gender || 'Male',
     state: user?.state || 'Delhi',
-    district: user?.district || 'New Delhi',
-    cityVillage: user?.cityVillage || 'Connaught Place',
-    education: user?.education || 'MCA',
-    occupation: user?.occupation || 'Student / Tech Aspirant',
-    employmentStatus: user?.employmentStatus || 'Student',
-    annualIncome: user?.annualIncome || 350000,
+    district: user?.district || '',
+    cityVillage: user?.cityVillage || '',
+    education: user?.education || 'Graduate',
+    occupation: user?.occupation || 'Citizen',
+    employmentStatus: user?.employmentStatus || 'Employed / Self-Employed',
+    annualIncome: user?.annualIncome || 300000,
     category: user?.category || 'General',
-    skills: user?.skills || ['Python', 'SQL', 'React', 'Data Analysis'],
+    skills: user?.skills || ['Digital Literacy'],
     hasDisability: user?.hasDisability || false
   });
+
+  React.useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || 'Citizen User',
+        email: user.email || '',
+        mobile: user.phone || user.mobile || '',
+        age: user.age || 24,
+        gender: user.gender || 'Male',
+        state: user.state || 'Delhi',
+        district: user.district || '',
+        cityVillage: user.cityVillage || '',
+        education: user.education || 'Graduate',
+        occupation: user.occupation || 'Citizen',
+        employmentStatus: user.employmentStatus || 'Employed / Self-Employed',
+        annualIncome: user.annualIncome || 300000,
+        category: user.category || 'General',
+        skills: user.skills || ['Digital Literacy'],
+        hasDisability: user.hasDisability || false
+      });
+    }
+  }, [user]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [skillInput, setSkillInput] = useState('');

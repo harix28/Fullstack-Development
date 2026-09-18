@@ -1,0 +1,65 @@
+[
+  {
+    "url": "https://services.india.gov.in",
+    "domain": "services.india.gov.in",
+    "state": "Central Government",
+    "department": "Ministry of Electronics & IT",
+    "status": "blocked",
+    "pages_crawled": 0,
+    "reason": "robots_txt_forbidden"
+  },
+  {
+    "url": "https://pgportal.gov.in",
+    "domain": "pgportal.gov.in",
+    "state": "Central Government",
+    "department": "Department of Administrative Reforms & Public Grievances",
+    "status": "successful",
+    "pages_crawled": 1,
+    "reason": null
+  },
+  {
+    "url": "https://www.ncs.gov.in",
+    "domain": "www.ncs.gov.in",
+    "state": "Central Government",
+    "department": "Ministry of Labour & Employment",
+    "status": "successful",
+    "pages_crawled": 1,
+    "reason": null
+  },
+  {
+    "url": "https://uidai.gov.in",
+    "domain": "uidai.gov.in",
+    "state": "Central Government",
+    "department": "UIDAI",
+    "status": "successful",
+    "pages_crawled": 1,
+    "reason": null
+  },
+  {
+    "url": "https://parivahan.gov.in",
+    "domain": "parivahan.gov.in",
+    "state": "Central Government",
+    "department": "Ministry of Road Transport & Highways",
+    "status": "successful",
+    "pages_crawled": 1,
+    "reason": null
+  },
+  {
+    "url": "https://scholarships.gov.in",
+    "domain": "scholarships.gov.in",
+    "state": "Central Government",
+    "department": "Ministry of Education",
+    "status": "successful",
+    "pages_crawled": 1,
+    "reason": null
+  },
+  {
+    "url": "https://delhi.gov.in",
+    "domain": "delhi.gov.in",
+    "state": "Delhi",
+    "department": "UT Government",
+    "status": "blocked",
+    "pages_crawled": 0,
+    "reason": "robots_txt_forbidden"
+  }
+]

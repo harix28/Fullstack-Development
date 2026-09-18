@@ -12,6 +12,7 @@ import LandingPage from '@/pages/public/LandingPage';
 import AboutPage from '@/pages/public/AboutPage';
 import HowItWorksPage from '@/pages/public/HowItWorksPage';
 import ContactPage from '@/pages/public/ContactPage';
+import ServicesPage from '@/pages/public/ServicesPage';
 
 // Auth pages
 import LoginPage from '@/pages/auth/LoginPage';
@@ -19,6 +20,7 @@ import RegisterPage from '@/pages/auth/RegisterPage';
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage';
 
 // Dashboard pages
+import DashboardOverview from '@/pages/dashboard/DashboardOverview';
 import ProfilePage from '@/pages/dashboard/ProfilePage';
 import SchemesPage from '@/pages/dashboard/SchemesPage';
 import SchemeDetailPage from '@/pages/dashboard/SchemeDetailPage';
@@ -63,14 +65,7 @@ function AppRoutes() {
   return (
     <Routes>
       {/* ── Public Single Landing Page (Consolidated intro, motive, services, about) ── */}
-      <Route
-        path="/"
-        element={
-          <PublicOnlyRoute>
-            <LandingPage />
-          </PublicOnlyRoute>
-        }
-      />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/about" element={<Navigate to="/" replace />} />
       <Route path="/how-it-works" element={<Navigate to="/" replace />} />
       <Route path="/contact" element={<Navigate to="/" replace />} />
@@ -97,7 +92,8 @@ function AppRoutes() {
       {/* ── Protected Dashboard Routes (all user journeys accessible via /dashboard/* or short aliases) ── */}
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<Navigate to="/dashboard/schemes" replace />} />
+          <Route path="/dashboard" element={<DashboardOverview />} />
+          <Route path="/dashboard/overview" element={<DashboardOverview />} />
           <Route path="/dashboard/profile" element={<ProfilePage />} />
           <Route path="/profile" element={<ProfilePage />} />
 
@@ -144,10 +140,9 @@ function AppRoutes() {
           <Route path="/dashboard/settings" element={<SettingsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
 
-          {/* Redirect removed Overview and Local Services */}
-          <Route path="/dashboard/overview" element={<Navigate to="/dashboard/schemes" replace />} />
-          <Route path="/dashboard/services" element={<Navigate to="/dashboard/schemes" replace />} />
-          <Route path="/services" element={<Navigate to="/dashboard/schemes" replace />} />
+          {/* Local Services */}
+          <Route path="/dashboard/services" element={<ServicesPage />} />
+          <Route path="/services" element={<ServicesPage />} />
         </Route>
       </Route>
 

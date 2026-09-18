@@ -1,329 +1,315 @@
-import type { ChatMessage } from '@/types';
+import type { ChatMessage, Job, Scheme, User, RecommendationItem, ActionItem, SourceCitation } from '@/types';
+import { mockJobs } from '@/data/mockJobs';
+import { mockSchemes } from '@/data/mockSchemes';
 
-// Helper delays for ultra-natural feeling response
-const delay = (ms: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
-const randomDelay = (min: number, max: number): Promise<void> =>
+const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+const randomDelay = (min: number, max: number) =>
   delay(Math.floor(Math.random() * (max - min + 1)) + min);
+const generateId = () => `msg_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-const generateId = (): string =>
-  `msg_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+type ActionType =
+  | 'navigate_grievance'
+  | 'navigate_schemes'
+  | 'navigate_jobs'
+  | 'navigate_vault'
+  | 'navigate_services'
+  | 'view_scheme'
+  | 'view_job'
+  | 'apply_official'
+  | 'create_grievance'
+  | string;
 
 export interface AssistantResponse {
   content: string;
   suggestions: string[];
-  actionType?: 'navigate_grievance' | 'navigate_schemes' | 'navigate_jobs' | 'navigate_vault' | 'filter_schemes';
+  intent?: string;
+  confidence?: number;
+  recommendations?: RecommendationItem[];
+  actions?: ActionItem[];
+  sources?: SourceCitation[];
+  actionType?: ActionType;
   actionLabel?: string;
-  actionPayload?: any;
+  actionPayload?: unknown;
 }
+
+type AssistantMessage = ChatMessage & Partial<Pick<AssistantResponse, 'actionType' | 'actionLabel' | 'actionPayload'>>;
+type AssistantContext = { page?: string; user?: Partial<User> };
+
+const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9\u0900-\u097f₹\s-]/gi, ' ');
+const hasAny = (text: string, words: string[]) => words.some((word) => text.includes(word));
+
+const educationLabel = (education?: string) => {
+  const value = education?.toLowerCase() || '';
+  if (value.includes('post') || value.includes('mca') || value.includes('master')) return 'Post Graduate / MCA';
+  if (value.includes('graduate') || value.includes('bca') || value.includes('bachelor')) return 'Graduate';
+  return education || 'Not specified';
+};
+
+const scoreScheme = (scheme: Scheme, user: Partial<User> = {}) => {
+  let score = 45;
+  const age = user.age;
+  const income = user.annualIncome;
+  const education = user.education?.toLowerCase() || '';
+  const state = user.state?.toLowerCase() || '';
+  const category = user.category?.toLowerCase() || '';
+
+  if (typeof age === 'number') {
+    if (scheme.eligibility.minAge === undefined || age >= scheme.eligibility.minAge) score += 10;
+    if (scheme.eligibility.maxAge === undefined || age <= scheme.eligibility.maxAge) score += 10;
+  }
+  if (typeof income === 'number' && scheme.eligibility.income !== undefined) {
+    score += income <= scheme.eligibility.income ? 15 : -20;
+  }
+  if (scheme.eligibility.state?.some((s) => state.includes(s.toLowerCase()))) score += 10;
+  if (scheme.eligibility.category?.some((c) => category.includes(c.toLowerCase()))) score += 5;
+  if (scheme.eligibility.education?.some((e) => education.includes(e.toLowerCase()))) score += 10;
+  if (scheme.tags.some((tag) => education.includes(tag.toLowerCase()) || tag.toLowerCase().includes('education'))) score += 5;
+
+  return Math.max(20, Math.min(98, score));
+};
+
+const scoreJob = (job: Job, user: Partial<User> = {}) => {
+  let score = 45;
+  const education = user.education?.toLowerCase() || '';
+  const skills = (user.skills || []).map((s) => s.toLowerCase());
+  const state = user.state?.toLowerCase() || '';
+  const age = user.age;
+
+  if (job.qualification.some((q) => {
+    const qualification = q.toLowerCase();
+    return qualification.includes('graduate') || qualification.includes('degree') ||
+      (education && (qualification.includes(education) || education.includes('mca') && qualification.includes('computer')));
+  })) score += 20;
+  if (job.tags.some((tag) => skills.some((skill) => tag.toLowerCase().includes(skill) || skill.includes(tag.toLowerCase())))) score += 15;
+  if (job.state.toLowerCase() === 'central' || job.state.toLowerCase() === state) score += 8;
+  if (typeof age === 'number' && age >= job.ageLimit.min && age <= job.ageLimit.max) score += 10;
+
+  return Math.max(20, Math.min(98, score));
+};
+
+const schemeResults = (user: Partial<User>) =>
+  mockSchemes
+    .map((scheme) => ({ scheme, score: scoreScheme(scheme, user) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+
+const jobResults = (user: Partial<User>) =>
+  mockJobs
+    .map((job) => ({ job, score: scoreJob(job, user) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+
+const makeMessage = (response: AssistantResponse): AssistantMessage => ({
+  id: generateId(),
+  role: 'assistant',
+  timestamp: new Date().toISOString(),
+  ...response,
+});
+
+const AI_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api/v1';
+
+const sendToAiBackend = async (message: string, history: ChatMessage[], currentContext?: AssistantContext): Promise<AssistantMessage | null> => {
+  try {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 14000);
+    const response = await fetch(`${AI_API_URL}/assistant/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message,
+        history: history.slice(-10).map(({ role, content }) => ({ role, content })),
+        user: currentContext?.user || {},
+        page: currentContext?.page || 'ask-sarkar',
+      }),
+      signal: controller.signal,
+    });
+    window.clearTimeout(timeout);
+    if (!response.ok) return null;
+    const data = await response.json();
+    const content = data?.content || data?.message;
+    if (!content) return null;
+
+    // Resolve primary action if actions array present
+    const firstAction = Array.isArray(data.actions) && data.actions.length > 0 ? data.actions[0] : null;
+
+    return makeMessage({
+      content,
+      suggestions: Array.isArray(data.suggestions) ? data.suggestions : [],
+      intent: data.intent,
+      confidence: data.confidence,
+      recommendations: Array.isArray(data.recommendations) ? data.recommendations : [],
+      actions: Array.isArray(data.actions) ? data.actions : [],
+      sources: Array.isArray(data.sources) ? data.sources : [],
+      actionType: data.actionType || (firstAction ? firstAction.type : undefined),
+      actionLabel: data.actionLabel || (firstAction ? firstAction.label : undefined),
+      actionPayload: data.actionPayload || (firstAction ? firstAction.payload : undefined),
+    });
+  } catch {
+    return null;
+  }
+};
 
 export const sendMessage = async (
   message: string,
-  _history: ChatMessage[],
-  currentContext?: { page?: string; user?: any }
-): Promise<ChatMessage & { actionType?: string; actionLabel?: string; actionPayload?: any }> => {
-  await randomDelay(350, 700); // Fast, responsive typing delay
+  history: ChatMessage[] = [],
+  currentContext?: AssistantContext,
+): Promise<AssistantMessage> => {
   const text = message.trim();
-  const lower = text.toLowerCase();
-
-  const userName = currentContext?.user?.name || 'Citizen';
-  const userEdu = currentContext?.user?.education || 'MCA / Graduate';
-  const userState = currentContext?.user?.state || 'Delhi';
-
-  // 1. GREETINGS & CASUAL (English & Hindi / Hinglish)
-  if (
-    lower === 'hi' || lower === 'hello' || lower === 'namaste' || lower === 'pranam' || 
-    lower.includes('kaise ho') || lower.includes('kya haal') || lower.includes('kem cho') ||
-    lower.startsWith('hey') || lower === 'hlo'
-  ) {
-    return {
-      id: generateId(),
-      role: 'assistant',
-      content: `Namaste **${userName}**! 🙏 Main **Ask Sarkar AI** hoon, aapka 24x7 Digital Citizen Assistant.
-
-Aap mujhse kisi bhi vishay par sawaal pooch sakte hain:
-• 🎯 **Welfare Schemes:** PM Kisan, MUDRA Loan, Ayushman Bharat, PMAY Housing
-• 💼 **Sarkari Jobs:** SSC CGL, Railways RRB, Banking PO/Clerk
-• 📁 **Digital Vault:** DigiLocker sync, document verification checklist
-• 📝 **Grievance Drafting:** Sadak, paani, bijli, ya nagar nigam ki complaint
-
-Bataiye, aaj main aapki kya madad kar sakta hoon?`,
-      timestamp: new Date().toISOString(),
-      suggestions: [
-        'Meri eligibility check karo',
-        'Top 3 schemes for me',
-        'Show Govt Jobs for my degree',
-        'File a civic complaint'
-      ]
-    };
+  if (!text) {
+    return makeMessage({
+      content: 'Please type your question and I will help you with schemes, jobs, documents, services or grievances.',
+      suggestions: ['Show schemes for me', 'Find jobs for me', 'Draft a complaint'],
+    });
   }
 
-  // 2. SCHEME ELIGIBILITY & RECOMMENDATIONS (Hinglish: "kya scheme hai", "eligibility", "paisa", "loan", "subsidy")
-  if (
-    lower.includes('eligible') || lower.includes('eligibility') || lower.includes('scheme') || 
-    lower.includes('yojana') || lower.includes('kaunsi scheme') || lower.includes('kya mil sakta') || 
-    lower.includes('subsidy') || lower.includes('paisa') || lower.includes('benefit') ||
-    lower.includes('recommend')
-  ) {
-    return {
-      id: generateId(),
-      role: 'assistant',
-      content: `### 🎯 Scheme Compatibility Report for **${userName}**
-**Evaluated Profile:** Age 23 • ${userEdu} • Domicile: ${userState}
+  // Prefer the real backend + Gemini when it is running. Keep the local engine as a safe offline/demo fallback.
+  const aiResponse = await sendToAiBackend(text, history, currentContext);
+  if (aiResponse) return aiResponse;
 
-Aapke verified profile ke hisaab se yeh 3 top schemes aapke liye best match karti hain:
+  await randomDelay(150, 350);
 
-1. 🌟 **National Scholarship Portal (NSP - PG Merit)** — **94% Compatibility**
-   • **Benefit:** ₹20,000/year direct DBT stipend for higher technical & graduate education.
-   • **Status:** Open for registration.
-
-2. 🚀 **PM MUDRA Yojana (Shishu & Tarun Loans)** — **91% Compatibility**
-   • **Benefit:** Up to ₹10 Lakhs **Collateral-Free business loan** at low interest for tech/business startups.
-   • **Vault Documents:** Aadhaar + PAN + Bank passbook ready!
-
-3. 🌾 **PM Kisan Samman Nidhi / PM-KMY** — **86% Compatibility**
-   • **Benefit:** Direct income support of ₹6,000/year via Aadhaar DBT.
-
-Aap in schemes ki live checklist dekh sakte hain ya direct official portal guide follow kar sakte hain.`,
-      timestamp: new Date().toISOString(),
-      suggestions: [
-        'How to apply for PM MUDRA loan?',
-        'NSP scholarship documents',
-        'Show Agriculture schemes',
-        'Compare loan interest rates'
-      ],
-      actionType: 'navigate_schemes',
-      actionLabel: 'Open Schemes Matching Engine'
-    };
+  if (!text) {
+    return makeMessage({
+      content: 'Please type your question and I will help you with schemes, jobs, documents, services or grievances.',
+      suggestions: ['Show schemes for me', 'Find jobs for me', 'Draft a complaint'],
+    });
   }
 
-  // 3. PM MUDRA / BUSINESS LOAN / STARTUP
-  if (lower.includes('mudra') || lower.includes('loan') || lower.includes('business') || lower.includes('startup') || lower.includes('karz')) {
-    return {
-      id: generateId(),
-      role: 'assistant',
-      content: `### 💼 Pradhan Mantri MUDRA Yojana (PMMY) Details
+  const lower = normalize(text);
+  const user = currentContext?.user || {};
+  const userName = user.name || 'Citizen';
+  const state = user.state || 'your state';
+  const education = educationLabel(user.education);
 
-Agar aap apna startup, IT freelancing, ya micro-business shuru karna chahte hain, toh MUDRA bina kisi collateral (bina zameen/property girvi rakhe) loan deti hai:
+  // Intent detection is deliberately ordered from specific to broad.
+  // This prevents words like "card", "loan" or "job" from hijacking a more specific request.
+  const isGreeting = /^(hi|hello|hey|hlo|namaste|pranam|salaam)$/.test(lower.trim()) ||
+    hasAny(lower, ['kaise ho', 'kya haal', 'kem cho']);
 
-• **1. Shishu Category:** Up to **₹50,000** (Zero processing fee, immediate sanction)
-• **2. Kishore Category:** **₹50,001 se ₹5,00,000** (Equipment & office setup)
-• **3. Tarun Category:** **₹5,00,001 se ₹10,00,000** (Business expansion)
+  const isGrievance = hasAny(lower, [
+    'complaint', 'grievance', 'shikayat', 'pothole', 'sadak', 'road', 'garbage', 'kachra', 'kooda',
+    'waterlogging', 'drain', 'sewer', 'paani', 'water supply', 'bijli', 'electricity', 'street light',
+  ]);
+  const isDocument = hasAny(lower, [
+    'document', 'documents', 'vault', 'digilocker', 'aadhaar', 'aadhar', 'pan card', 'marksheet',
+    'certificate', 'kaghaz', 'upload file', 'proof',
+  ]);
+  const isJob = hasAny(lower, [
+    'job', 'jobs', 'naukri', 'vacancy', 'vacancies', 'recruitment', 'ssc', 'upsc', 'railway', 'ibps',
+    'bank po', 'cgl', 'career', 'government post',
+  ]);
+  const isHealth = hasAny(lower, ['ayushman', 'pm jay', 'health insurance', 'hospital', 'health scheme']);
+  const isHousing = hasAny(lower, ['pmay', 'awas', 'housing', 'ghar', 'makaan']);
+  const isScheme = hasAny(lower, [
+    'scheme', 'schemes', 'yojana', 'eligible', 'eligibility', 'subsidy', 'benefit', 'scholarship',
+    'financial help', 'pension', 'ration', 'mudra', 'loan', 'startup',
+  ]);
 
-**Required Documents in Vault:**
-✅ Aadhaar Card & PAN Card
-✅ 6 Months Bank Statement
-✅ Business Plan Summary
-
-Aap kisi bhi National Bank (SBI, PNB, BoB) ya **UdyamiMitra.gov.in** portal se direct apply kar sakte hain.`,
-      timestamp: new Date().toISOString(),
-      suggestions: [
-        'Check my MUDRA eligibility',
-        'Nearest Bank branches for MUDRA',
-        'View Scheme Details on GovConnect'
-      ],
-      actionType: 'navigate_schemes',
-      actionLabel: 'View MUDRA Scheme Card'
-    };
+  if (isGreeting) {
+    return makeMessage({
+      content: `Namaste **${userName}**! 🙏\n\nMain **Ask Sarkar** hoon. Main aapke GovConnect profile ke context ke saath schemes, jobs, documents, local services aur grievance drafting mein help kar sakta hoon.\n\n**Current profile:** ${education} • ${state}${user.skills?.length ? ` • ${user.skills.slice(0, 3).join(', ')}` : ''}\n\nAap normal language mein sawaal pooch sakte hain — Hindi, English ya Hinglish mein.`,
+      suggestions: ['Meri schemes check karo', 'Mere liye jobs dhoondo', 'Complaint draft karo', 'Mere documents batao'],
+    });
   }
 
-  // 4. SARKARI JOBS & RECRUITMENT (SSC, UPSC, Banking, Railways)
-  if (
-    lower.includes('job') || lower.includes('naukri') || lower.includes('vacancy') || 
-    lower.includes('ssc') || lower.includes('upsc') || lower.includes('railway') || 
-    lower.includes('bank') || lower.includes('ibps') || lower.includes('recruitment') ||
-    lower.includes('cgl') || lower.includes('exam')
-  ) {
-    return {
-      id: generateId(),
-      role: 'assistant',
-      content: `### 💼 Sarkari Jobs Matched for **${userEdu}**
+  if (isGrievance) {
+    let category = 'Public Services';
+    let department = 'Relevant local civic authority';
+    let title = 'Civic Service Complaint';
+    let priority: 'low' | 'medium' | 'high' = 'medium';
 
-Hamare system ne **17,700+ active government vacancies** scan ki hain. Aapke qualifications aur technical skills ke mutabiq yeh best opportunities hain:
-
-1. 🏛️ **SSC Combined Graduate Level (SSC CGL 2026)**
-   • **Vacancies:** 17,727 Posts (ASO, Tax Assistant, Inspector)
-   • **Pay Scale:** Level 4 to Level 7 (₹25,500 – ₹1,42,400)
-   • **Age Limit:** 18–30 Years (Age relaxations for reserved categories)
-
-2. 💻 **National Informatics Centre (NIC / MeitY) - Scientific Officer**
-   • **Match Rate:** 94% (Matches your degree & Python/SQL skills)
-   • **Pay Scale:** Level 10 (₹56,100 – ₹1,77,500)
-
-3. 🏦 **State Bank of India (SBI PO / Specialist Officer)**
-   • **Vacancies:** 2,000+ Posts • Direct Interview & Online CBT
-
-Aap in sabhi jobs ke complete syllabus aur notification link GovConnect Jobs Tracker me dekh sakte hain!`,
-      timestamp: new Date().toISOString(),
-      suggestions: [
-        'Show SSC CGL Syllabus',
-        'Age relaxations for OBC/SC',
-        'How to do OTR registration?'
-      ],
-      actionType: 'navigate_jobs',
-      actionLabel: 'Open Govt Jobs Tracker'
-    };
-  }
-
-  // 5. GRIEVANCE DRAFTING (Sadak, paani, bijli, kooda, garbage, complaint)
-  if (
-    lower.includes('garbage') || lower.includes('kooda') || lower.includes('kachra') || 
-    lower.includes('sadak') || lower.includes('road') || lower.includes('pothole') ||
-    lower.includes('bijli') || lower.includes('electricity') || lower.includes('light') ||
-    lower.includes('paani') || lower.includes('water') || lower.includes('drain') ||
-    lower.includes('complaint') || lower.includes('shikayat') || lower.includes('grievance')
-  ) {
-    let issueType = 'Municipal Infrastructure';
-    let dept = 'Municipal Corporation & Public Works (PWD)';
-    let sampleTitle = 'Immediate Road Repair & Street Light Restoration';
-
-    if (lower.includes('garbage') || lower.includes('kooda') || lower.includes('kachra')) {
-      issueType = 'Public Sanitation & Cleanliness';
-      dept = 'Municipal Sanitation Wing';
-      sampleTitle = 'Urgent Clearance of Overflowing Garbage Dump';
-    } else if (lower.includes('bijli') || lower.includes('light')) {
-      issueType = 'Electrical Maintenance & Power Supply';
-      dept = 'State Electricity Distribution Board (DISCOM)';
-      sampleTitle = 'Non-Functional Street Lights & Power Fluctuation';
-    } else if (lower.includes('paani') || lower.includes('water')) {
-      issueType = 'Water Supply & Pipeline Contamination';
-      dept = 'Jal Board / Municipal Water Supply';
-      sampleTitle = 'Contaminated Drinking Water Supply & Low Pressure';
+    if (hasAny(lower, ['garbage', 'kachra', 'kooda'])) {
+      category = 'Sanitation'; department = 'Municipal Sanitation Department'; title = 'Garbage collection / sanitation issue'; priority = 'high';
+    } else if (hasAny(lower, ['paani', 'water supply', 'sewer', 'drain', 'waterlogging'])) {
+      category = 'Water & Drainage'; department = 'Local Water / Municipal Department'; title = 'Water supply / drainage issue'; priority = 'high';
+    } else if (hasAny(lower, ['bijli', 'electricity', 'street light'])) {
+      category = 'Electricity / Street Lighting'; department = 'Electricity utility / Municipal authority'; title = 'Electricity or street-light issue';
+    } else if (hasAny(lower, ['road', 'sadak', 'pothole'])) {
+      category = 'Road & Infrastructure'; department = 'Municipal authority / PWD'; title = 'Road / pothole repair request';
     }
 
-    return {
-      id: generateId(),
-      role: 'assistant',
-      content: `### 📝 AI Grievance Draft Generated: ${issueType}
+    const draft = `Subject: ${title}\n\nRespected Authority,\n\nI would like to report a ${category.toLowerCase()} issue in ${state}. The issue described by the citizen requires review and appropriate action. Kindly inspect the location and take necessary remedial action.\n\nLocation: ${state}\n\nRegards,\n${userName}`;
 
-Maine aapki samasya samajh li hai aur CPGRAMS / Local Civic Portal ke format me official complaint tayar ki hai:
-
-• **Department:** ${dept}
-• **Suggested Subject:** ${sampleTitle}
-• **Citizen Location:** ${userState}
-• **Priority Assigned:** High (Civic & Health Concern)
-• **Expected SLA:** 48 se 72 ghante
-
-**Draft Content Preview:**
-> *"Respected Authority, I am writing to bring to your urgent notice the recurring issue of ${issueType.toLowerCase()} in our residential area. Despite verbal notices, the condition remains unresolved and poses health and safety risks. Kindly initiate immediate remedial action under public service guarantee act."*
-
-Click below to open our 1-click filing screen and submit this directly with token tracking!`,
-      timestamp: new Date().toISOString(),
-      suggestions: [
-        'File this Grievance Now',
-        'Track my existing complaint status',
-        'Helpline numbers for emergency'
-      ],
+    return makeMessage({
+      content: `### 📝 Complaint Analysis\n\n**Detected issue:** ${category}\n**Suggested department:** ${department}\n**Suggested priority:** ${priority}\n\nI have prepared a **draft only**. Please review/edit it before submitting through the official portal.\n\n**Draft:**\n${draft}`,
+      suggestions: ['Edit this complaint', 'Track my grievances', 'Open grievance form'],
       actionType: 'navigate_grievance',
-      actionLabel: 'Proceed to File Grievance',
-      actionPayload: {
-        title: sampleTitle,
-        category: 'municipal',
-        department: dept
-      }
-    };
+      actionLabel: 'Review Grievance Draft',
+      actionPayload: { title, category, department, priority, draft },
+    });
   }
 
-  // 6. DOCUMENTS & DIGILOCKER VAULT
-  if (
-    lower.includes('document') || lower.includes('vault') || lower.includes('digilocker') || 
-    lower.includes('aadhaar') || lower.includes('pan') || lower.includes('marksheet') || 
-    lower.includes('certificate') || lower.includes('kaghaz')
-  ) {
-    return {
-      id: generateId(),
-      role: 'assistant',
-      content: `### 📁 Digital Document Vault Status
-
-GovConnect me aapke zaroori dastawez (documents) DigiLocker standard ke mutabiq secure aur auto-fill ready hain:
-
-• **Aadhaar Card:** ✅ Verified (SHA-256 Checksum Active)
-• **Degree Marksheet:** ✅ Ready for College / Job forms
-• **Income Certificate:** ✅ Verified (Ceiling < ₹8 Lakhs)
-• **Bank IFSC & Passbook:** ✅ Direct Benefit Transfer (DBT) Ready
-
-**Vault Readiness Score:** **80% Ready**
-Aap bina baar-baar file upload kiye kisi bhi government scheme form me yeh documents auto-populate kar sakte hain.`,
-      timestamp: new Date().toISOString(),
-      suggestions: [
-        '⚡ 1-Click DigiLocker Sync',
-        'Upload New Document',
-        'Which documents needed for OBC?'
-      ],
+  if (isDocument) {
+    return makeMessage({
+      content: `### 📁 Document Vault\n\nI can help you understand which documents may be needed, but I won't claim that your files are verified unless the application actually has verification data.\n\nFor a typical government application, requirements can include identity proof, address proof, education/certificate documents and income/category certificates depending on the service.\n\n**For your profile:** ${education} • ${state}\n\nOpen the vault to see the documents currently stored in this demo.`,
+      suggestions: ['Open my document vault', 'Documents for a scholarship', 'Documents for a job application'],
       actionType: 'navigate_vault',
-      actionLabel: 'Open Document Vault'
-    };
+      actionLabel: 'Open Document Vault',
+    });
   }
 
-  // 7. AYUSHMAN BHARAT / HEALTHCARE
-  if (lower.includes('health') || lower.includes('ayushman') || lower.includes('hospital') || lower.includes('ilaj') || lower.includes('card')) {
-    return {
-      id: generateId(),
-      role: 'assistant',
-      content: `### 🏥 Ayushman Bharat (PM-JAY) Information
-
-**Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (PM-JAY)** duniya ki sabse badi health guarantee scheme hai:
-
-• **Health Cover:** **₹5,00,000 prati varsh** prati parivar cash-less secondary & tertiary hospital treatment ke liye.
-• **Empaneled Hospitals:** 27,000+ government aur private hospitals nationwide.
-• **No Out-of-Pocket Expense:** Medicines, tests, pre- and post-hospitalization sab covered hain.
-
-Aapka status check karne ke liye mera scheme explorer dekhein:`,
-      timestamp: new Date().toISOString(),
-      suggestions: [
-        'Check Ayushman Bharat Card',
-        'Nearby Empaneled Hospitals',
-        'Download PM-JAY Guide'
-      ],
+  if (isHealth) {
+    const scheme = mockSchemes.find((item) => item.id === 'sch_ayushman_01') || mockSchemes.find((item) => item.title.toLowerCase().includes('ayushman'));
+    return makeMessage({
+      content: scheme
+        ? `### 🏥 ${scheme.title}\n\n${scheme.description}\n\n**Benefits**\n${scheme.benefits.slice(0, 2).map((b) => `• ${b}`).join('\n')}\n\nEligibility can depend on the beneficiary database and applicable rules. Please verify your final eligibility on the official portal.`
+        : 'I can help you explore health-related government schemes. Please open the scheme explorer for the current demo data.',
+      suggestions: ['Show health schemes', 'What documents may be needed?', 'Check my scheme matches'],
       actionType: 'navigate_schemes',
-      actionLabel: 'View PM-JAY Scheme'
-    };
+      actionLabel: 'Open Health Schemes',
+      actionPayload: scheme ? { schemeId: scheme.id } : undefined,
+    });
   }
 
-  // 8. PMAY / HOUSING / AWAS YOJANA
-  if (lower.includes('housing') || lower.includes('awas') || lower.includes('ghar') || lower.includes('pmay') || lower.includes('makaan')) {
-    return {
-      id: generateId(),
-      role: 'assistant',
-      content: `### 🏠 Pradhan Mantri Awas Yojana (PMAY-U / PMAY-G)
-
-Pradhan Mantri Awas Yojana har eligible parivar ko 'Pucca Makaan' banane ya khareedne ke liye financial assistance deti hai:
-
-• **Interest Subsidy (CLSS):** Up to **₹2.67 Lakhs** home loan interest subsidy.
-• **Beneficiary Led Construction:** ₹1.5 Lakh to ₹2.5 Lakh direct grant.
-• **Eligibility:** Jo pehle se kisi pucca ghar ke maalik nahi hain aur income category (EWS/LIG/MIG) me aate hain.`,
-      timestamp: new Date().toISOString(),
-      suggestions: [
-        'Am I eligible for PMAY?',
-        'Documents required for PMAY',
-        'How to apply online on PMAYMIS?'
-      ],
+  if (isHousing) {
+    const scheme = mockSchemes.find((item) => item.id === 'sch_pmay_u_03') || mockSchemes.find((item) => item.title.toLowerCase().includes('awas'));
+    return makeMessage({
+      content: scheme
+        ? `### 🏠 ${scheme.title}\n\n${scheme.description}\n\n**Eligibility signals in the demo:**\n${scheme.eligibility.description.slice(0, 3).map((x) => `• ${x}`).join('\n')}\n\nFinal eligibility and current benefits should be verified on the official scheme portal.`
+        : 'I can help you explore housing schemes. Open the scheme explorer to view the current demo data.',
+      suggestions: ['Check my PMAY eligibility', 'Required documents', 'Explore all schemes'],
       actionType: 'navigate_schemes',
-      actionLabel: 'Explore PMAY Details'
-    };
+      actionLabel: 'Explore Housing Schemes',
+      actionPayload: scheme ? { schemeId: scheme.id } : undefined,
+    });
   }
 
-  // 9. DEFAULT HIGH-INTELLIGENCE RESPONSE
-  return {
-    id: generateId(),
-    role: 'assistant',
-    content: `Main samajh gaya aapka prashna: **"${text}"**.
+  if (isJob) {
+    const results = jobResults(user);
+    const lines = results.map(({ job, score }) =>
+      `**${job.title}** — ${score}% profile match\n• ${job.organization} • ${job.location}\n• Qualification: ${job.qualification[0]}\n• Deadline: ${job.applicationDeadline}`,
+    );
 
-**GovConnect AI Quick Analysis:**
-1. **Welfare Schemes:** Humare paas 200+ Central aur State guidelines hain jo aapke profile (${userEdu}, ${userState}) se auto-match ho sakti hain.
-2. **Sarkari Jobs:** 17,700+ active government vacancies me eligibility check karein.
-3. **Grievance Redress:** Civic, bijli, sadak, ya municipal issues ka automated draft generate karein.
+    return makeMessage({
+      content: `### 💼 Jobs matched to your profile\n\nProfile used: **${education}**${user.skills?.length ? ` • ${user.skills.slice(0, 4).join(', ')}` : ''}\n\n${lines.join('\n\n')}\n\nThese are **prototype match scores**, not official eligibility decisions. Always verify the recruitment notification before applying.`,
+      suggestions: ['Show all jobs', 'Filter jobs by my skills', 'Open my saved jobs'],
+      actionType: 'navigate_jobs',
+      actionLabel: 'Open Jobs Tracker',
+      actionPayload: { jobIds: results.map(({ job }) => job.id) },
+    });
+  }
 
-Aap inme se kya karna chahenge? Niche diye gaye quick options par click karein:`,
-    timestamp: new Date().toISOString(),
-    suggestions: [
-      'Show Schemes for Me',
-      'Show Govt Jobs for MCA/Graduates',
-      'Check Document Vault Readiness',
-      'Draft a Civic Complaint'
-    ],
-    actionType: 'navigate_schemes',
-    actionLabel: 'Open Citizen Dashboard Services'
-  };
+  if (isScheme) {
+    const results = schemeResults(user);
+    const lines = results.map(({ scheme, score }) =>
+      `**${scheme.title}** — ${score}% indicative match\n• ${scheme.category.replace(/_/g, ' ')}\n• ${scheme.benefits[0] || 'See scheme details for benefits.'}`,
+    );
+
+    return makeMessage({
+      content: `### 🎯 Scheme recommendations for ${userName}\n\nProfile used: **${education} • ${state}**${user.annualIncome !== undefined ? ` • Income: ₹${user.annualIncome.toLocaleString('en-IN')}` : ''}\n\n${lines.join('\n\n')}\n\n**Important:** A match score is only a recommendation based on the demo data. It is not a government eligibility decision. Verify the latest criteria on the official portal.`,
+      suggestions: ['Show scholarship schemes', 'Show financial schemes', 'Open scheme explorer'],
+      actionType: 'navigate_schemes',
+      actionLabel: 'Open Scheme Matching',
+      actionPayload: { schemeIds: results.map(({ scheme }) => scheme.id) },
+    });
+  }
+
+  // Context-aware fallback: don't invent facts or pretend a live government database was queried.
+  const recentTopics = history.slice(-4).filter((item) => item.role === 'user').map((item) => item.content).join(' ');
+  const contextHint = recentTopics ? ` I can continue from your recent question: “${recentTopics.slice(-120)}”.` : '';
+
+  return makeMessage({
+    content: `I can help with **government schemes, jobs, documents, grievances and local services**.${contextHint}\n\nI couldn't confidently identify the intent of your question yet. Try asking something specific, for example:\n\n• “Which schemes may match my profile?”\n• “Find government jobs for an MCA graduate.”\n• “What documents do I need for a scholarship?”\n• “Help me draft a complaint about potholes.”`,
+    suggestions: ['Find schemes for me', 'Find jobs for me', 'What documents do I need?', 'Draft a grievance'],
+  });
 };

@@ -337,6 +337,30 @@ export type NotificationType =
 
 // ─── Chat / AI Assistant Types ────────────────────────────────────────────────
 
+export interface RecommendationItem {
+  id: string;
+  type: 'scheme' | 'job' | 'service';
+  title: string;
+  subtitle?: string;
+  match_score?: number;
+  match_reasons?: string[];
+  official_url?: string;
+  details?: Record<string, any>;
+}
+
+export interface ActionItem {
+  type: string;
+  label: string;
+  payload?: any;
+}
+
+export interface SourceCitation {
+  name: string;
+  url: string;
+  domain?: string;
+  last_checked?: string;
+}
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
@@ -344,6 +368,14 @@ export interface ChatMessage {
   timestamp: string;
   isTyping?: boolean;
   suggestions?: string[];
+  intent?: string;
+  confidence?: number;
+  recommendations?: RecommendationItem[];
+  actions?: ActionItem[];
+  sources?: SourceCitation[];
+  actionType?: string;
+  actionLabel?: string;
+  actionPayload?: any;
 }
 
 // ─── API Response Types ───────────────────────────────────────────────────────

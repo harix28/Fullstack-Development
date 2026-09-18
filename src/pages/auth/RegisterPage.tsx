@@ -46,32 +46,32 @@ export default function RegisterPage() {
 
   const [formData, setFormData] = useState({
     // Step 1
-    name: 'Hari Sharma',
-    email: 'hari.sharma@example.com',
-    mobile: '9876543210',
-    password: 'Password@123',
-    confirmPassword: 'Password@123',
+    name: '',
+    email: '',
+    mobile: '',
+    password: '',
+    confirmPassword: '',
 
     // Step 2
-    age: 23,
+    age: 21,
     gender: 'Male',
     state: 'Delhi',
-    district: 'New Delhi',
-    cityVillage: 'Connaught Place',
+    district: '',
+    cityVillage: '',
     category: 'General',
-    annualIncome: 350000,
+    annualIncome: 250000,
     hasDisability: false,
 
     // Step 3
-    education: 'MCA',
-    occupation: 'Student / Tech Aspirant',
+    education: 'Graduate',
+    occupation: 'Student / Seeking Opportunities',
     employmentStatus: 'Student',
-    skills: ['Python', 'SQL', 'React', 'Data Analysis'],
+    skills: [] as string[],
 
     // Step 4
-    interestedSchemes: ['Education & Scholarships', 'Small Business & Startups (MUDRA)'],
-    interestedJobs: ['Staff Selection Commission (SSC)', 'Banking & Insurance (IBPS / SBI)', 'State IT & Tech Services'],
-    preferredLocation: 'Delhi NCR / Remote'
+    interestedSchemes: ['Education & Scholarships'],
+    interestedJobs: ['Staff Selection Commission (SSC)'],
+    preferredLocation: 'All India'
   });
 
   const toggleSkill = (skill: string) => {
@@ -249,7 +249,7 @@ export default function RegisterPage() {
                     required
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Hari Sharma"
+                    placeholder="e.g. Ramesh Kumar"
                     className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1a2f8a] text-sm"
                   />
                 </div>
@@ -264,7 +264,7 @@ export default function RegisterPage() {
                       required
                       value={formData.email}
                       onChange={e => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="e.g. hari.sharma@example.com"
+                      placeholder="e.g. name@example.com"
                       className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1a2f8a] text-sm"
                     />
                   </div>

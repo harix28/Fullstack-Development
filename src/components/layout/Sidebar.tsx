@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { 
-  FileText, Briefcase, FolderOpen, MessageSquare, 
+  LayoutDashboard, FileText, Briefcase, FolderOpen, MessageSquare, 
   Bot, Bell, Settings, LogOut, Shield, Bookmark, User,
   Sparkles, CheckCircle2
 } from 'lucide-react';
@@ -15,8 +15,8 @@ export default function Sidebar() {
   const { savedSchemeIds, savedJobIds } = useSaved();
   const totalSaved = savedSchemeIds.length + savedJobIds.length;
 
-  // Streamlined, focused citizen modules (No "Overview", No "Local Services")
   const primaryNavItems = [
+    { label: 'Overview', icon: LayoutDashboard, href: ROUTES.DASHBOARD },
     { label: 'Schemes Matching', icon: FileText, href: ROUTES.SCHEMES, badge: 'AI Match' },
     { label: 'Govt Jobs Tracker', icon: Briefcase, href: ROUTES.JOBS },
     { label: 'Document Vault', icon: FolderOpen, href: ROUTES.DOCUMENTS },
@@ -36,7 +36,7 @@ export default function Sidebar() {
       
       {/* Top Brand */}
       <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-        <Link to={ROUTES.SCHEMES} className="flex items-center gap-2.5 group">
+        <Link to={ROUTES.DASHBOARD} className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0f1740] via-[#1a2f8a] to-[#2563eb] flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
             <Shield className="h-4.5 w-4.5" />
           </div>
