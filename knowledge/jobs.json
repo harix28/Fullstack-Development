@@ -1,0 +1,124 @@
+[
+  {
+    "id": "job_ncs_nic_tech_01",
+    "title": "Scientist B / Technical Assistant (Software Systems & Cloud)",
+    "organization": "National Informatics Centre (NIC)",
+    "department": "Ministry of Electronics and Information Technology",
+    "location": "New Delhi / Pan-India State Informatics Centres",
+    "qualification": [
+      "BE / B.Tech in Computer Science / IT / Electronics or MCA (Master of Computer Applications) or M.Sc in Computer Science"
+    ],
+    "experience": "Freshers eligible; 0-2 years software development or database management experience preferred",
+    "skills": [
+      "Python",
+      "SQL",
+      "Database Design",
+      "React",
+      "Linux System Administration"
+    ],
+    "salary": "Pay Level 10 (₹56,100 – ₹1,77,500) + Central Govt DA & HRA",
+    "vacancies": "598",
+    "deadline": "25 October 2026",
+    "selection_process": [
+      "Computer Based Examination (80% Computer Science & IT syllabus, 20% Logical Reasoning)",
+      "Document Verification and Technical Personality Assessment"
+    ],
+    "official_url": "https://www.ncs.gov.in",
+    "source_url": "https://www.ncs.gov.in",
+    "source_domain": "ncs.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://www.ncs.gov.in"
+    ]
+  },
+  {
+    "id": "job_upsc_cgl_02",
+    "title": "Combined Graduate Level (SSC CGL 2026) – Inspectors & Administrative Officers",
+    "organization": "Staff Selection Commission (SSC)",
+    "department": "Department of Personnel & Training (DoPT)",
+    "location": "All India Service (Central Ministries & Departments)",
+    "qualification": [
+      "Bachelor's Degree in any discipline from a recognized University (Graduates, BCA, MCA, Engineers all eligible)"
+    ],
+    "experience": "None required (Direct Entry)",
+    "skills": [
+      "General Awareness",
+      "Quantitative Aptitude",
+      "Computer Proficiency (Data Entry & MS Office)"
+    ],
+    "salary": "Pay Level 4 to Level 8 (₹25,500 – ₹1,51,100)",
+    "vacancies": "17,727",
+    "deadline": "15 November 2026",
+    "selection_process": [
+      "Tier-I Computer Based Objective Examination",
+      "Tier-II Computer Based Examination (Mathematical Abilities, Reasoning, English, General Awareness & Computer Knowledge Module)"
+    ],
+    "official_url": "https://ssc.gov.in",
+    "source_url": "https://www.india.gov.in",
+    "source_domain": "india.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://www.india.gov.in"
+    ]
+  },
+  {
+    "id": "job_rrb_ntpc_tech_03",
+    "title": "Non-Technical Popular Categories & IT Supervisors (RRB NTPC 2026)",
+    "organization": "Railway Recruitment Boards (Ministry of Railways)",
+    "department": "Indian Railways (All Zones)",
+    "location": "Northern, Western, Eastern, Southern Railway Zones",
+    "qualification": [
+      "Graduate Degree in any discipline or Diploma / BCA / MCA for technical data supervisory cadres"
+    ],
+    "experience": "Fresher",
+    "skills": [
+      "General Intelligence",
+      "Mathematics",
+      "Digital Data Handling"
+    ],
+    "salary": "Pay Level 5 & 6 (₹29,200 – ₹1,12,400)",
+    "vacancies": "11,558",
+    "deadline": "20 October 2026",
+    "selection_process": [
+      "CBT 1 (Screening Objective Test)",
+      "CBT 2 (Specialized Core Test)",
+      "Computer Based Aptitude / Typing Skill Test and Medical Examination"
+    ],
+    "official_url": "https://indianrailways.gov.in",
+    "source_url": "https://services.india.gov.in",
+    "source_domain": "services.india.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://services.india.gov.in"
+    ]
+  },
+  {
+    "id": "job_f8583358",
+    "title": "NcsNewWebsite",
+    "organization": "National Career Service",
+    "department": "Ministry of Labour & Employment",
+    "location": "Central Government",
+    "qualification": [
+      "Relevant qualifications as per official advertisement"
+    ],
+    "experience": "As per official notification",
+    "skills": [
+      "General Administration",
+      "Computer Literacy"
+    ],
+    "salary": null,
+    "vacancies": null,
+    "deadline": "Refer to official recruitment notification",
+    "selection_process": [
+      "Written Examination / Computer Based Test",
+      "Document Verification & Interview"
+    ],
+    "official_url": "https://ncs.gov.in",
+    "source_url": "https://ncs.gov.in",
+    "source_domain": "ncs.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://ncs.gov.in"
+    ]
+  }
+]

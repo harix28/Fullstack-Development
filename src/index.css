@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  /* === Palette Colors (Warm Minimalist Aesthetic) ===
+     Swatch 1: #EDEDE9 (Porcelain linen)
+     Swatch 2: #D6CCC2 (Warm pebble taupe)
+     Swatch 3: #F5EBE0 (Soft almond cream)
+     Swatch 4: #E3D5CA (Warm sand latte)
+     Swatch 5: #D5BDAF (Muted desert clay / blush)
+     Espresso Brand: #59463B (Primary CTA & Brand)
+     Dark Espresso Text: #2D231E (High contrast text & headers)
+  */
+  --color-warm-canvas: #F5EBE0;
+  --color-warm-surface: #FFFFFF;
+  --color-warm-porcelain: #EDEDE9;
+  --color-warm-sand: #E3D5CA;
+  --color-warm-taupe: #D6CCC2;
+  --color-warm-clay: #D5BDAF;
+  --color-warm-accent: #A67C65;
+  --color-warm-espresso: #59463B;
+  --color-warm-dark: #2D231E;
+
+  --color-gov-bg: #F5EBE0;
+  --color-gov-card: #FFFFFF;
+  --color-gov-border: #D6CCC2;
+  --color-gov-text: #2D231E;
+  --color-gov-muted: #7D6E63;
+  --color-gov-subtle: #A89B91;
+
+  /* Legacy aliases mapped to warm palette to guarantee 100% theme coverage */
+  --color-navy-50: #FAF7F2;
+  --color-navy-100: #F5EBE0;
+  --color-navy-200: #EDEDE9;
+  --color-navy-300: #E3D5CA;
+  --color-navy-400: #D6CCC2;
+  --color-navy-500: #D5BDAF;
+  --color-navy-600: #A67C65;
+  --color-navy-700: #59463B;
+  --color-navy-800: #43342B;
+  --color-navy-900: #2D231E;
+  --color-navy-950: #1C1512;
+
+  --color-teal-50: #FAF7F2;
+  --color-teal-100: #F5EBE0;
+  --color-teal-200: #EDEDE9;
+  --color-teal-300: #E3D5CA;
+  --color-teal-400: #D5BDAF;
+  --color-teal-500: #B88E77;
+  --color-teal-600: #A67C65;
+  --color-teal-700: #8C644F;
+  --color-teal-800: #59463B;
+  --color-teal-900: #2D231E;
+
+  /* === Typography === */
+  --font-sans: 'Inter', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
+
+  /* === Border Radius === */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* === Shadows === */
+  --shadow-card: 0 1px 3px 0 rgb(45 35 30 / 0.05), 0 1px 2px -1px rgb(45 35 30 / 0.03);
+  --shadow-card-hover: 0 10px 25px -5px rgb(45 35 30 / 0.08), 0 8px 10px -6px rgb(45 35 30 / 0.04);
+  --shadow-modal: 0 25px 50px -12px rgb(45 35 30 / 0.25);
+}
+
+/* === Base Styles === */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #F5EBE0;
+  color: #2D231E;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Focus Styles (Accessibility) === */
+:focus-visible {
+  outline: 2px solid #59463B;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F5EBE0;
+}
+::-webkit-scrollbar-thumb {
+  background: #D6CCC2;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A67C65;
+}
+
+/* === Transitions === */
+.transition-base {
+  transition: all 0.2s ease;
+}
+
+/* === Hindi/Devanagari text optimization === */
+[lang="hi"] {
+  font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+  line-height: 1.8;
+}
+
+/* Glassmorphism & UI enhancement touches */
+.glass-nav {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.card-glow-warm {
+  box-shadow: 0 4px 20px -2px rgba(89, 70, 59, 0.12);
+}

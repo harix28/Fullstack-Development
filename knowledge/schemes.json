@@ -1,0 +1,220 @@
+[
+  {
+    "id": "sch_nsp_postmatric_01",
+    "name": "Post Matric Scholarships Scheme for Minorities & Economically Weaker Sections",
+    "type": "scheme",
+    "ministry": "Ministry of Minority Affairs / Ministry of Social Justice",
+    "department": "National Scholarship Division",
+    "state": "Central Government",
+    "description": "Financial scholarship support for students pursuing higher education (including Bachelor's degrees, MCA, Engineering, and Post Graduation) from recognized universities.",
+    "benefits": [
+      "Full tuition fee waiver up to ₹20,000 per academic year",
+      "Monthly maintenance allowance of ₹1,200 for hostellers and ₹550 for day scholars",
+      "Book grant and examination fee reimbursements"
+    ],
+    "eligibility": [
+      "Pursuing Post-Matric or Higher Education courses (Graduate, Post Graduate, MCA, Tech)",
+      "Annual family income ceiling: Less than or equal to ₹2,50,000 per annum",
+      "Minimum 50% marks in the preceding final examination",
+      "Aadhaar authenticated Indian citizen"
+    ],
+    "required_documents": [
+      "Aadhaar Card",
+      "Income Certificate issued by Tehsildar / SDM",
+      "Previous Qualifying Exam Marksheet",
+      "Institutional Fee Receipt",
+      "Aadhaar-seeded Bank Account Passbook"
+    ],
+    "application_process": [
+      "Register for One-Time Registration (OTR) on scholarships.gov.in",
+      "Complete Face Authentication or Aadhaar biometric e-KYC",
+      "Fill student profile, upload institution bonafide certificate, and submit for verification"
+    ],
+    "deadline": "31 October 2026",
+    "official_url": "https://scholarships.gov.in",
+    "source_url": "https://scholarships.gov.in",
+    "source_domain": "scholarships.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://scholarships.gov.in"
+    ]
+  },
+  {
+    "id": "sch_pm_mudra_02",
+    "name": "Pradhan Mantri MUDRA Yojana (PMMY)",
+    "type": "scheme",
+    "ministry": "Ministry of Finance",
+    "department": "Department of Financial Services",
+    "state": "Central Government",
+    "description": "Collateral-free institutional credit up to ₹20 Lakh to micro and small enterprises for manufacturing, processing, trading, or service activities.",
+    "benefits": [
+      "Collateral-free business loans: Shishu (up to ₹50,000), Kishore (₹50,000 - ₹5 Lakh), Tarun (₹5 Lakh - ₹10 Lakh), Tarun Plus (up to ₹20 Lakh)",
+      "No processing fee for Shishu and Kishore category loans",
+      "Low interest rates linked to RBI benchmark repo rate"
+    ],
+    "eligibility": [
+      "Non-farm micro or small business enterprises, shopkeepers, service providers, tech startups",
+      "Indian citizens aged 18 to 65 years with a viable business project",
+      "Satisfactory credit track record with no prior banking defaults"
+    ],
+    "required_documents": [
+      "Aadhaar Card and PAN Card",
+      "Business Address Proof / Udyam Registration Certificate",
+      "Past 6 months bank account statements",
+      "Project report with revenue projections and quotation of machinery/assets"
+    ],
+    "application_process": [
+      "Apply online through Udyami Mitra portal (udyamimitra.in) or visit any commercial bank",
+      "Submit business plan, KYC documents, and loan requirement application",
+      "Sanction and disbursement directly to vendor/business account with MUDRA Card"
+    ],
+    "deadline": "Open / Rolling throughout 2026",
+    "official_url": "https://www.mudra.org.in",
+    "source_url": "https://www.india.gov.in",
+    "source_domain": "india.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://www.india.gov.in"
+    ]
+  },
+  {
+    "id": "sch_pm_kisan_03",
+    "name": "PM Kisan Samman Nidhi (PM-KISAN)",
+    "type": "scheme",
+    "ministry": "Ministry of Agriculture & Farmers Welfare",
+    "department": "Department of Agriculture and Farmers Welfare",
+    "state": "Central Government",
+    "description": "Central sector income support scheme transferring ₹6,000 annually in three equal tranches of ₹2,000 directly to landholding farmer families.",
+    "benefits": [
+      "₹6,000 per year direct benefit transfer (DBT) in three four-monthly installments of ₹2,000",
+      "Direct transfer into Aadhaar-linked bank accounts without intermediaries"
+    ],
+    "eligibility": [
+      "Landholding farmer families with cultivable land parcels in their names",
+      "Subject to exclusion of institutional landholders, income tax payers, and constitutional post holders"
+    ],
+    "required_documents": [
+      "Aadhaar Card",
+      "Land ownership record (Khasra/Khatauni/ROR)",
+      "Active Aadhaar-seeded Bank Account",
+      "Mobile number registered with Aadhaar"
+    ],
+    "application_process": [
+      "Register at pmkisan.gov.in under New Farmer Registration",
+      "Submit Aadhaar, State, District, Sub-district, Village, and Land details",
+      "Complete mandatory e-KYC via OTP or biometric CSC verification"
+    ],
+    "deadline": "Open / Rolling 2026",
+    "official_url": "https://pmkisan.gov.in",
+    "source_url": "https://services.india.gov.in",
+    "source_domain": "services.india.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://services.india.gov.in"
+    ]
+  },
+  {
+    "id": "sch_pmay_urban_04",
+    "name": "Pradhan Mantri Awas Yojana – Urban 2.0 (PMAY-U 2.0)",
+    "type": "scheme",
+    "ministry": "Ministry of Housing and Urban Affairs",
+    "department": "Housing for All Division",
+    "state": "Central Government",
+    "description": "Affordable housing mission providing interest subsidies and financial assistance up to ₹2.5 Lakh for urban poor, EWS, and LIG families to construct or purchase pucca houses.",
+    "benefits": [
+      "Interest subsidy of up to 4.0% on home loans up to ₹25 Lakh for EWS/LIG beneficiaries",
+      "Direct financial assistance of ₹2.5 Lakh for beneficiary-led individual construction",
+      "Affordable Rental Housing Complexes (ARHCs) for urban migrants"
+    ],
+    "eligibility": [
+      "Family must not own a pucca house in any part of India in the name of any member",
+      "EWS annual income ceiling: up to ₹3,00,000; LIG annual income ceiling: ₹3,00,001 to ₹6,00,000",
+      "Female head of household as owner or co-owner of the property"
+    ],
+    "required_documents": [
+      "Aadhaar Card of all family members",
+      "Income certificate / Income tax assessment order",
+      "Land registry / allotment deed / NOC from municipal authority",
+      "Affidavit declaring no other pucca house owned in India"
+    ],
+    "application_process": [
+      "Apply online through pmaymis.gov.in or municipal civic citizen service centre",
+      "Select component (Beneficiary-led Construction or Credit Linked Subsidy)",
+      "Geo-tagging verification by municipal engineer followed by DBT release"
+    ],
+    "deadline": "December 2026",
+    "official_url": "https://pmaymis.gov.in",
+    "source_url": "https://www.india.gov.in",
+    "source_domain": "india.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://www.india.gov.in"
+    ]
+  },
+  {
+    "id": "sch_ab_pmjay_05",
+    "name": "Ayushman Bharat – Pradhan Mantri Jan Arogya Yojana (AB-PMJAY)",
+    "type": "scheme",
+    "ministry": "Ministry of Health and Family Welfare",
+    "department": "National Health Authority (NHA)",
+    "state": "Central Government",
+    "description": "World's largest public health assurance program providing ₹5 Lakh cashless hospitalisation cover per family per year, expanded to all citizens aged 70+.",
+    "benefits": [
+      "₹5,00,000 cashless hospitalisation cover per family per year across 28,000+ empaneled hospitals",
+      "All senior citizens aged 70 years and above eligible for dedicated ₹5 Lakh cover regardless of income",
+      "Covers 1,949 treatments including oncology, cardiology, neurosurgery, and intensive care"
+    ],
+    "eligibility": [
+      "Families registered under Socio-Economic Caste Census (SECC) or state food security registries",
+      "All senior citizens aged 70+ under expanded Ayushman Vay Vandana enrollment",
+      "No restrictions on family size, gender, or age"
+    ],
+    "required_documents": [
+      "Aadhaar Card (with biometric / mobile OTP authentication)",
+      "Ration Card / Family Samagra ID / Ration Card"
+    ],
+    "application_process": [
+      "Visit beneficiary.nha.gov.in or use Ayushman App",
+      "Enter Aadhaar / Family ID to check eligibility",
+      "Complete e-KYC and download Ayushman Golden Card instantly"
+    ],
+    "deadline": "Rolling / Open 2026",
+    "official_url": "https://beneficiary.nha.gov.in",
+    "source_url": "https://esanjeevani.mohfw.gov.in",
+    "source_domain": "mohfw.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://esanjeevani.mohfw.gov.in"
+    ]
+  },
+  {
+    "id": "sch_b67ea433",
+    "name": "NSP : National Scholarship Portal",
+    "type": "scheme",
+    "ministry": "Ministry of Education",
+    "department": "Ministry of Education",
+    "state": "Central Government",
+    "description": "NSP : National Scholarship Portal VANI - Virtual Assistance By NIC I am still learning.Please forgive me if you find any answer to be inappropriate. Please Select Language × English Hindi Gujarati Tamil Accessibility Controls Reset Filter Resize Text Dark Contrast Light Contrast Invert Saturation Text Size Increase Text Size Decrease Highlight Link",
+    "benefits": [
+      "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding activities in self-service mode for Direct Benefit Transfer(DBT) by enabling the citizens to carry out certain activities in digital mode"
+    ],
+    "eligibility": [
+      "Students may apply for one merit-based scholarship scheme and one or more welfare-based scholarship schemes from AY 2026–27, as per scheme eligibility criteria"
+    ],
+    "required_documents": [
+      "Aadhaar"
+    ],
+    "application_process": [
+      "Apply online via official government portal",
+      "Submit e-KYC and required verification documents"
+    ],
+    "deadline": null,
+    "official_url": "https://scholarships.gov.in/",
+    "source_url": "https://scholarships.gov.in/",
+    "source_domain": "scholarships.gov.in",
+    "last_checked": "2026-09-18",
+    "source_urls": [
+      "https://scholarships.gov.in/"
+    ]
+  }
+]
