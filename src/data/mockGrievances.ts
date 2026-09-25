@@ -1,0 +1,90 @@
+import type { Grievance } from '@/types';
+
+export const mockGrievances: Grievance[] = [
+  {
+    id: 'grv_pot_01',
+    title: 'Severe potholes and water-logging on Kabir Nagar Main Road',
+    description: 'The main connecting road between Kabir Nagar and Durgakund has developed crater-sized potholes over a 500m stretch following monsoon rains. Multiple two-wheelers have met with accidents and emergency vehicles face severe transit delays.',
+    category: 'infrastructure',
+    department: 'Varanasi Municipal Corporation (Nagar Nigam) / PWD',
+    location: 'Kabir Nagar Main Cross Road, near Durgakund Police Chowki',
+    district: 'Varanasi',
+    state: 'Uttar Pradesh',
+    referenceNumber: 'UP-PWD-2026-89412',
+    attachments: ['pothole_photo_1.jpg', 'waterlogging_crossroad.jpg'],
+    status: 'under_review',
+    priority: 'high',
+    aiAnalysis: {
+      detectedDepartment: 'Public Works Department (PWD) / Municipal Corporation',
+      complaintCategory: 'Road Infrastructure & Public Safety',
+      prioritySuggestion: 'high',
+      confidence: 91,
+      reasoning: 'Issues concerning recurring traffic hazards and delayed emergency services receive high priority dispatch.',
+      suggestedPortal: {
+        name: 'CPGRAMS (MoRTH / Urban Affairs)',
+        url: 'https://pgportal.gov.in',
+        description: 'Centralized Public Grievance Redress and Monitoring System',
+        type: 'central',
+      },
+    },
+    aiDraft: `To,\nThe Municipal Commissioner,\nVaranasi Municipal Corporation (Nagar Nigam),\nVaranasi, Uttar Pradesh.\n\nSubject: Urgent Request for Immediate Repair of Critical Potholes on Kabir Nagar Main Road\n\nRespected Sir/Madam,\n\nI am writing to bring to your urgent attention the dilapidated condition of Kabir Nagar Main Road. Following recent rains, deep craters and water-logging have rendered the stretch extremely hazardous for pedestrians and vehicular traffic. Several commuters have sustained minor injuries over the past week.\n\nI kindly request your inspection team to survey the road stretch and sanction prompt macadamization / patch-repair work to avert further accidents.\n\nThanking you,\nAarav Sharma\nResident, Kabir Nagar, Varanasi`,
+    officialPortal: {
+      name: 'Jansunwai (UP IGRS)',
+      url: 'https://jansunwai.up.nic.in',
+      description: 'Integrated Grievance Redressal System of Uttar Pradesh Government',
+      type: 'state',
+    },
+    createdAt: '2026-08-10T11:00:00.000Z',
+    updatedAt: '2026-08-14T15:30:00.000Z',
+    timeline: [
+      {
+        status: 'Submitted',
+        description: 'Complaint drafted and submitted on UP IGRS Jansunwai portal.',
+        timestamp: '2026-08-10T11:00:00.000Z',
+      },
+      {
+        status: 'Assigned',
+        description: 'Forwarded to Executive Engineer (Zone 3), Varanasi Nagar Nigam.',
+        timestamp: '2026-08-12T14:20:00.000Z',
+      },
+      {
+        status: 'Under Review',
+        description: 'Site inspection scheduled by Assistant Engineer.',
+        timestamp: '2026-08-14T15:30:00.000Z',
+      },
+    ],
+  },
+  {
+    id: 'grv_elec_02',
+    title: 'Frequent unscheduled voltage fluctuations and transformer tripping',
+    description: 'Our residential block has been experiencing severe voltage drops and surges damaging domestic appliances for the past two weeks. Repeated calls to local substation have gone unanswered.',
+    category: 'utilities',
+    department: 'Purvanchal Vidyut Vitaran Nigam Limited (UPPCL)',
+    location: 'Sector 4, Bhelupur',
+    district: 'Varanasi',
+    state: 'Uttar Pradesh',
+    referenceNumber: 'UPPCL-CMP-2026-3401',
+    attachments: ['meter_voltage_reading.jpg'],
+    status: 'resolved',
+    priority: 'medium',
+    createdAt: '2026-07-02T10:15:00.000Z',
+    updatedAt: '2026-07-08T17:00:00.000Z',
+    timeline: [
+      {
+        status: 'Submitted',
+        description: 'Complaint registered with UPPCL 1912 Helpline.',
+        timestamp: '2026-07-02T10:15:00.000Z',
+      },
+      {
+        status: 'Technician Dispatched',
+        description: 'Lineman team replaced faulty distribution transformer phase jumper.',
+        timestamp: '2026-07-06T12:00:00.000Z',
+      },
+      {
+        status: 'Resolved',
+        description: 'Standard 230V stabilized output confirmed by junior engineer.',
+        timestamp: '2026-07-08T17:00:00.000Z',
+      },
+    ],
+  }
+];
