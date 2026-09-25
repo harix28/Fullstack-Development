@@ -1,34 +1,24 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Shield, AlertCircle, ArrowRight, CheckCircle2, Lock } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { Button, Badge } from '@/components/ui';
 import ROUTES from '@/constants/routes';
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (!identifier.trim()) {
-      setError('Please enter your registered email or mobile number.');
-      return;
-    }
-    if (!password) {
-      setError('Please enter your password.');
-      return;
-    }
-
+    if (!identifier.trim()) { setError('Please enter your email or mobile number.'); return; }
+    if (!password) { setError('Please enter your password.'); return; }
     setIsLoading(true);
     try {
       await login({ emailOrMobile: identifier, password });
@@ -41,88 +31,76 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white font-sans">
-      {/* Left Panel - Branding */}
-      <div className="hidden md:flex md:w-1/2 bg-[#0f1740] text-white flex-col justify-between p-12 relative overflow-hidden">
-        <div className="relative z-10">
-          <Link to={ROUTES.HOME} className="flex items-center gap-2 mb-16">
-            <Shield className="h-8 w-8 text-white" />
-            <span className="text-2xl font-bold tracking-tight text-white">
-              Gov<span className="text-[#0d9488]">Connect</span>
-            </span>
-          </Link>
-          
-          <Badge className="bg-white/10 text-teal-300 border-white/20 mb-4 text-xs font-semibold">
-            Unified Citizen Services Platform
-          </Badge>
+    <div className="min-h-screen flex bg-[var(--color-bg)] font-sans">
 
-          <h1 className="text-4xl lg:text-5xl font-bold leading-tight mb-6">
-            Empowering Citizens.<br />Simplifying Access.
-          </h1>
-          <p className="text-lg text-blue-100 mb-10 max-w-md">
-            Your unified portal for discovering schemes, tracking government jobs, managing official documents, and getting AI-assisted citizen support.
+      {/* Left — brand panel */}
+      <div className="hidden md:flex md:w-2/5 flex-col justify-between p-14 border-r border-[var(--color-border)] bg-[var(--color-surface)]">
+        <div>
+          <Link to={ROUTES.HOME} className="font-serif text-2xl font-semibold text-[var(--color-text)]">
+            GovConnect
+          </Link>
+          <p className="mt-1 text-xs text-[var(--color-muted)] tracking-widest uppercase">
+            Citizen Services Platform
           </p>
 
-          <div className="space-y-4">
+          <div className="mt-16 space-y-5">
+            <h2 className="font-serif text-3xl text-[var(--color-text)] leading-snug">
+              One platform for<br />every citizen need.
+            </h2>
+            <p className="text-sm text-[var(--color-muted)] leading-relaxed max-w-xs">
+              Schemes, jobs, documents, and grievances — unified in a single, quiet, and private interface.
+            </p>
+          </div>
+
+          <div className="mt-12 space-y-3">
             {[
-              'Single citizen profile powers scheme & job matching',
-              'Assisted grievance drafting with official routing',
-              'Local service locator with proximity tracking',
-              'Secure digital document vault with client-side privacy'
-            ].map((feature, idx) => (
-              <div key={idx} className="flex items-center gap-3">
-                <CheckCircle2 className="text-[#0d9488] w-5 h-5 shrink-0" />
-                <span className="text-blue-50 text-sm">{feature}</span>
-              </div>
+              'Scheme & job matching from your profile',
+              'Assisted grievance drafting',
+              'Encrypted document vault',
+              'Bilingual — English & Hindi',
+            ].map((f) => (
+              <p key={f} className="text-xs text-[var(--color-muted)] flex items-start gap-2">
+                <span className="mt-0.5 w-1 h-1 rounded-full bg-[var(--color-olive-500)] shrink-0 inline-block" />
+                {f}
+              </p>
             ))}
           </div>
         </div>
 
-        {/* Citizen Security & Privacy Notice */}
-        <div className="relative z-10 mt-auto pt-8 border-t border-white/10">
-          <p className="text-xs text-blue-200 mb-2 font-medium flex items-center gap-1.5">
-            <Lock className="w-3.5 h-3.5 text-teal-300" />
-            Privacy & Trust:
-          </p>
-          <p className="text-xs text-blue-300/80 leading-relaxed">
-            GovConnect secures your citizen profile and documents. No sensitive biometric credentials are collected or shared with unverified parties.
-          </p>
-        </div>
-
-        {/* Abstract Background Orbs */}
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#1a2f8a] rounded-full blur-3xl opacity-50 pointer-events-none" />
-        <div className="absolute top-20 -left-20 w-64 h-64 bg-[#0d9488] rounded-full blur-3xl opacity-20 pointer-events-none" />
+        <p className="text-[10px] text-[var(--color-subtle)] leading-relaxed max-w-xs">
+          No biometric data is collected. Your documents remain client-side and private.
+        </p>
       </div>
 
-      {/* Right Panel - Form */}
-      <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:flex-none lg:w-1/2 lg:px-20 xl:px-24 py-12 overflow-y-auto">
-        <div className="mx-auto w-full max-w-md">
-          {/* Mobile Brand */}
-          <div className="md:hidden flex items-center gap-2 mb-8">
-            <Shield className="h-8 w-8 text-[#1a2f8a]" />
-            <span className="text-2xl font-bold tracking-tight text-[#0f1740]">
-              Gov<span className="text-[#0d9488]">Connect</span>
-            </span>
+      {/* Right — form */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm space-y-8">
+
+          {/* Mobile brand */}
+          <div className="md:hidden">
+            <Link to={ROUTES.HOME} className="font-serif text-xl font-semibold text-[var(--color-text)]">
+              GovConnect
+            </Link>
           </div>
 
           <div>
-            <h2 className="text-3xl font-bold text-[#0f1740]">Sign In</h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Enter your credentials to access citizen schemes, jobs, and grievance assistance.
+            <h1 className="font-serif text-2xl text-[var(--color-text)]">Sign In</h1>
+            <p className="mt-1 text-sm text-[var(--color-muted)]">
+              Access your citizen dashboard.
             </p>
           </div>
 
           {error && (
-            <div className="mt-6 bg-red-50 border-l-4 border-red-500 p-3 rounded-md flex gap-2 items-center text-xs text-red-700">
-              <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+            <div className="flex items-start gap-2 text-xs text-[var(--color-terra-700)] border border-[var(--color-terra-100)] bg-[var(--color-terra-100)] rounded-sm px-3 py-2">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="identifier" className="block text-xs font-semibold text-slate-700 mb-1">
-                Mobile Number or Email Address
+              <label htmlFor="identifier" className="block text-[11px] uppercase tracking-widest text-[var(--color-muted)] mb-1.5">
+                Email or Mobile
               </label>
               <input
                 id="identifier"
@@ -130,13 +108,13 @@ export default function LoginPage() {
                 required
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
-                placeholder="e.g. hari.sharma@example.com"
+                className="w-full px-3 py-2.5 border border-[var(--color-border)] rounded-sm text-sm text-[var(--color-text)] bg-[var(--color-surface)] placeholder:text-[var(--color-subtle)] focus:outline-none focus:border-[var(--color-accent)] transition-colors"
+                placeholder="e.g. citizen@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-xs font-semibold text-slate-700 mb-1">
+              <label htmlFor="password" className="block text-[11px] uppercase tracking-widest text-[var(--color-muted)] mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -146,50 +124,40 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2f8a]"
+                  className="w-full px-3 py-2.5 border border-[var(--color-border)] rounded-sm text-sm text-[var(--color-text)] bg-[var(--color-surface)] placeholder:text-[var(--color-subtle)] focus:outline-none focus:border-[var(--color-accent)] transition-colors"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-subtle)] hover:text-[var(--color-muted)] cursor-pointer"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-xs">
-              <label className="flex items-center gap-2 cursor-pointer text-slate-600">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="rounded text-[#1a2f8a]"
-                />
-                <span>Remember me</span>
-              </label>
-
-              <Link to={ROUTES.FORGOT_PASSWORD} className="font-medium text-[#1a2f8a] hover:underline">
+            <div className="flex items-center justify-end">
+              <Link to={ROUTES.FORGOT_PASSWORD} className="text-xs text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors">
                 Forgot password?
               </Link>
             </div>
 
-            <Button
+            <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-[#0f1740] hover:bg-[#1a2f8a] text-white font-semibold rounded-lg transition-colors text-sm shadow"
+              className="w-full py-2.5 text-sm font-medium text-[var(--color-surface)] bg-[var(--color-ink-800)] hover:bg-[var(--color-ink-900)] dark:bg-[var(--color-parch-200)] dark:text-[var(--color-ink-900)] dark:hover:bg-[var(--color-parch-300)] rounded-sm transition-colors cursor-pointer disabled:opacity-50"
             >
-              {isLoading ? 'Signing In...' : 'Sign In to GovConnect'}
-            </Button>
+              {isLoading ? 'Signing in…' : 'Sign In'}
+            </button>
           </form>
 
-          <div className="mt-8 text-center text-xs text-slate-600">
-            Don't have an account?{' '}
-            <Link to={ROUTES.REGISTER} className="font-bold text-[#0d9488] hover:underline inline-flex items-center">
-              Register new profile <ArrowRight className="ml-1 w-3.5 h-3.5" />
+          <p className="text-xs text-center text-[var(--color-muted)]">
+            No account?{' '}
+            <Link to={ROUTES.REGISTER} className="text-[var(--color-text)] underline underline-offset-2">
+              Register here
             </Link>
-          </div>
+          </p>
         </div>
       </div>
     </div>

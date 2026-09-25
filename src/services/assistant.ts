@@ -106,48 +106,7 @@ const makeMessage = (response: AssistantResponse): AssistantMessage => ({
   ...response,
 });
 
-const AI_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api/v1';
-
-const sendToAiBackend = async (message: string, history: ChatMessage[], currentContext?: AssistantContext): Promise<AssistantMessage | null> => {
-  try {
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 14000);
-    const response = await fetch(`${AI_API_URL}/assistant/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message,
-        history: history.slice(-10).map(({ role, content }) => ({ role, content })),
-        user: currentContext?.user || {},
-        page: currentContext?.page || 'ask-sarkar',
-      }),
-      signal: controller.signal,
-    });
-    window.clearTimeout(timeout);
-    if (!response.ok) return null;
-    const data = await response.json();
-    const content = data?.content || data?.message;
-    if (!content) return null;
-
-    // Resolve primary action if actions array present
-    const firstAction = Array.isArray(data.actions) && data.actions.length > 0 ? data.actions[0] : null;
-
-    return makeMessage({
-      content,
-      suggestions: Array.isArray(data.suggestions) ? data.suggestions : [],
-      intent: data.intent,
-      confidence: data.confidence,
-      recommendations: Array.isArray(data.recommendations) ? data.recommendations : [],
-      actions: Array.isArray(data.actions) ? data.actions : [],
-      sources: Array.isArray(data.sources) ? data.sources : [],
-      actionType: data.actionType || (firstAction ? firstAction.type : undefined),
-      actionLabel: data.actionLabel || (firstAction ? firstAction.label : undefined),
-      actionPayload: data.actionPayload || (firstAction ? firstAction.payload : undefined),
-    });
-  } catch {
-    return null;
-  }
-};
+// Backend AI integration is coming soon. Assistant uses local fallback logic only.
 
 export const sendMessage = async (
   message: string,
@@ -161,10 +120,6 @@ export const sendMessage = async (
       suggestions: ['Show schemes for me', 'Find jobs for me', 'Draft a complaint'],
     });
   }
-
-  // Prefer the real backend + Gemini when it is running. Keep the local engine as a safe offline/demo fallback.
-  const aiResponse = await sendToAiBackend(text, history, currentContext);
-  if (aiResponse) return aiResponse;
 
   await randomDelay(150, 350);
 
